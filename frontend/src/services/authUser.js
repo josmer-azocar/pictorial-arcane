@@ -1,4 +1,4 @@
-export async function logUser(){
+export async function logUser(credentials){
     const url = "http://localhost:8080/api/login";
 
     try {
@@ -21,6 +21,30 @@ export async function logUser(){
     }
 }
 
+export async function registerUser(credentials) {
+    const url = "http://localhost:8080/api/login";
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type' : 'application/json'},
+            body: JSON.stringify(credentials)
+        })
+
+        if (!response.ok) {
+            throw new Error(response.status);
+            
+        }
+
+        return await response.json();
+        
+    } catch (error) {
+        console.error("Error de registro", error);
+        throw error;
+        
+    }
+}
+
 /*export async function logUser(credentials) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -39,3 +63,13 @@ export async function logUser(){
 }*/
 
 //funcion para hacer pruebas
+
+/*export async function registerUser(credentials) {
+    console.log("Registro de prueba:", credentials);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return {
+        success: true,
+        message: "Usuario creado (MOCK)",
+        user: credentials.nombre
+    };
+}*/
