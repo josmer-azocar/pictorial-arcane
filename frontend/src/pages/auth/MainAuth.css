@@ -1,3 +1,28 @@
 .auth-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    text-align: center;
     background-color: burlywood;
+    max-width: 500px;
+    margin: 0 auto;
+    border-radius: 5px;
+    font-family: "Roboto Flex", Arial, Helvetica, sans-serif;
+}
+
+#auth-buttons {
+    padding: 4%;
+    display: flex;
+}
+
+#auth-buttons button {
+    background: none;
+    border: none;
+    margin: 2%;
+}
+
+#auth-buttons button:hover {
+    cursor: pointer;
 }

@@ -1,0 +1,23 @@
+header {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+}
+
+header h1{
+    font-family: "Zen Tokyo Zoo", system-ui;;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+.list-item {
+    margin: 5px;
+    list-style-type: none;
+
+}

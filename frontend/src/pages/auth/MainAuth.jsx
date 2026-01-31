@@ -9,7 +9,7 @@ function MainAuth() {
 
     return (
         <section className='auth-form'>
-            <div>
+            <div id='auth-buttons'>
                 <button onClick={()=> setAuthPage(true)}>Login</button>
                 <button onClick={()=> setAuthPage(false)}>Sign Up</button>
             </div>

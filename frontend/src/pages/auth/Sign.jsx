@@ -1,3 +1,4 @@
+import './MainAuth.css'
 import { useState } from 'react';
 import {registerUser} from '../../services/authUser.js'
 
