@@ -25,11 +25,9 @@ function Login() {
         <section className='auth-form'>
             <form onSubmit={handleLogin}>
                 {errorMessage && <p>{errorMessage}</p>}
-                <label htmlFor="emaillog">Email</label>
-                <input type="text" id="emaillog" name="email" onChange={(e) => setEmail(e.target.value)}/><br/>
-                <label htmlFor="passwordlog">Contraseña</label>
-                <input type="password" id="passwordlog" name="password" onChange={(e) => setPassword(e.target.value)}/><br/>
-                <input type="submit" value="Submit"/>                
+                <input type="text" id="emaillog" name="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)}/><br/>
+                <input type="password" id="passwordlog" name="password" placeholder="Contraseña" onChange={(e) => setPassword(e.target.value)}/><br/>
+                <input type="submit" className='sub-button' value="Entrar"/>                
             </form>
         </section>
     );
