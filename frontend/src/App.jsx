@@ -1,3 +1,4 @@
+import React from 'react'
 import './App.css'
 import './components/Header.jsx'
 import Header from './components/Header.jsx'
