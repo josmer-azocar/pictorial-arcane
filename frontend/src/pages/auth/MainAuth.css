@@ -8,6 +8,7 @@
     background-color: rgba(255,255,255,0.50);
     max-width: 400px;
     margin: 0 auto;
+    margin-top: 20px;
     padding: 30px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1); /* Sombra suave para que flote */
@@ -62,6 +63,7 @@
     transition: 0.2s;
     outline: none;
     background-color: #f8f8f8;
+    margin-bottom: 10px;
 }
 /* Focus solo para inputs de texto */
 .auth-form input[type="text"]:focus,
