@@ -1,23 +1,64 @@
 header {
     display: flex;
-    flex-direction: column;
-    text-align: center;
-    padding: 20px;
+    justify-content: space-between; 
+    padding: 15px 40px; 
+    
+    background: rgba(255, 255, 255, 0.85); /* Blanco al 85% de opacidad */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05); /* Sombra muy suave */
+    
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-header h1{
-    font-family: "Zen Tokyo Zoo", system-ui;;
+header h1 {
+    font-family: "Zen Tokyo Zoo", system-ui;
+    font-size: 2.8rem;
+    color: #1a1a1a;
+    margin: 0;
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.1); /* Pequeño relieve */
 }
 
 nav {
     display: flex;
-    justify-content: center;
     align-items: center;
-    align-content: center;
 }
 
-.list-item {
-    margin: 5px;
-    list-style-type: none;
 
+.list-item {
+    list-style-type: none;
+    margin: 0 20px;
+    display: inline-block; /* Asegura que se pongan en fila */
+}
+
+.list-item a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px; /* Espaciado */
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.list-item a:hover {
+    color: #000;
+}
+
+/* Línea animada debajo del menú */
+.list-item a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    left: 0;
+    background-color: #000;
+    transition: width 0.3s ease;
+}
+
+.list-item a:hover::after {
+    width: 100%;
 }
