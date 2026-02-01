@@ -1,28 +1,83 @@
 .auth-form{
     display: flex;
-    flex-direction: column;
+    flex-direction: row-reverse;
     justify-content: center;
     align-items: center;
     align-content: center;
     text-align: center;
     background-color: burlywood;
-    max-width: 500px;
+    max-width: 800px;
     margin: 0 auto;
     border-radius: 5px;
     font-family: "Roboto Flex", Arial, Helvetica, sans-serif;
+    font-weight: 200;
+    overflow: hidden;
 }
 
 #auth-buttons {
-    padding: 4%;
-    display: flex;
+    padding: 20px;
 }
 
 #auth-buttons button {
     background: none;
     border: none;
-    margin: 2%;
+    margin: 10px;
+    white-space: nowrap;
+    font-family: "Roboto Flex", sans-serif;
+    font-size: 1.5rem;
+    font-weight: 100;
 }
 
 #auth-buttons button:hover {
     cursor: pointer;
+    color: rgb(51, 33, 61);
+
+}
+
+.auth-form input {
+    margin-bottom: 10px;
+    padding: 7px;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.815);
+    background-color: transparent;
+}
+
+.auth-form input.sub-button {
+    font-family: "Roboto Flex", sans-serif;
+    padding: 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: beige;
+}
+
+.auth-form input.sub-button:hover {
+    background-color: rgb(196, 154, 196);
+    cursor: pointer;
+}
+
+#log-click {
+    flex: 2;
+    padding: 20px;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#auth-welcome {
+    flex: 1; 
+    display: flex;
+    align-self: stretch;
+    
+}
+
+#text-welcome{
+    padding: 40px;
+    max-height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(90deg, #e7dbca 0%, #f5d8b8 50%, #eaeeb3 100%);
+
 }
