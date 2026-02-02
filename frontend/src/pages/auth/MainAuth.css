@@ -1,0 +1,93 @@
+.auth-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+    background-color: rgba(255,255,255,0.50);
+    max-width: 400px;
+    margin: 0 auto;
+    margin-top: 20px;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1); /* Sombra suave para que flote */
+    font-family: "Roboto Flex", Arial, Helvetica, sans-serif;
+
+    
+}.glass{
+    
+    backdrop-filter:blur(20px);
+
+}body {
+  background-image: url("fondoLo.gif");
+}
+
+#auth-buttons {
+    padding: 10px;
+    display: flex;
+    gap: 20px; /* Espacio entre Acceso e Inscribirse */
+    margin-bottom: 20px;
+}
+
+#auth-buttons button {
+    background: none;
+    border: none;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* Estilo para las etiquetas (Correo, Contraseña) */
+.auth-form label {
+    align-self: flex-start; /* Alinea el texto a la izquierda */
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    margin-top: 20px;
+}
+
+/* Estilo para los cuadros de texto (Inputs) */
+
+
+
+.auth-form input[type="text"],.auth-form input[type="email"],.auth-form input[type="password"] ,.auth-form input[type="number"]
+{
+    width: 100%;
+    height: 45px;
+    border: 1.5px solid #ecedec;
+    border-radius: 10px;
+    padding: 0 15px;
+    box-sizing: border-box; /* Evita que se salga de la caja */
+    transition: 0.2s;
+    outline: none;
+    background-color: #f8f8f8;
+    margin-bottom: 10px;
+}
+/* Focus solo para inputs de texto */
+.auth-form input[type="text"]:focus,
+.auth-form input[type="email"]:focus,
+.auth-form input[type="password"]:focus {   
+    
+    border: 1.5px solid #2ddcf3;    background-color: #fff;
+
+}
+/* Estilo específico para el botón Submit */
+.auth-form input[type="submit"] {   
+     margin-top: 20px; /* Separación del campo de contraseña */
+     width: 100%;    height: 45px;
+     background-color: #078d2f;  
+       color: white;
+       font-weight: 600;   
+        font-size: 16px;  
+          border: none;   
+           border-radius: 10px;   
+            cursor: pointer;    
+            transition: 0.3s;}
+            
+/* Hover del botón */
+.auth-form input[type="submit"]:hover {   
+     background-color: #d42424;    
+     transform: translateY(-2px);  
+    box-shadow: 0 5px 15px rgba(9, 148, 102, 0.3);}
