@@ -1,43 +1,226 @@
-.artwork-detail-container {
-  max-width: 1200px;
+:root {
+  --bg-dark: #ffffff;
+  --bg-card: #ffffff;
+  --text-main: #000000;
+  --text-muted: #000000;
+  --gold-accent: #d4af37;
+  --gold-hover: #b5952f;
+  --btn-primary: #f0c14b;
+  --btn-hover: #e0b040;
+  --border-color: #333333;
+  --verified-blue: #1da1f2;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+/* LAYOUT PRINCIPAL */
+.artwork-detail-page {
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
-  font-family: Arial, sans-serif;
+  padding: 2rem 5%;
 }
 
-.artwork-main {
-  display: flex;
-  gap: 40px;
-  margin-bottom: 40px;
+.product-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr; /* Imagen más ancha */
+  gap: 4rem;
+  margin-bottom: 4rem;
 }
 
-.artwork-image {
-  width: 600px;
+@media (max-width: 968px) {
+  .product-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+/* IZQUIERDA*/
+.artwork-gallery {
+  position: relative;
+}
+
+.image-frame {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--border-color);
+}
+
+.main-artwork-img {
+  width: 100%;
   height: auto;
+  display: block;
   object-fit: cover;
-  border-radius: 8px;
 }
 
-.artwork-info h1 {
-  margin: 0 0 20px 0;
+.status-badge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: rgb(0, 0, 0);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
-.artist-link a {
-  color: #0066cc;
+.status-badge.disponible { background-color: #28a745; }
+.status-badge.reservada { background-color: #ffc107; color: #000; }
+.status-badge.vendida { background-color: #dc3545; }
+
+/*PANEL DE COMPRA (DERECHA) */
+.artwork-purchase-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.artwork-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.artist-attribution {
+  font-size: 1.2rem;
+}
+
+.artist-link-bold {
+  color: var(--verified-blue);
   text-decoration: none;
+  font-weight: 600;
 }
 
-.artist-bio, .specific-details {
-  background: #51c010;
-  padding: 20px;
+.artist-link-bold:hover {
+  text-decoration: underline;
+}
+
+.verified-check {
+  color: var(--verified-blue);
+  margin-left: 4px;
+}
+
+.price-container {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 2.4rem;
+  font-weight: 700;
+}
+
+.currency {
+  font-size: 1.8rem;
+}
+
+.tax-note {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-left: 0.5rem;
+}
+
+.actions-area {
+  margin: 2rem 0;
+}
+
+.buy-now-btn {
+  background-color: var(--btn-primary);
+  color: #111;
+  padding: 1rem 2.5rem;
+  border: none;
   border-radius: 8px;
-  margin-bottom: 30px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.3s;
 }
 
-.artist-photo {
-  width: 200px;
-  height: auto;
-  border-radius: 50%;
-  float: left;
-  margin-right: 20px;
+.buy-now-btn:hover {
+  background-color: var(--btn-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.disabled-btn {
+  background-color: #444;
+  color: #888;
+  cursor: not-allowed;
+  width: 100%;
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+
+.process-note {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 0.8rem;
+  text-align: center;
+}
+
+.trust-signals {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.trust-signals .signal {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.trust-signals .signal i {
+  color: var(--gold-accent);
+  font-size: 1.3rem;
+}
+
+/* SECCIÓN INFERIOR  */
+.detailed-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+@media (max-width: 968px) {
+  .detailed-info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.info-card {
+  background-color: var(--bg-card);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.info-card h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.6rem;
+  color: var(--gold-accent);
+}
+
+.specs-container p {
+  margin-bottom: 0.8rem;
+  font-size: 1rem;
 }
