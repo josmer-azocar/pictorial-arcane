@@ -1,0 +1,43 @@
+.artwork-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.artwork-main {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.artwork-image {
+  width: 600px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.artwork-info h1 {
+  margin: 0 0 20px 0;
+}
+
+.artist-link a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.artist-bio, .specific-details {
+  background: #51c010;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.artist-photo {
+  width: 200px;
+  height: auto;
+  border-radius: 50%;
+  float: left;
+  margin-right: 20px;
+}

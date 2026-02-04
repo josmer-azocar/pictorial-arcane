@@ -15,12 +15,13 @@
     font-family: "Roboto Flex", Arial, Helvetica, sans-serif;
 
     
-}.glass{
-    
-    backdrop-filter:blur(20px);
-
-}body {
+}/*.body {
   background-image: url("fondoLo.gif");
+}*/.auth-page-wrapper {
+    min-height: 100vh;
+    background-image: url("fondoLo.gif");
+    background-size: cover;
+    background-position: center;
 }
 
 #auth-buttons {

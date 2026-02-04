@@ -8,6 +8,7 @@ function MainAuth() {
     const [isLogin, setAuthPage] = useState(true);
 
     return (
+     <div className="auth-page-wrapper">
         <section className='auth-form'>
             <div id='auth-buttons'>
                 <button onClick={()=> setAuthPage(true)}>Login</button>
@@ -16,6 +17,7 @@ function MainAuth() {
 
             {isLogin? <Login/> : <Sign/>}            
         </section>
+     </div>
     );
 }
 
