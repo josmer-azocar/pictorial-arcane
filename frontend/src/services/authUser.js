@@ -1,5 +1,5 @@
 export async function logUser(credentials){
-    const url = "http://localhost:8080/api/login";
+    const url = "http://localhost:8080/auth/login";
 
     try {
         const response = await fetch(url, {
@@ -22,7 +22,7 @@ export async function logUser(credentials){
 }
 
 export async function registerUser(credentials) {
-    const url = "http://localhost:8080/api/login";
+    const url = "http://localhost:8080/auth/register";
 
     try {
         const response = await fetch(url, {
