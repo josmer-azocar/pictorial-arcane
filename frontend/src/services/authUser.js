@@ -1,48 +1,16 @@
+import axios from 'axios';
+const url = "http://localhost:8080/auth";
+
+
 export async function logUser(credentials){
-    const url = "http://localhost:8080/auth/login";
 
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {'Content-Type' : 'application/json'},
-            body: JSON.stringify(credentials)
-        });
-
-        if (!response.ok) {
-            throw new Error(response.status); //fetch no detecta si la contraseña es incorrecta o el server falla como error por lo que no se va a catch directamente
-            
-        }
-
-        return await response.json();
-
-    } catch (error) {
-        console.error("Error de servicio:", error);
-        throw error;
-    }
+    const response = await axios.post(`${url}/login`, credentials);
+    return response.data;
 }
 
 export async function registerUser(credentials) {
-    const url = "http://localhost:8080/auth/register";
-
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {'Content-Type' : 'application/json'},
-            body: JSON.stringify(credentials)
-        })
-
-        if (!response.ok) {
-            throw new Error(response.status);
-            
-        }
-
-        return await response.json();
-        
-    } catch (error) {
-        console.error("Error de registro", error);
-        throw error;
-        
-    }
+    const response = await axios.post(`${url}/signUp`, userData);
+    return response.data;
 }
 
 /*export async function logUser(credentials) {

@@ -1,4 +1,5 @@
 import './Header.css'
+import { Link } from 'react-router-dom';
 
 
 
@@ -12,11 +13,12 @@ function Header(){
             </h1>
 
         <nav className="navigation">
-            <li className="list-item"><a href="#"> Home</a></li>
-            <li className="list-item"><a href="#">Acerca de</a></li>
-            <li className="list-item"><a href="#">Galería</a></li>
-            <li className="list-item"><a href="#">Artistas</a></li>
-            <li className="list-item"><a href="#">Envíos</a></li>
+            <li className="list-item"><Link to="/">Home</Link></li>
+            <li className="list-item"><Link to="#">Acerca de</Link></li>
+            <li className="list-item"><Link to="#">Galería</Link></li>
+            <li className="list-item"><Link to="#">Artistas</Link></li>
+            <li className="list-item"><Link to="#">Envíos</Link></li>
+            <li className="list-item"><Link to="/auth">Ingreso</Link></li>
         </nav>
     </header>);
 }

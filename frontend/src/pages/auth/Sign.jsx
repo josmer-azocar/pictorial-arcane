@@ -1,6 +1,7 @@
-import './MainAuth.css'
+import './MainAuth.css';
 import { useState } from 'react';
-import {registerUser} from '../../services/authUser.js'
+import {registerUser} from '../../services/authUser.js';
+import { useNavigate } from 'react-router-dom';
 
 function Sign() {
     const [registerData, setRegister] = useState({
@@ -12,10 +13,13 @@ function Sign() {
     });
 
     const [errMessage, setErrMessage] = useState("");
+    const [loadPage, setLoadPage] = useState(false);
+    const navigate = useNavigate();
 
     const handleRegister = async (e) =>{
         e.preventDefault();
         setErrMessage("");
+        setLoadPage(true);
 
         const passwordMatch = e.target.elements.cpassword.value;
         const regex = /[0-9!@#$%^&*]/;
@@ -24,13 +28,17 @@ function Sign() {
 
         if (!registerData.nombre || !registerData.apellido || !registerData.dni || !registerData.email || !registerData.password) {
             setErrMessage("Tienes que llenar todos los campos");
+            return;
         } else if(!dniRegex.test(registerData.dni)) {
             setErrMessage("La cédula solo puede contener números");
+            return;
+        } else if(Number(registerData.dni) < 900000){
+            setErrMessage("Número de cédula inváido");
+            return;
         } else if (!emailRegex.test(registerData.email)) {
             setErrMessage("Debes colocar un correo válido");
-        }
-
-        if (registerData.password !== passwordMatch) {
+            return;
+        } else if (registerData.password !== passwordMatch) {
             setErrMessage("Las contraseñas no son las mismas");
             return;
         } else if (registerData.password.length < 8) {
@@ -38,10 +46,12 @@ function Sign() {
             return;
         } else if (!regex.test(registerData.password)) {
             setErrMessage("La contraseña necesita por lo menos un caracter especial (!@#$%^&*) o un número");
+            return;
         } 
         try {
             const result = await registerUser(registerData);
             console.log("Usuario creado", result);
+            navigate("/auth/login");
             
         } catch (err) {
             console.error("No se pudo registrar", err);

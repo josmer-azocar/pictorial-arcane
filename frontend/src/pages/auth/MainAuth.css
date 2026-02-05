@@ -13,6 +13,7 @@
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1); /* Sombra suave para que flote */
     font-family: "Roboto Flex", Arial, Helvetica, sans-serif;
+    min-width: 300px;
 
     
 }.glass{
@@ -64,6 +65,7 @@
     outline: none;
     background-color: #f8f8f8;
     margin-bottom: 10px;
+    min-width: 250px;
 }
 /* Focus solo para inputs de texto */
 .auth-form input[type="text"]:focus,
@@ -91,3 +93,14 @@
      background-color: #d42424;    
      transform: translateY(-2px);  
     box-shadow: 0 5px 15px rgba(9, 148, 102, 0.3);}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield; 
+}

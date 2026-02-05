@@ -1,6 +1,8 @@
 import './MainAuth.css'
 import { useState } from 'react';
-import {logUser} from '../../services/authUser.js'
+import {logUser} from '../../services/authUser.js';
+import { useNavigate } from 'react-router-dom';
+import Loading from '../../components/Loading.jsx'
 
 
 function Login() {
@@ -8,19 +10,42 @@ function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrMsg] = useState("");
+    const [loadPage, setLoadPage] = useState(false);
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setErrMsg("");
+        console.log(email, password);
+        setLoadPage(true);
 
+        if (email === "" || password === "") {
+            setErrMsg("Tiene que llenar todos los campos");
+            return; 
+        }
         try {
+            await new Promise(resolve => setTimeout(resolve, 1000));
             const data = await logUser({email, password});
             console.log('Fetch Exitoso ', data);
+            navigate("/");
         } catch (err) {
-            setErrMsg("Revisa tus datos de usuario");
-        }
-
+            if (err.response?.status === 401) {
+                setErrMsg("Correo o contraseña incorrectos.");
+            } else if (err.response?.status === 404) {
+                setErrMsg("El servidor no responde. Intenta después");
+            } else {
+                setErrMsg("Ingrese sus credenciales");
+            }
+            
+        } finally {
+            setLoadPage(false);
+        }       
     }
+
+    if (loadPage) {
+        return <Loading/>;
+    }
+    
     return(
         <section className='auth-form'>
             <form onSubmit={handleLogin}>
