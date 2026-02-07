@@ -1,0 +1,67 @@
+.artist-profile-page {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.artist-header {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 40px;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.artist-photo {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.artist-info h1 {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.nationality, .birth-date {
+  font-size: 1.1rem;
+  color: #555;
+  margin: 10px 0;
+}
+
+.artist-biography {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+
+.artist-biography h2 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.artist-biography p {
+  line-height: 1.8;
+  color: #555;
+  font-size: 1.1rem;
+}
+
+.artist-works {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.coming-soon {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 40px 0;
+}

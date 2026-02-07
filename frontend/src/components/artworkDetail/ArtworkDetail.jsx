@@ -68,7 +68,6 @@ const ArtworkDetail = ({ artwork }) => {
             <p><strong>Camera:</strong> {artwork.camera || 'Not specified'}</p>
           </div>
         );
-
       case 'PINTURA':
         return (
           <div className="specific-details">

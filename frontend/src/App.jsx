@@ -11,7 +11,7 @@ function App() {
 
 const testArtwork = {
   name: "Escultura de mármol",
-  photo_url: "https://via.placeholder.com/800x600?text=Escultura+Marmol", 
+  photo_url: "/imagen/v.jpg", 
   price: 2500,
   creation_date: "2023-06-15",
   status: "Available",
@@ -22,6 +22,7 @@ const testArtwork = {
   width: 60,
   depth: 60,
   artist: {
+    id:1,
     first_name: "Inés",
     last_name: "Rodríguez",
     photo_url: "https://via.placeholder.com/200?text=Ines+Rodriguez",
