@@ -1,11 +1,9 @@
-import React from 'react'
-import './App.css'
-import './components/Header.jsx'
-import Header from './components/Header.jsx'
-import MainAuth from './pages/auth/MainAuth.jsx'
-import ArtworkDetail from './components/artworkDetail/ArtworkDetail.jsx'
- 
-
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
+import Header from './components/Header.jsx';
+import ArtworkDetail from './components/artworkDetail/ArtworkDetail.jsx';
+import ArtistProfile from './pages/auth/ArtistProfile.jsx';
 
 function App() {
 
@@ -25,22 +23,55 @@ const testArtwork = {
     id:1,
     first_name: "Inés",
     last_name: "Rodríguez",
-    photo_url: "https://via.placeholder.com/200?text=Ines+Rodriguez",
+    photo_url: "/imagen/venus de Milo.jpg",
     biography: "Artista especializada en escultura clásica.",
     birth_date: "1985-03-20",
     nationality: "Venezolana"
   }
+
+
+
+  
 } 
+// Más obras de prueba para el artista (simulando base de datos)
+  const mockArtworksByArtist = {
+    1: {
+      "Escultura Clásica": [
+        { id: 1, title: "Venus Moderna", price: 12500, image_url: "/imagen/venus.jpg" },
+        { id: 2, title: "Busto de la Memoria", price: 8300, image_url: "/imagen/busto.jpg" },
+        { id: 3, title: "David Contemporáneo", price: 15000, image_url: "/imagen/david.jpg" }
+      ],
+      "Arte Abstracto": [
+        { id: 4, title: "Formas del Tiempo", price: 6200, image_url: "/imagen/tiempo.jpg" },
+        { id: 5, title: "Geometría Emocional", price: 7800, image_url: "/imagen/geo.jpg" }
+      ],
+      "Instalaciones": [
+        { id: 6, title: "Espacio Interior", price: 22000, image_url: "/imagen/espacio.jpg" },
+        { id: 7, title: "Luz y Sombra", price: 18500, image_url: "/imagen/luz.jpg" }
+      ]
+    }
+  }
  /*<ArtworkDetail artwork={testArtwork} />*/
 /*<MainAuth/>*/
-  return (
+return (
+   
     <>
-        <Header/>
-       
-       <ArtworkDetail artwork={testArtwork} />
-     
+      <Header />
+      <Routes>
+        <Route path="/" element={<ArtworkDetail artwork={testArtwork} />} />
+        <Route 
+          path="/artists/:id" 
+          element={
+            <ArtistProfile 
+              mockArtists={[testArtwork.artist]} 
+              mockArtworks={mockArtworksByArtist}
+            />
+          } 
+        />
+      </Routes>
+
     </>
-  )
+  );
 }
 
 export default App

@@ -1,67 +1,82 @@
-.artist-profile-page {
-  max-width: 1200px;
-  margin: 40px auto;
-  padding: 20px;
+.artp-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #fafafa;
 }
 
-.artist-header {
-  display: flex;
-  gap: 40px;
-  margin-bottom: 40px;
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+/* Layout Superior (Boceto) */
+.artp-top-layout {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 40px;
 }
 
-.artist-photo {
-  width: 300px;
-  height: 300px;
-  object-fit: cover;
-  border-radius: 12px;
+.artp-side-info {
+    flex: 0 0 320px; /* Ancho fijo para la columna de bio */
 }
 
-.artist-info h1 {
-  font-size: 2.5rem;
-  margin-bottom: 15px;
-  color: #2c3e50;
+.artp-card {
+    background: white;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.nationality, .birth-date {
-  font-size: 1.1rem;
-  color: #555;
-  margin: 10px 0;
+.artp-field {
+    margin-bottom: 15px;
 }
 
-.artist-biography {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  margin-bottom: 30px;
+.artp-label {
+    display: block;
+    font-weight: bold;
+    font-size: 12px;
+    color: #6b7280;
+    text-transform: uppercase;
 }
 
-.artist-biography h2 {
-  color: #2c3e50;
-  margin-bottom: 15px;
+.artp-value {
+    color: #111827;
+    font-size: 15px;
 }
 
-.artist-biography p {
-  line-height: 1.8;
-  color: #555;
-  font-size: 1.1rem;
+.artp-bio-text {
+    margin-top: 5px;
+    line-height: 1.5;
+    font-size: 14px;
 }
 
-.artist-works {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+/* Header derecho */
+.artp-main-header {
+    flex: 1;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
 }
 
-.coming-soon {
-  text-align: center;
-  color: #999;
-  font-style: italic;
-  padding: 40px 0;
+.artp-avatar-frame {
+    width: 180px;
+    height: 180px;
+    margin-bottom: 20px;
 }
+
+.artp-circle-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%; /* El círculo del dibujo */
+    border: 4px solid #f3f4f6;
+}
+
+.artp-artist-name {
+    font-size: 2.5rem;
+    color: #111827;
+}
+
+/* Sección de Obras Inferior */

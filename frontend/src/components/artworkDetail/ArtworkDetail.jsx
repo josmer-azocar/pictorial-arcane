@@ -113,57 +113,67 @@ const ArtworkDetail = ({ artwork }) => {
         return null;
     }
   };
-
-  
-  return (
+return (
   <div className="artwork-detail-page">
-    
     <main className="product-layout">
       
-      
+      {/* ========== COLUMNA 1: IMAGEN ========== */}
       <section className="artwork-gallery">
         <div className="image-frame">
           <img src={photo_url} alt={name} className="main-artwork-img" />
-
-          {/* Badge de estatus : Disponible, Reservada o Vendida */}
           <div className={`status-badge ${status.toLowerCase()}`}>{status}</div>
         </div>
       </section>
-
-
-      {/* Columna Derecha: Panel de Compra e Información Crítica */}
+ {/* ========== COLUMNA 2: FICHA TÉCNICA ========== */}
+      <section className="detailed-info-grid">
+        <div className="info-card">
+          <h1 className="artwork-title">{name}</h1>
+          <div className="specs-container">
+            <p><strong>Género:</strong> {genre}</p>
+            <p>
+              <strong>Fecha de creación:</strong>{' '}
+              {creation_date 
+                ? new Date(creation_date).toLocaleDateString('es-ES', { 
+                    day: 'numeric', 
+                    month: 'long', 
+                    year: 'numeric'
+                  })
+                : 'No especificada'}
+            </p>
+             <p>
+             <div className="artist-attribution">
+          Artista: 
+          <Link 
+            to={artist?.id ? `/artists/${artist.id}` : '#'}
+            className="artist-link-bold"
+            onClick={(e) => {
+              if (!artist?.id) {
+                e.preventDefault();
+                alert('ID del artista no disponible aún');
+              }
+            }}
+          >
+            {artist?.first_name} {artist?.last_name}
+          </Link>
+          <span className="verified-check">✓</span>
+        </div>
+          </p>  
+            {renderSpecificDetails()}
+          </div>
+        </div>
+      </section>
+      {/* ========== COLUMNA 3: INFO Y COMPRA ========== */}
       <section className="artwork-purchase-panel">
-        <h1 className="artwork-title">{name}</h1>
         
-        {/* Link al artista*/}
-
-<div className="artist-attribution">
-  Artista Verificado: 
-  <Link 
-    to={artist?.id ? `/artists/${artist.id}` : '#'}  // Evita ruta rota
-    className="artist-link-bold"
-    onClick={(e) => {
-      if (!artist?.id) {
-        e.preventDefault();
-        alert('ID del artista no disponible aún');
-      }
-    }}
-  >
-    {artist?.first_name} {artist?.last_name}
-  </Link>
-  <span className="verified-check">✓</span>
-</div>
-
+        
+       
 
         <div className="price-container">
           <span className="currency">$</span>
           <span className="amount">{price?.toLocaleString()}</span>
-
-          {/* especifica que el IVA se calcula aparte  */}
           <small className="tax-note">+ IVA</small>
         </div>
 
-        {/* Área de Acción */}
         <div className="actions-area">
           {status === 'Disponible' ? (
             <>
@@ -177,18 +187,16 @@ const ArtworkDetail = ({ artwork }) => {
           )}
         </div>
 
-        {/* ELEMENTOS*/}
         <div className="trust-signals">
           <div className="signal">
             <i className="fas fa-lock"></i>
             <span>Pago Seguro Encriptado</span>
           </div>
-
           
           <div className="trust-item">
-  <TruckIcon size={28} />
-  <span>Envío Seguro Global</span>
-</div>
+            <TruckIcon size={28} />
+            <span>Envío Seguro Global</span>
+          </div>
 
           <div className="signal">
             <i className="fas fa-certificate"></i>
@@ -196,36 +204,14 @@ const ArtworkDetail = ({ artwork }) => {
           </div>
         </div>
       </section>
+
+     
+
     </main>
-
-    {/*Sección Inferior: Detalles Técnicos y Biografía  */}
-
-    <section className="detailed-info-grid">
-      <div className="info-card">
-        <h2>Ficha Técnica</h2>
-        <div className="specs-container">
-         
-          <p><strong>Género:</strong> {genre}</p>
-       <p>
-  <strong>Fecha de creación:</strong>{' '}
-  {creation_date 
-    ? new Date(creation_date).toLocaleDateString('es-ES', { 
-        day: 'numeric', 
-         month: 'long', 
-        year: 'numeric'
-      })
-    : 'No especificada'}
-</p>
-          
-          {/* Aquí se renderizan los detalles específicos*/}
-          {renderSpecificDetails()}
-        </div>
-      </div>
-
-      
-    </section>
   </div>
 );
+  
+
 };
 
 export default ArtworkDetail;
