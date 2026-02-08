@@ -7,7 +7,7 @@ import { Link, useLocation } from 'react-router-dom';
 function MainAuth() {
 
     const location = useLocation();
-    const isLogin = location.pathname.includes("login");
+    const isLogin = location.pathname.includes("login"); // verifica si el url es el login
     
     return (
         <section className='auth-form'>

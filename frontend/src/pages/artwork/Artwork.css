@@ -1,0 +1,24 @@
+#art-display{
+    background-color: rgb(255, 228, 196);
+    margin: 25px;
+}
+
+#art-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    padding: 40px;
+    gap: 20px;
+    justify-items: center;
+    justify-content: center;
+}
+
+.art-piece {
+    width: fit-content;
+    text-align: left;
+}
+
+.art-piece img {
+    width: 100%;            
+    object-fit: cover; 
+    display: block;
+}

@@ -9,7 +9,7 @@ export async function logUser(credentials){
 }
 
 export async function registerUser(credentials) {
-    const response = await axios.post(`${url}/signUp`, userData);
+    const response = await axios.post(`${url}/signUp`, credentials);
     return response.data;
 }
 

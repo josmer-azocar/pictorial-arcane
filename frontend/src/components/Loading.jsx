@@ -4,12 +4,12 @@ function Loading() {
 
     return (<div id="loading-container">
         <div id="spinner">
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="shadow"></div>
-            <div class="shadow"></div>
-            <div class="shadow"></div>
+            <div className="circle"></div>
+            <div className="circle"></div>
+            <div className="circle"></div>
+            <div className="shadow"></div>
+            <div className="shadow"></div>
+            <div className="shadow"></div>
         </div>
         <div id="loading-text">
             <p>Esperando respuesta</p>
