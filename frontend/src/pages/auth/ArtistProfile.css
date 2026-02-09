@@ -1,82 +1,125 @@
+:root {
+  --primary-purple: #4a0080;
+  --accent-gold: #ffd700;
+  --glass-bg: rgba(255, 255, 255, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --text-dark: #2d0050;
+
+}
+
 .artp-page {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 30px;
-    background-color: #fafafa;
+  min-height: 100vh;
+  padding: 40px;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-gradient);
+  color: var(--text-dark);
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
-/* Layout Superior (Boceto) */
+/* --- SECCIÓN SUPERIOR (Avatar y Nombre) --- */
 .artp-top-layout {
-    display: flex;
-    gap: 25px;
-    margin-bottom: 40px;
-}
-
-.artp-side-info {
-    flex: 0 0 320px; /* Ancho fijo para la columna de bio */
-}
-
-.artp-card {
-    background: white;
-    padding: 20px;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.artp-field {
-    margin-bottom: 15px;
-}
-
-.artp-label {
-    display: block;
-    font-weight: bold;
-    font-size: 12px;
-    color: #6b7280;
-    text-transform: uppercase;
-}
-
-.artp-value {
-    color: #111827;
-    font-size: 15px;
-}
-
-.artp-bio-text {
-    margin-top: 5px;
-    line-height: 1.5;
-    font-size: 14px;
-}
-
-/* Header derecho */
-.artp-main-header {
-    flex: 1;
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  padding-left: 50px;
 }
 
 .artp-avatar-frame {
-    width: 180px;
-    height: 180px;
-    margin-bottom: 20px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  padding: 5px;
+  background: linear-gradient(to bottom, var(--primary-purple), var(--accent-gold));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .artp-circle-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%; /* El círculo del dibujo */
-    border: 4px solid #f3f4f6;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
 }
 
 .artp-artist-name {
-    font-size: 2.5rem;
-    color: #111827;
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--primary-purple);
+  text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.5);
 }
 
-/* Sección de Obras Inferior */
+/* --- PANEL LATERAL --- */
+.artp-side-info {
+  max-width: 400px;
+}
+
+.artp-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border);
+  border-radius: 25px;
+  padding: 30px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.artp-field {
+  margin-bottom: 20px;
+}
+
+.artp-label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+  color: var(--primary-purple);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.artp-value, .artp-bio-text {
+  font-size: 1.1rem;
+  color: #333;
+  line-height: 1.5;
+}
+
+/* LA BIOGRAFÍA (Lado izquierdo) */
+.artp-side-info {
+  width: 350px;              /* Ancho fijo para que no se mueva */
+  flex-shrink: 0;
+}
+
+/* LA GALERÍA  */
+.artp-gallery-right {
+  flex: 1;                   /* ¡ESTO llena el espacio vacío! */
+  background: white;         /* Fondo blanco como en tu imagen */
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+/* LA FILA DE GÉNEROS */
+.artp-genres-row {
+  display:grid;             /* Los géneros se ponen uno al lado del otro */
+  flex-direction: row;
+  gap: 20px;
+  overflow-x: auto;          /* Scroll si hay muchos géneros */
+  padding-bottom: 15px;
+}
+
+.artp-genre-card {
+  min-width: 200px;
+  background: #f9f9f9;
+  border-radius: 15px;
+  padding: 15px;
+  text-align: center;
+}
+
+.artp-genre-cover {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;         /* La imagen de la obra no se deforma */
+  border-radius: 10px;
+}

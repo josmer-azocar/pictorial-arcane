@@ -32,28 +32,12 @@ const ArtistProfile = ({ mockArtists, mockArtworks }) => {
   return (
     <div className="artp-page">
       {/* SECCIÓN SUPERIOR - Basada en tu boceto */}
-      <div className="artp-top-layout">
+      <div className="artp-top-layout"style={{ backgroundImage: "url('/g.gif')" }}>
         
-        {/* Izquierda: Info Personal */}
-        <aside className="artp-side-info">
-          <div className="artp-card">
-            <div className="artp-field">
-              <span className="artp-label">Fecha de nacimiento:</span>
-              <span className="artp-value">{artist.birth_date}</span>
-            </div>
-            <div className="artp-field">
-              <span className="artp-label">Nacionalidad:</span>
-              <span className="artp-value">{artist.nationality}</span>
-            </div>
-            <div className="artp-field">
-              <span className="artp-label">Biografía:</span>
-              <p className="artp-bio-text">{artist.biography}</p>
-            </div>
-          </div>
-        </aside>
+      
 
         {/* Derecha: Nombre y Círculo */}
-        <header className="artp-main-header">
+        <aside className="artp-main-header">
           <div className="artp-avatar-frame">
             <img 
               src={artist.photo_url} 
@@ -64,31 +48,59 @@ const ArtistProfile = ({ mockArtists, mockArtworks }) => {
           <h1 className="artp-artist-name">
             {artist.first_name} {artist.last_name}
           </h1>
-        </header>
+        </aside>
       </div>
+  
+     
+    
+<div className="artp-layout-split">
 
-      {/* SECCIÓN INFERIOR - Cuadrícula de Géneros */}
-      <section className="artp-gallery-section">
-        <h2 className="artp-section-title">Obras por Género</h2>
-        <div className="artp-genres-grid">
-          {Object.entries(artworksByGenre).map(([genre, artworks]) => (
-            <div key={genre} className="artp-genre-col">
-              <h3 className="artp-genre-name">{genre}</h3>
-              <div className="artp-works-stack">
-                {artworks.map((work) => (
-                  <div key={work.id} className="artp-work-item">
-                    <img src={work.image_url} alt={work.title} className="artp-work-thumb" />
-                    <div className="artp-work-info">
-                      <span className="artp-work-title">{work.title}</span>
-                      <span className="artp-work-price">${work.price}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+  {/* IZQUIERDA: Biografía  */}
+  <aside className="artp-side-info">
+    <div className="artp-card">
+      <div className="artp-field">
+        <span className="artp-label">Fecha de nacimiento:</span>
+        <span className="artp-value">{artist.birth_date}</span>
+      </div>
+      <div className="artp-field">
+        <span className="artp-label">Nacionalidad:</span>
+        <span className="artp-value">{artist.nationality}</span>
+      </div>
+      <div className="artp-field">
+        <span className="artp-label">Biografía:</span>
+        <p className="artp-bio-text">{artist.biography}</p>
+      </div>
+    </div>
+  </aside>
+
+  <section className="artp-gallery-right">
+  <h2 className="artp-section-title">Obras por Género</h2>
+  
+  <div className="artp-genres-row">
+    {Object.entries(artworksByGenre).map(([genre, artworks]) => (
+      <div key={genre} className="artp-genre-card">
+        <h3 className="artp-genre-title">{genre}</h3>
+        
+        {/* En lugar de artworks[0], recorremos la lista de obras del género */}
+        <div className="artp-works-container">
+          {artworks.map((work) => (
+            <div key={work.id} className="artp-work-mini-card">
+              <img 
+                src={work.image_url || work.photo_url} 
+                alt={work.title} 
+                className="artp-genre-cover" 
+              />
+              <p className="artp-work-name">{work.title}</p>
+              <span className="artp-work-price">${work.price}</span>
             </div>
           ))}
         </div>
-      </section>
+      </div>
+    ))}
+  </div>
+</section>
+
+</div>
     </div>
   );
 };

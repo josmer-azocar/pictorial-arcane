@@ -23,7 +23,7 @@ const testArtwork = {
     id:1,
     first_name: "Inés",
     last_name: "Rodríguez",
-    photo_url: "/imagen/venus de Milo.jpg",
+    photo_url: "/imagen/v.jpg",
     biography: "Artista especializada en escultura clásica.",
     birth_date: "1985-03-20",
     nationality: "Venezolana"
@@ -36,16 +36,16 @@ const testArtwork = {
 // Más obras de prueba para el artista (simulando base de datos)
   const mockArtworksByArtist = {
     1: {
-      "Escultura Clásica": [
+      "Escultura ": [
         { id: 1, title: "Venus Moderna", price: 12500, image_url: "/imagen/venus.jpg" },
         { id: 2, title: "Busto de la Memoria", price: 8300, image_url: "/imagen/busto.jpg" },
         { id: 3, title: "David Contemporáneo", price: 15000, image_url: "/imagen/david.jpg" }
       ],
-      "Arte Abstracto": [
+      "Pinturas": [
         { id: 4, title: "Formas del Tiempo", price: 6200, image_url: "/imagen/tiempo.jpg" },
         { id: 5, title: "Geometría Emocional", price: 7800, image_url: "/imagen/geo.jpg" }
       ],
-      "Instalaciones": [
+      "fotografia": [
         { id: 6, title: "Espacio Interior", price: 22000, image_url: "/imagen/espacio.jpg" },
         { id: 7, title: "Luz y Sombra", price: 18500, image_url: "/imagen/luz.jpg" }
       ]
