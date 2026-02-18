@@ -44,21 +44,27 @@
 }
 
 .artp-artist-name {
+  color: white;
   font-size: 3.5rem;
   font-weight: 800;
-  color: var(--primary-purple);
-  text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.5);
+  
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+}
+.artp-layout-split {
+  display: flex;         /* Pone los hijos en fila */
+  align-items: flex-start;
+  gap: 30px;            /* Espacio entre biografía y galería */
+  width: 100%;
 }
 
-/* --- PANEL LATERAL --- */
+/* PANEL LATERAL IZQUIERDO (Biografía) */
 .artp-side-info {
-  max-width: 400px;
+  width: 350px;         /* Ancho fijo para que no se mueva */
+  flex-shrink: 0;       /* Evita que se encoja */
 }
 
 .artp-card {
   background: var(--glass-bg);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
   border: 1px solid var(--glass-border);
   border-radius: 25px;
   padding: 30px;
@@ -85,41 +91,61 @@
   line-height: 1.5;
 }
 
-/* LA BIOGRAFÍA (Lado izquierdo) */
-.artp-side-info {
-  width: 350px;              /* Ancho fijo para que no se mueva */
-  flex-shrink: 0;
-}
-
-/* LA GALERÍA  */
+/*SECCIÓN DE GALERÍA (DERECHA) */
 .artp-gallery-right {
-  flex: 1;                   /* ¡ESTO llena el espacio vacío! */
-  background: white;         /* Fondo blanco como en tu imagen */
+  flex: 1;              /* Ocupa todo el espacio restante a la derecha */
+  background: white;  
   border-radius: 20px;
   padding: 30px;
   box-shadow: 0 5px 20px rgba(0,0,0,0.05);
 }
 
-/* LA FILA DE GÉNEROS */
-.artp-genres-row {
-  display:grid;             /* Los géneros se ponen uno al lado del otro */
-  flex-direction: row;
-  gap: 20px;
-  overflow-x: auto;          /* Scroll si hay muchos géneros */
-  padding-bottom: 15px;
+.artp-section-title {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: var(--primary-purple);
 }
 
-.artp-genre-card {
-  min-width: 200px;
-  background: #f9f9f9;
-  border-radius: 15px;
-  padding: 15px;
-  text-align: center;
+/* El contenedor que agrupa las tarjetas de escultura */
+.artp-works-container {
+  display: flex; 
+  flex-wrap: wrap;       /* Hace que las fotos bajen si no caben */
+  gap: 25px;            /* Espacio entre cada tarjeta */
+  padding: 10px 0;
+}
+
+/* TARJETAS DE ESCULTURA */
+.artp-work-mini-card {
+  width: 200px;         /* Ancho fijo para cada tarjeta */
+  display: flex;
+  flex-direction: column;
+  text-align: left;     /* Alineación a la izquierda */
 }
 
 .artp-genre-cover {
   width: 100%;
-  height: 150px;
-  object-fit: cover;         /* La imagen de la obra no se deforma */
-  border-radius: 10px;
+  aspect-ratio: 1 / 1;  /* Crea un cuadrado perfecto */
+  object-fit: cover;    /* Evita que la foto de la escultura se estire */
+  border-radius: 18px;  /* Esquinas redondeadas suaves */
+  margin-bottom: 10px;
+  transition: transform 0.3s ease; /* Para efecto visual opcional */
+}
+
+.artp-genre-cover:hover {
+  transform: scale(1.02); /* Pequeño efecto de zoom al pasar el mouse */
+}
+
+.artp-work-name {
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin: 0;
+  color: var(--text-dark);
+}
+
+.artp-work-price {
+  color: #777;          /* Color gris para el precio */
+  font-size: 0.9rem;
+  margin-top: 4px;
+}.artp-page {
+  padding-top: 100px; 
 }

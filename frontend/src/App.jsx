@@ -4,6 +4,7 @@ import './App.css';
 import Header from './components/Header.jsx';
 import ArtworkDetail from './components/artworkDetail/ArtworkDetail.jsx';
 import ArtistProfile from './pages/auth/ArtistProfile.jsx';
+import MainAuth from './pages/auth/MainAuth.jsx';
 
 function App() {
 
@@ -37,17 +38,17 @@ const testArtwork = {
   const mockArtworksByArtist = {
     1: {
       "Escultura ": [
-        { id: 1, title: "Venus Moderna", price: 12500, image_url: "/imagen/venus.jpg" },
-        { id: 2, title: "Busto de la Memoria", price: 8300, image_url: "/imagen/busto.jpg" },
-        { id: 3, title: "David Contemporáneo", price: 15000, image_url: "/imagen/david.jpg" }
+        { id: 1, title: "Venus Moderna", price: 12500, image_url: "/imagen/v.jpg" },
+        { id: 2, title: "Busto de la Memoria", price: 8300, image_url: "/imagen/v.jpg" },
+        { id: 3, title: "David Contemporáneo", price: 15000, image_url: "/imagen/v.jpg" }
       ],
       "Pinturas": [
-        { id: 4, title: "Formas del Tiempo", price: 6200, image_url: "/imagen/tiempo.jpg" },
-        { id: 5, title: "Geometría Emocional", price: 7800, image_url: "/imagen/geo.jpg" }
+        { id: 4, title: "Formas del Tiempo", price: 6200, image_url: "/imagen/v.jpg" },
+        { id: 5, title: "Geometría Emocional", price: 7800, image_url: "/imagen/v.jpg" }
       ],
       "fotografia": [
-        { id: 6, title: "Espacio Interior", price: 22000, image_url: "/imagen/espacio.jpg" },
-        { id: 7, title: "Luz y Sombra", price: 18500, image_url: "/imagen/luz.jpg" }
+        { id: 6, title: "Espacio Interior", price: 22000, image_url: "/imagen/v.jpg" },
+        { id: 7, title: "Luz y Sombra", price: 18500, image_url: "/imagen/v.jpg" }
       ]
     }
   }
@@ -59,6 +60,7 @@ return (
       <Header />
       <Routes>
         <Route path="/" element={<ArtworkDetail artwork={testArtwork} />} />
+        <Route path="/login" element={<MainAuth />} />
         <Route 
           path="/artists/:id" 
           element={
