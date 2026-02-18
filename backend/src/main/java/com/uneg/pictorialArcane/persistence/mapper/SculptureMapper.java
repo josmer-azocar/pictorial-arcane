@@ -10,10 +10,8 @@ import java.util.List;
 
 @Mapper(componentModel = "spring") //componente para inyectar en otras clases
 public interface SculptureMapper {
-    @Mapping(target = "idArtWork", source = "artWork.idArtWork") //saca el id de artwork para usarlo en el dto
     SculptureResponseDto toResponseDto (SculptureEntity entity);
 
-    @Mapping(target = "artWork", ignore = true) //ignora el artwork
     SculptureEntity toEntity(SculptureRequestDto request);
 
     List<SculptureResponseDto> toResponseDtoList(List<SculptureEntity> entities);

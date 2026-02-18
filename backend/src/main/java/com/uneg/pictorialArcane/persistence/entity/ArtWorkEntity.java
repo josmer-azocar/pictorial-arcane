@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "artwork")
+@Inheritance(strategy = InheritanceType.JOINED) //para crear dos tablas separadas artwork y sculpture
 public class ArtWorkEntity {
 
     @Id
@@ -26,6 +27,9 @@ public class ArtWorkEntity {
 
     @Column(name = "id_artist")
     private Long idArtist; //aqui se guarda el id del artista dentro de ArtWork
+
+    @Column(name = "artwork_commission", nullable = false)
+    private Double artWorkCommission; //sera copiado del artista al momento de crear la obra para manejar los cambios de precio
 
     public ArtistEntity getArtist() {
         return artist;
@@ -73,5 +77,13 @@ public class ArtWorkEntity {
 
     public void setPrize(double prize) {
         this.prize = prize;
+    }
+
+    public Double getArtWorkCommission() {
+        return artWorkCommission;
+    }
+
+    public void setArtWorkCommission(Double artWorkCommission) {
+        this.artWorkCommission = artWorkCommission;
     }
 }

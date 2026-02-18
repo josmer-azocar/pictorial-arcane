@@ -4,16 +4,17 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "sculpture")
-public class SculptureEntity {
+@PrimaryKeyJoinColumn(name = "id_artwork") //aqui se unen ñas dos tablas por la misma PK(id)
+public class SculptureEntity extends ArtWorkEntity {
 
-    @Id
+    /**@Id
     @Column(name = "id")
     private Long id;
 
     @OneToOne
     @MapsId //mapea el id de Sculpture sea el mismo que el de ArtWork
     @JoinColumn(name = "id_artwork") //aqui se unen
-    private ArtWorkEntity artWork;
+    private ArtWorkEntity artWork;**/
 
     @Column(name = "material", nullable = false, length = 100)
     private String material;
@@ -31,12 +32,6 @@ public class SculptureEntity {
     private Double depth;
 
     // --- GETTERS Y SETTERS ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public ArtWorkEntity getArtWork() {return artWork;}
-    public  void setArtWork(ArtWorkEntity artWork){this.artWork = artWork;}
-
     public String getMaterial() { return material; }
     public void setMaterial(String material) { this.material = material; }
 

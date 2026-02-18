@@ -1,6 +1,8 @@
 package com.uneg.pictorialArcane.persistence.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 
 import java.util.List;
 
@@ -12,6 +14,11 @@ public class ArtistEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_artist")
     private Long idArtist;
+
+    @Column(name = "commission_rate", nullable = false)
+    @DecimalMin(value = "5.0", message = "La comisión mínima es del 5%")
+    @DecimalMax(value = "10.0", message = "La comisión máxima es del 10%")
+    private Double commissionRate; //la comisión puesta por el artista
 
     @Column(name = "name", nullable = false, length = 50)
     private String name;
@@ -68,4 +75,19 @@ public class ArtistEntity {
         this.biography = biography;
     }
 
+    public Double getCommissionRate() {
+        return commissionRate;
+    }
+
+    public void setCommissionRate(Double commissionRate) {
+        this.commissionRate = commissionRate;
+    }
+
+    public List<ArtWorkEntity> getArtWorks() {
+        return artWorks;
+    }
+
+    public void setArtWorks(List<ArtWorkEntity> artWorks) {
+        this.artWorks = artWorks;
+    }
 }
