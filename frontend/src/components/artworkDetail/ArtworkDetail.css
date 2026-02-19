@@ -50,13 +50,15 @@ body {
   flex: 1;
   position: sticky;
   top: 20px;
+
+  overflow: visible; 
 }
 
 .image-frame {
   position: relative;
   border: 1px solid var(--border);
   border-radius: 8px;
-  overflow: hidden;
+   overflow: visible;
   background: var(--bg-white);
 }
 

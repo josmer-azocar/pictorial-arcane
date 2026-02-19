@@ -1,9 +1,11 @@
 import './MainAuth.css'
 import { useState } from 'react';
 import { registerUser } from '../../services/authUser.js'
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Sign() {
-    // Estado inicial: Mantenemos tus nombres de variables y agregamos las preguntas de seguridad
+    // Estado inicial
     const [registerData, setRegister] = useState({
         nombre: "",
         apellido: "",
@@ -12,7 +14,6 @@ function Sign() {
         codigo_postal: "",   
         email: "",
         password: "",
-        // Nuevos campos necesarios para la tarea de Josue (Recuperación de código)
         pregunta1: "",
         pregunta2: "",
         pregunta3: ""
@@ -20,6 +21,7 @@ function Sign() {
 
     const [errMessage, setErrMessage] = useState("");
     const [step, setStep] = useState(1);
+    const [confirmPassword, setConfirmPassword] = useState("");
 
     // PASO 1: Validación de Identidad Básica
     const handleNext1 = () => {
@@ -41,6 +43,7 @@ function Sign() {
     const handleNext2 = () => {
         setErrMessage("");
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
 
         if (!registerData.email || !registerData.password) {
             setErrMessage("Tienes que llenar el correo y la contraseña.");
@@ -70,8 +73,8 @@ function Sign() {
     const handleRegister = async (e) =>{
         e.preventDefault();
         setErrMessage("");
-
-        const passwordMatch = e.target.elements.cpassword.value;
+         const passwordMatch = confirmPassword;
+        
         const cardRegex = /^\d{16}$/;
         const specialCharRegex = /[0-9!@#$%^&*]/;
 
@@ -94,31 +97,34 @@ function Sign() {
         
         try {
             const result = await registerUser(registerData);
-            console.log("Usuario creado", result);
-            // Aviso de éxito y membresía de $10 cobrada
-            alert("¡Registro exitoso! Se han cobrado $10 de membresía. Revisa tu correo para obtener tu código de seguridad.");
+           toast.success(`¡Registro exitoso! Se ha enviado tu código de seguridad al correo ${registerData.email}. Lo necesitarás para reservar obras.`, {
+        position: "top-center",
+        autoClose: 6000, });
         } catch (err) {
-            console.error("No se pudo registrar", err);
-            setErrMessage("Ocurrió un error al intentar registrar.");
+           console.error("No se pudo registrar", err);
+         toast.error("Ocurrió un error al intentar registrar.");
         }
     }
 
     return(
         <section className='auth-form'>
             <form onSubmit={handleRegister}>
+                 <ToastContainer />
                 {errMessage && <p style={{color: 'red', fontWeight: 'bold'}}>{errMessage}</p>}
+
                 <div className="step-indicator">
+
   {[1, 2, 3, 4].map((num) => (
     <div key={num} className="step-item">
       {/* El círculo con el número */}
-      <div className={`circle ${step >= num ? 'active' : ''}`}>
-        {num}
-      </div>
-      {/* La línea que conecta (no aparece después del 4) */}
-      {num < 4 && <div className={`line ${step > num ? 'active' : ''}`}></div>}
-    </div>
-  ))}
-</div>
+           <div className={`circle ${step >= num ? 'active' : ''}`}>
+             {num}
+             </div>
+             {/* La línea que conecta (no aparece después del 4) */}
+            {num < 4 && <div className={`line ${step > num ? 'active' : ''}`}></div>}
+              </div>
+             ))}
+            </div>
 
 
 
@@ -140,12 +146,12 @@ function Sign() {
                         <h3>Paso 2: Cuenta</h3>
                         <input type="text" placeholder='Email' value={registerData.email} onChange={(e)=>setRegister({...registerData, email: e.target.value})}/><br/>
                         <input type="password" placeholder='Contraseña' value={registerData.password} onChange={(e)=>setRegister({...registerData, password:e.target.value})}/><br/>
-                        <input type="password" id="cpassword" name="cpassword" placeholder='Confirmar Contraseña'/><br/>
-                        <div style={{display: "flex", gap: "10px"}}>
-                            <button type="button" onClick={() => setStep(1)} className='sub-button'>Atrás</button>
-                            <button type="button" onClick={handleNext2} className='sub-button'>Siguiente</button>
-                        </div>
-                    </div>
+                        <input type="password" placeholder='Confirmar Contraseña' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}/><br/>
+             <div style={{display: "flex", gap: "10px"}}>
+             <button type="button" onClick={() => setStep(1)} className='sub-button'>Atrás</button>
+              <button type="button" onClick={handleNext2} className='sub-button'>Siguiente</button>
+               </div>
+             </div>
                 )}
 
                 {/* PASO 3: Recuperación (Preguntas de Seguridad) */}
