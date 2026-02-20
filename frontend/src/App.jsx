@@ -13,7 +13,7 @@ const testArtwork = {
   photo_url: "/imagen/v.jpg", 
   price: 2500,
   creation_date: "2023-06-15",
-  status: "Available",
+  status: "Disponible",
   genre: "ESCULTURA",
   material: "Mármol Carrara",
   weight: 150,

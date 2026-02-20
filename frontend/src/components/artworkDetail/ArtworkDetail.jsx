@@ -99,7 +99,7 @@ const [showZoom, setShowZoom] = useState(false);
 
   const handleReservar = async () => {
     try {
-        // Aquí va el endpoint que te diga Patricia/Josmer
+        // Aquí va el endpoint 
         const response = await fetch(`/api/reservar/${artwork.id}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -201,7 +201,7 @@ return (
   <div className="artwork-detail-page">
     <main className="product-layout">
       
-      {/* ========== COLUMNA 1: IMAGEN ========== */}
+      {/* COLUMNA 1: IMAGEN */}
       <section className="artwork-gallery">
         <div className="image-frame" style={{ position: 'relative' }}
   onMouseMove={(e) => {
@@ -232,13 +232,13 @@ return (
   )}
 </div>
       </section>
- {/* ========== COLUMNA 2: FICHA TÉCNICA ========== */}
+ {/* COLUMNA 2: FICHA TÉCNICA */}
       <section className="detailed-info-grid">
         <div className="info-card">
           <h1 className="artwork-title">{name}</h1>
           <div className="specs-container">
             <p><strong>Género:</strong> {genre}</p>
-            <p>
+            
               <strong>Fecha de creación:</strong>{' '}
               {creation_date 
                 ? new Date(creation_date).toLocaleDateString('es-ES', { 
@@ -247,8 +247,7 @@ return (
                     year: 'numeric'
                   })
                 : 'No especificada'}
-            </p>
-             <p>
+            
              <div className="artist-attribution">
           Artista: 
           <Link 
@@ -265,12 +264,12 @@ return (
           </Link>
           <span className="verified-check">✓</span>
         </div>
-          </p>  
+          
             {renderSpecificDetails()}
           </div>
         </div>
       </section>
-      {/* ========== COLUMNA 3: INFO Y COMPRA ========== */}
+      {/* COLUMNA 3: INFO Y COMPRA */}
       <section className="artwork-purchase-panel">
         
         
