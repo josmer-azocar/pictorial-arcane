@@ -6,40 +6,44 @@ import './Artwork.css'
 
 
 function Artwork() {
-    const [works, setWork] = useState([]);
+    const [works, setWork] = useState({ content: [], totalPages: 0, number: 0});
     const [load, isLoad] = useState(false);
     const [error, setError] = useState("");
 
-    useEffect(() => {
-
-        const getArt = async () => {
-            isLoad(true);
-            try {
+    const getArt = async (page = 0) => {
+        isLoad(true);
+        try {
 
 
-                setError("");
-                const data = await showArtwork();
-                const artistData = await showArtist();
+            setError("");
+            const response = await showArtwork(page);
+            const artistData = await showArtist();
 
-                const artAndArtist = data.map(art => {
-                    const artist = artistData.find(a => a.id === art.id_artist);
-                    return {
-                        ...art,
-                        artistName: artist ? artist.name : "Desconocido",
-                        artistId: artist ? artist.id : 0
-                    };
-                });
-                setWork(artAndArtist);
-                console.log("fetch exitoso", data);
+            const artAndArtist = response.content.map(art => {
+                const artist = artistData.find(a => a.id === art.id_artist);
+                return {
+                    ...art,
+                    artistName: artist ? artist.name : "Desconocido",
+                    artistId: artist ? artist.id : 0
+                };
+            });
+            setWork({
+                ...response,
+                content: artAndArtist
+            });
 
-            } catch (error) {
-                console.error("Connection failed:", error);
-                setError("No se pudo mostrar. Error del servidor");
+            console.log("fetch exitoso", response);
 
-            } finally {
-                isLoad(false);
-            }
+        } catch (error) {
+            console.error("Connection failed:", error);
+            setError("No se pudo mostrar. Error del servidor");
+
+        } finally {
+            isLoad(false);
         }
+    }
+
+    useEffect(() => {
         getArt();
 
     }, []); // el array vacío hace que se renderize solo una vez
@@ -56,15 +60,25 @@ function Artwork() {
 
     return (
         <section id="art-display">
+            
             <section id="art-grid">
-                {works.map((artPiece) => (
+                {(works.content || []).map((artPiece) => (
                     <div className="art-piece" key={artPiece.id}>
                         <img src={artPiece.image} alt={artPiece.description} />
                         <div className="text-art-piece">
+                            <p className="precio-display">${artPiece.precio}</p>
                             <p>{artPiece.name}</p>
                             <p><Link to={`/artist/${artPiece.artistId}`}>{artPiece.artistName}</Link></p>
                         </div>
                     </div>
+                ))}
+            </section>
+            <section className="pagination">
+                {[...Array(works.totalPages || 0)].map((unused, index) => ( //el spread... se hace para forzar a que se lea el array y que map pueda ver los valores como undefined
+                    <button key={index} onClick={ () => getArt(index)} 
+                        className={works.number === index ? "active-page" : ""}>
+                        {index + 1}
+                    </button>
                 ))}
             </section>
 

@@ -1,6 +1,7 @@
 #art-display{
-    background-color: rgb(255, 228, 196);
+    background-color: rgb(255, 255, 255);
     margin: 25px;
+    padding: 20px;
 }
 
 #art-grid {
@@ -21,4 +22,46 @@
     width: 100%;            
     object-fit: cover; 
     display: block;
+    border-radius: 5%;
+}
+
+.text-art-piece {
+    font-family: 'Roboto Flex', Arial, Helvetica, sans-serif;
+    font-weight: 200;
+    padding: 0 7px;
+}
+
+.text-art-piece p a {
+    text-decoration: none;
+    color: black;
+}
+
+.precio-display {
+    text-align: center;
+    font-weight: 100;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.pagination button {
+    border-radius: 50%;
+    width: 53px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    height: 53px;
+    box-shadow: none;
+    background-color: transparent;
+}
+
+.pagination button:hover{
+    background-color: rgb(202, 146, 255);
+    cursor: pointer;
+}
+
+.pagination button.active-page {
+    background-color: rgb(176, 91, 255);
 }
