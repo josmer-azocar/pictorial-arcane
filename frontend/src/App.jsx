@@ -54,14 +54,8 @@ const testArtwork = {
   }
  /*<ArtworkDetail artwork={testArtwork} />*/
 /*<MainAuth/>*/
-return (
-   
-    <>
-      <Header />
-      <Routes>
-        <Route path="/" element={<ArtworkDetail artwork={testArtwork} />} />
-        <Route path="/login" element={<MainAuth />} />
-        <Route 
+
+/*<Route 
           path="/artists/:id" 
           element={
             <ArtistProfile 
@@ -70,6 +64,20 @@ return (
             />
           } 
         />
+        
+        
+     <Route path="/" element={<ArtworkDetail artwork={testArtwork} />} />
+   
+        
+        */
+return (
+   
+    <>
+      <Header />
+      <Routes>
+        <Route path="/" element={<ArtworkDetail artwork={testArtwork} />} />
+        <Route path="/login" element={<MainAuth />} />
+        <Route path="/artworks/:id" element={<ArtworkDetail />} />
       </Routes>
 
     </>
