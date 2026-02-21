@@ -1,0 +1,29 @@
+.user-welcome{
+    display: flex;
+    flex-direction: row;
+    margin: 70px;
+    align-items: center;
+    gap: 40px;
+
+}
+#pfp-moment{
+    background-color: blueviolet;
+    color: antiquewhite;
+    padding: 40px;
+    min-height: 80vh;
+}
+
+#pfp-moment a {
+    text-decoration: none;
+    color: antiquewhite;
+}
+
+#pfp-moment img {
+    border-radius: 50%;
+    max-height: 200px;
+    max-width: 200px;
+}
+
+#user-info li {
+    list-style-type: none;
+}

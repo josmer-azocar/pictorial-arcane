@@ -4,6 +4,7 @@ import { registerUser } from '../../services/authUser.js'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../services/authContext.jsx';
 
 function Sign() {
     // Estado inicial
@@ -25,6 +26,8 @@ function Sign() {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [confirmPassword, setConfirmPassword] = useState("");
+    const { login } = useAuth();
+
 
     // PASO 1: Validación de Identidad Básica
     const handleNext1 = () => {

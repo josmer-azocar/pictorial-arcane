@@ -1,4 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { jwtDecode } from "jwt-decode";
+import getProfile from "./getUserPfp.js"
 
 const AuthContext = createContext(null); //crea un objeto contexto
 
@@ -8,19 +10,45 @@ export const AuthProvider = ({children}) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const savedToken = localStorage.getItem("token");
-        if (savedToken) {
-            setIsLoggedIn(true);
-            setUser({ name: "User" });
-        }
 
-        setLoading(false);
+        const initializeUser = async () => {
+            const savedToken = localStorage.getItem("token");
+        
+            if (savedToken) {
+
+                try {
+                    const tokenToDecode = savedToken.startsWith("Bearer ") 
+                    ? savedToken.split(" ")[1] 
+                    : savedToken;
+                    console.log("Attempting to decode:", tokenToDecode);
+                    const decoded = jwtDecode(tokenToDecode);
+                    setIsLoggedIn(true);
+                    setUser({ name: decoded.userName || "Usuario", pfp: "https://fastly.picsum.photos/id/55/4608/3072.jpg?hmac=ahGhylwdN52ULB37deeMZX6T_G7NiERtoPhwydMvUKQ" });
+
+                    const data = await getProfile(savedToken);
+                    setUser( 
+                        prev => ({ 
+                            ...prev, 
+                            pfp: data.profilePicture || prev.pfp 
+                        })
+                    );
+                } catch (error) {
+                    console.error("Token inválido");
+                    logout();
+                }
+                
+            }
+
+            setLoading(false);
+        }
+        initializeUser();
+
     }, []);
 
     const login = (userName, token) => {
         setIsLoggedIn(true);
         localStorage.setItem("token", token);
-        setUser({name: userName});
+        setUser({name: userName, pfp: "https://picsum.photos/200"});
     }
 
     const logout = () => {
@@ -31,10 +59,10 @@ export const AuthProvider = ({children}) => {
 
     return(
         <AuthContext.Provider value={{isLoggedIn, user, login, logout, loading }}>
-            {children}
+            {!loading && children}
         </AuthContext.Provider>
     );
 };
 
-export const useAuth = () => useContext(authContext);
+export const useAuth = () => useContext(AuthContext);
 export default AuthProvider;

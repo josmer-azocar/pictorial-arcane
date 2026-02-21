@@ -7,8 +7,10 @@ import Artwork from './pages/artwork/artwork.jsx'
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import ArtworkDetail from './components/artworkDetail/ArtworkDetail.jsx';
 import ArtistProfile from './pages/auth/ArtistProfile.jsx';
-import AuthProvider from './services/AuthContext.jsx'; 
+import AuthProvider from './services/authContext.jsx'; 
 import Dashboard from './pages/dashboard/Dashboard.jsx';
+import PrivateRoutes from './services/PrivateRoutes.jsx'
+import Admin from './pages/admin/Admin.jsx'
 
 function App() {
 
@@ -61,12 +63,12 @@ const testArtwork = {
 return (
     <AuthProvider>
         <Header />
+        <main>
         <Routes>
           <Route path="/" element={<ArtworkDetail artwork={testArtwork} />} />
           <Route path="/login" element={<MainAuth />} />
           <Route path='/auth/*' element={<MainAuth/>} />
           <Route path='/artwork/*' element={<Artwork/>}/>
-          <Route path='/dashboard/*' element={<Dashboard/>}/>
           <Route 
             path="/artists/:id" 
             element={
@@ -76,7 +78,12 @@ return (
               />
             } 
           />
+          <Route element={<PrivateRoutes/>}>
+            <Route path='/dashboard/*' element={<Dashboard/>}/>
+            <Route path='/admin/*' element={<Admin/>}/>
+          </Route>
         </Routes>
+        </main>
       </AuthProvider>
   );
 }

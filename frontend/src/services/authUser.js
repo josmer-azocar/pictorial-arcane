@@ -2,21 +2,21 @@ import axios from 'axios';
 const url = "http://localhost:8080/auth";
 
 
-export async function logUser(credentials){
+/*export async function logUser(credentials){
 
     const response = await axios.post(`${url}/login`, credentials);
     return response.data;
-}
+}*/
 
 export async function registerUser(credentials) {
     const response = await axios.post(`${url}/signUp`, credentials);
     return response.data;
 }
 
-/*export async function logUser(credentials) {
+export async function logUser(credentials) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (credentials.email === "test@test.com" && credentials.password === "1234") {
+      if (credentials.email === "test@test.com" && credentials.password === "12345678") {
         resolve({
           status: "success",
           user: { name: "Tester", email: "test@test.com" },
@@ -28,7 +28,7 @@ export async function registerUser(credentials) {
       }
     }, 1500);
   });
-}*/
+}
 
 //funcion para hacer pruebas
 

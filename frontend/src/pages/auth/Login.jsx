@@ -3,8 +3,7 @@ import { useState } from 'react';
 import {logUser} from '../../services/authUser.js';
 import { useNavigate } from 'react-router-dom';
 import Loading from '../../components/Loading.jsx'
-
-
+import { useAuth } from '../../services/authContext.jsx';
 
 function Login() {
 
@@ -13,8 +12,10 @@ function Login() {
     const [errorMessage, setErrMsg] = useState("");
     const [loadPage, setLoadPage] = useState(false);
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleLogin = async (e) => {
+
         e.preventDefault();
         setErrMsg("");
         console.log(email, password);
@@ -22,13 +23,16 @@ function Login() {
 
         if (email === "" || password === "") {
             setErrMsg("Tiene que llenar todos los campos");
+            setLoadPage(false);
             return; 
         }
         try {
             await new Promise(resolve => setTimeout(resolve, 1000));
             const data = await logUser({email, password});
+
+            login(data.userName || "Usuario", data.token);
             console.log('Fetch Exitoso ', data);
-            navigate("/");
+            navigate("/dashboard");
         } catch (err) {
             if (err.response?.status === 401) {
                 setErrMsg("Correo o contraseña incorrectos.");
