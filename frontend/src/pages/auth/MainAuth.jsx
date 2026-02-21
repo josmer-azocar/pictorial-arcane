@@ -10,6 +10,7 @@ function MainAuth() {
     const isLogin = location.pathname.includes("login"); // verifica si el url es el login
     
     return (
+     <div className="auth-page-wrapper">
         <section className='auth-form'>
             <div id='auth-buttons'>
                 <Link to="/auth/login"><button>Login</button></Link>
@@ -18,6 +19,7 @@ function MainAuth() {
 
             {isLogin? <Login/> : <Sign/>}            
         </section>
+     </div>
     );
 }
 

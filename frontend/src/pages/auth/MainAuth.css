@@ -16,13 +16,16 @@
     min-width: 300px;
 
     
-}.glass{
-    
-    backdrop-filter:blur(20px);
-
-}body {
-  background-image: url("fondoLo.gif");
+}.auth-page-wrapper {
+    min-height: 100vh;
+    background-image: url("/fondoLo.gif");
+    background-size: cover;
+    background-position: center;
+    padding-top: 100px;
+    margin: 0;/*n*/
 }
+
+
 
 #auth-buttons {
     padding: 10px;
@@ -35,7 +38,7 @@
     background: none;
     border: none;
     font-weight: 600;
-    color: #666;
+    color: #000000;
     cursor: pointer;
     transition: 0.3s;
 }
@@ -76,23 +79,77 @@
 
 }
 /* Estilo específico para el botón Submit */
-.auth-form input[type="submit"] {   
+.auth-form input[type="submit"], 
+.auth-form button { 
      margin-top: 20px; /* Separación del campo de contraseña */
-     width: 100%;    height: 45px;
+     width: 90px;    
+     height: 40px;
      background-color: #078d2f;  
        color: white;
        font-weight: 600;   
-        font-size: 16px;  
+        font-size: 14px;  
           border: none;   
            border-radius: 10px;   
             cursor: pointer;    
             transition: 0.3s;}
             
 /* Hover del botón */
-.auth-form input[type="submit"]:hover {   
-     background-color: #d42424;    
+.auth-form input[type="submit"]:hover,
+.auth-form button:hover {
+     background-color: #8524d4;    
      transform: translateY(-2px);  
-    box-shadow: 0 5px 15px rgba(9, 148, 102, 0.3);}
+    box-shadow: 0 5px 15px rgba(206, 238, 92, 0.705);}
+
+    /* Contenedor principal del indicador */
+.step-indicator {
+    display: flex;
+    justify-content: center; /* Centra todo el grupo de pasos */
+    align-items: center;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+/* Contenedor de cada paso (círculo + línea) */
+.step-item {
+    display: flex;
+    align-items: center;
+}
+
+/* El círculo con el número */
+.circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid #ecedec; /* Color gris suave como tus inputs */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: #666;
+    background-color: #fff;
+    transition: 0.3s ease;
+}
+
+/* La línea que une los círculos */
+.line {
+    width: 40px;
+    height: 2px;
+    background-color: #ecedec;
+    margin: 0 5px;
+    transition: 0.3s ease;
+}
+
+/* Estado ACTIVO: Cuando el usuario está en ese paso */
+/* Usamos el color cian que tienes en el focus de tus inputs */
+.circle.active {
+    border-color: #892df3; 
+    color: #892df3;
+    box-shadow: 0 0 8px rgba(174, 111, 245, 0.4);
+}
+
+.line.active {
+    background-color: #792df3;
+}
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
