@@ -2,7 +2,7 @@ import axios from "axios";
 const url = "http://localhost:8080";
 
 
-export async function showArtwork(page = 0){
+/*export async function showArtwork(page = 0){
     try {
         const fetchedArtwork = await axios.get(`${url}/artwork?page=${page}`, {timeout: 0});
         console.log(fetchedArtwork);
@@ -25,10 +25,10 @@ export async function showArtist() {
         return [];
     }
     
-}
+}*/
 
 
-/*export async function showArtwork(page = 0) {
+export async function showArtwork(page = 0) {
     return new Promise((resolve) => {
         setTimeout(() => {
             const page0 = [
@@ -71,4 +71,4 @@ export async function showArtist() {
             ]);
         }, 100);
     });
-}*/
+}
