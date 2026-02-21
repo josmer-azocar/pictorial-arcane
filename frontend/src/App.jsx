@@ -63,6 +63,8 @@ return (
       <Routes>
         <Route path="/" element={<ArtworkDetail artwork={testArtwork} />} />
         <Route path="/login" element={<MainAuth />} />
+        <Route path='/auth/*' element={<MainAuth/>} />
+        <Route path='/artwork/*' element={<Artwork/>}/>
         <Route 
           path="/artists/:id" 
           element={
@@ -76,25 +78,6 @@ return (
 
     </>
   );
-  return (
-    <Router>
-      <Header/>
-
-      <Routes>
-        <Route path='/auth/*' element={<MainAuth/>} />
-        <Route path='/artwork/*' element={<Artwork/>}/>
-      </Routes>
-      <Route 
-          path="/artists/:id" 
-          element={
-            <ArtistProfile 
-              mockArtists={[testArtwork.artist]} 
-              mockArtworks={mockArtworksByArtist}
-            />
-          } 
-        />
-    </Router>
-  )
 }
 
 export default App

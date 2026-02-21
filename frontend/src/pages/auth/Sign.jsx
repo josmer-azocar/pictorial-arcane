@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { registerUser } from '../../services/authUser.js'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 function Sign() {
     // Estado inicial
@@ -131,6 +132,7 @@ function Sign() {
          toast.error("Ocurrió un error al intentar registrar.");
         }
     }
+    }
 
     return(
         <section className='auth-form'>
@@ -215,6 +217,6 @@ function Sign() {
         </section>
     );
 }
-}
+
 
 export default Sign;

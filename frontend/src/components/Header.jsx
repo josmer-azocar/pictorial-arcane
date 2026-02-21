@@ -1,7 +1,5 @@
 import './Header.css'
 import { Link } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-
 
 
 function Header(){
@@ -19,7 +17,6 @@ function Header(){
             <li className="list-item"><Link to="/artwork">Galería</Link></li>
             <li className="list-item"><Link to="#">Artistas</Link></li>
             <li className="list-item"><Link to="#">Envíos</Link></li>
-            <li className="list-item"><Link to="/auth">Ingreso</Link></li>
             {/* botón de Login */}
             <li className="list-item">
                 <Link to="/login" className="login-btn">Login</Link>
