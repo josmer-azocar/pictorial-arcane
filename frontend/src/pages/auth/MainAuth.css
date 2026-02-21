@@ -13,7 +13,6 @@
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1); /* Sombra suave para que flote */
     font-family: "Roboto Flex", Arial, Helvetica, sans-serif;
-    min-width: 300px;
 
     
 }.auth-page-wrapper {
@@ -68,7 +67,6 @@
     outline: none;
     background-color: #f8f8f8;
     margin-bottom: 10px;
-    min-width: 250px;
 }
 /* Focus solo para inputs de texto */
 .auth-form input[type="text"]:focus,
@@ -117,10 +115,10 @@
 
 /* El círculo con el número */
 .circle {
-    width: 35px;
-    height: 35px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
-    border: 2px solid #ecedec; /* Color gris suave como tus inputs */
+    border: 2px solid #ecedec; 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -128,19 +126,20 @@
     color: #666;
     background-color: #fff;
     transition: 0.3s ease;
+     flex-shrink: 0; 
 }
 
 /* La línea que une los círculos */
 .line {
-    width: 40px;
+    width: 25px;
     height: 2px;
     background-color: #ecedec;
-    margin: 0 5px;
+    margin: 0 3px;
     transition: 0.3s ease;
 }
 
 /* Estado ACTIVO: Cuando el usuario está en ese paso */
-/* Usamos el color cian que tienes en el focus de tus inputs */
+
 .circle.active {
     border-color: #892df3; 
     color: #892df3;
@@ -150,14 +149,16 @@
 .line.active {
     background-color: #792df3;
 }
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.auth-form form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-input[type=number] {
-  -moz-appearance: textfield;
-  appearance: textfield; 
+.form-step {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }

@@ -7,7 +7,7 @@
     z-index: 1;
 }
 
-.circle {
+.loader-circle {
     width: 20px;
     height: 20px;
     position: absolute;
@@ -37,18 +37,18 @@
   }
 }
 
-.circle:nth-child(2) {
+.loader-circle:nth-child(2) {
     left: 45%;
     animation-delay: .2s;
 }
 
-.circle:nth-child(3) {
+.loader-circle:nth-child(3){
   left: auto;
   right: 15%;
   animation-delay: .3s;
 }
 
-.shadow {
+.loader-shadow {
   width: 20px;
   height: 4px;
   border-radius: 50%;
@@ -78,12 +78,12 @@
   }
 }
 
-.shadow:nth-child(4) {
+.loader-shadow:nth-child(4) {
   left: 45%;
   animation-delay: .2s
 }
 
-.shadow:nth-child(5) {
+.loader-shadow:nth-child(5) {
   left: auto;
   right: 15%;
   animation-delay: .3s;
