@@ -4,7 +4,7 @@ const url = "http://localhost:8080";
 
 export async function showArtwork(page = 0){
     try {
-        const fetchedArtwork = await axios.get(`${url}/artwork?page=${page}`, {timeout: 0});
+        const fetchedArtwork = await axios.get(`${url}/artwork/all?page=${page}`, {timeout: 0});
         console.log(fetchedArtwork);
         return fetchedArtwork.data;
         
@@ -16,7 +16,7 @@ export async function showArtwork(page = 0){
 
 export async function showArtist() {
     try{
-        const fetchedArtist = await axios.get(`${url}/artist`, {timeout: 0});
+      const fetchedArtist = await axios.get(`${url}/artist/all`, {timeout: 0});
         return fetchedArtist.data;
 
     } catch (error){
@@ -72,3 +72,61 @@ export async function showArtist() {
         }, 100);
     });
 }*/
+
+// *Artistas
+// Trae un artista por su id - GET /artists/{id}
+export async function getArtistById(id) {
+  const url = `http://localhost:8080/artists/${id}`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(response.status);
+    return await response.json();
+  } catch (error) {
+    console.error("Error al obtener artista:", error);
+    throw error;
+  }
+}
+
+// *Obras 
+// Trae todas las obras de un artista - GET /artworks?artistId={id}
+export async function getArtworksByArtist(artistId) {
+  const url = `http://localhost:8080/artworks?artistId=${artistId}`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(response.status);
+    return await response.json();
+  } catch (error) {
+    console.error("Error al obtener obras:", error);
+    throw error;
+  }
+}
+// Trae una obra por su id - GET /artworks/{id}
+export async function getArtworkById(id) {
+  const url = `http://localhost:8080/artworks/${id}`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(response.status);
+    return await response.json();
+  } catch (error) {
+    console.error("Error al obtener obra:", error);
+    throw error;
+  }
+}
+// Reserva una obra - POST /artworks/{id}/reserve
+export async function reserveArtwork(artworkId, securityCode) {
+  const url = `http://localhost:8080/artworks/${artworkId}/reserve`;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ security_code: securityCode })
+    });
+    if (!response.ok) throw new Error(response.status);
+    return await response.json();
+  } catch (error) {
+    console.error("Error al reservar obra:", error);
+    throw error;
+  }
+}
+/*hola*/
+

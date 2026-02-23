@@ -6,6 +6,8 @@ import Artwork from './pages/artwork/artwork.jsx'
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import ArtworkDetail from './components/artworkDetail/ArtworkDetail.jsx';
 import ArtistProfile from './pages/auth/ArtistProfile.jsx';
+import Home from './pages/home/Home.jsx'
+
 
 function App() {
 
@@ -54,7 +56,7 @@ return (
   <>
     <Header />
     <Routes>
-      <Route path="/" element={<ArtworkDetail artwork={testArtwork} />} />
+      <Route path="/" element={<Home />} />
       <Route path="/login" element={<MainAuth />} />
       <Route path='/auth/*' element={<MainAuth/>} />
       <Route path='/artwork/*' element={<Artwork/>}/>

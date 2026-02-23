@@ -1,9 +1,13 @@
 import { Link } from 'react-router-dom';
 import './ArtworkDetail.css'; 
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+import { useParams } from 'react-router-dom';
+import { getArtworkById } from '../../services/fetchArtwork.js';
+
 
 const CertificateIcon = ({ size = 28 }) => (
   <svg 
@@ -75,16 +79,23 @@ const GlobalShippingIcon = ({ size = 28 }) => (
   </svg>
 );
 
-const ArtworkDetail = ({ artwork }) => {
+const ArtworkDetail = ({ artwork: artworkProp }) => {
+  const { id } = useParams();
+  const [artwork, setArtwork] = useState(artworkProp || null);
   const [showModal, setShowModal] = useState(false);
   const [securityCode, setSecurityCode] = useState("");
   const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
-const [showZoom, setShowZoom] = useState(false);
+  const [showZoom, setShowZoom] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      getArtworkById(id).then(data => setArtwork(data));
+    }
+  }, [id]);
 
   if (!artwork) {
     return <div>Loading artwork details...</div>;
   }
-
 
   
   const {
