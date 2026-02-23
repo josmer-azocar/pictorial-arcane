@@ -12,6 +12,12 @@ public record ArtWorkRequestDto(
         String status,
 
         @Positive
-        double prize
+        double price,
+
+        @NotNull
+        Long idArtist,
+
+        @NotNull
+        Long idGender
 ) {
 }

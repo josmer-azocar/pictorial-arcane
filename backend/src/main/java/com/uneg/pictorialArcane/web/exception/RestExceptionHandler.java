@@ -1,9 +1,7 @@
 package com.uneg.pictorialArcane.web.exception;
 
 
-import com.uneg.pictorialArcane.domain.exception.ArtWorkDoesNotExistsException;
-import com.uneg.pictorialArcane.domain.exception.UserAlreadyExistsException;
-import com.uneg.pictorialArcane.domain.exception.UserDoesNotExistsException;
+import com.uneg.pictorialArcane.domain.exception.*;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +34,18 @@ public class RestExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
+    @ExceptionHandler(AnswersAreNotCorrectException.class)
+    public ResponseEntity<Error> handleException(AnswersAreNotCorrectException ex){
+        Error error = new Error("the-answers-are-not-correct", ex.getMessage());
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(QuestionDoesNotExistsException.class)
+    public ResponseEntity<Error> handleException(QuestionDoesNotExistsException ex){
+        Error error = new Error("question-does-not-exist", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
     @ExceptionHandler(ArtWorkDoesNotExistsException.class)
     public ResponseEntity<Error> handleException(ArtWorkDoesNotExistsException ex){
         Error error = new Error("artwork-does-not-exist", ex.getMessage());
@@ -56,5 +66,11 @@ public class RestExceptionHandler {
     public ResponseEntity<Error> handleException(Exception ex){
         Error error = new Error("unknown-error", ex.getMessage());
         return ResponseEntity.internalServerError().body(error);
+    }
+
+    @ExceptionHandler(ArtistDoesNotExistsException.class)
+    public ResponseEntity<Error> handleException(ArtistDoesNotExistsException ex){
+        Error error = new Error("artist-does-not-exist", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 }
