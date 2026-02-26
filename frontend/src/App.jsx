@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import ArtworkDetail from './components/artworkDetail/ArtworkDetail.jsx';
 import ArtistProfile from './pages/auth/ArtistProfile.jsx';
 import Home from './pages/home/Home.jsx'
+import Footer from './components/Footer.jsx';
 
 
 function App() {
@@ -71,6 +72,7 @@ return (
         } 
       />
     </Routes>
+    <Footer />
   </>
   );
 }
