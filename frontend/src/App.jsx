@@ -56,6 +56,7 @@ const mockArtworksByArtist = {
 return (
   <>
     <Header />
+    <main className="main-content">
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<MainAuth />} />
@@ -72,9 +73,11 @@ return (
         } 
       />
     </Routes>
+
+    </main>
     <Footer />
   </>
   );
 }
 
-export default App
+export default App 
