@@ -1,6 +1,5 @@
 import './MainAuth.css';
-import React, { useState } from 'react';
-import { registerUser } from '../../services/authUser.js';
+import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -30,7 +29,15 @@ function Sign() {
     { idQuestion: "", answer: "" },
     { idQuestion: "", answer: "" },
 ]);
-
+//trae las preguntas del backend al llegar al paso 3
+useEffect(() => {
+        if (step === 3) {
+            fetch('http://localhost:8080/questions/getAllQuestions')
+                .then(res => res.json())
+                .then(data => setPreguntasBackend(data))
+                .catch(err => console.error("Error al obtener preguntas:", err));
+        }
+    }, [step]);
 
     // --- FUNCIONES DE NAVEGACIÓN Y VALIDACIÓN ---
 
@@ -86,28 +93,26 @@ function Sign() {
 
     };
 
-   const handleNext3 = async () => {
+  const handleNext3 = async () => {
     setErrMessage("");
-    if (!registerData.pregunta1 || !registerData.pregunta2 || !registerData.pregunta3) {
-        setErrMessage("Responde todas las preguntas de seguridad.");
+
+    const incompletas = respuestas.some(r => !r.idQuestion || !r.answer.trim());
+    if (incompletas) {
+        setErrMessage("Selecciona una pregunta y escribe tu respuesta en cada campo.");
         return;
     }
 
     setIsLoading(true);
     try {
-        const preguntas = [
-            { id: 1, respuesta: registerData.pregunta1 },
-            { id: 2, respuesta: registerData.pregunta2 },
-            { id: 3, respuesta: registerData.pregunta3 },
-        ];
-        for (const p of preguntas) {
-            await fetch(`http://localhost:8080/questions/updateQuestion?questionId=${p.id}`, {
+        for (const r of respuestas) {
+            // Llamada 1: PUT /questions/updateQuestion?questionId=4  body: "Rocky"
+            await fetch(`http://localhost:8080/questions/updateQuestion?questionId=${r.idQuestion}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${authToken}`
                 },
-                body: JSON.stringify(p.respuesta)
+                body: JSON.stringify(r.answer) // Solo envía la respuesta como string
             });
         }
         setStep(4);
@@ -141,15 +146,38 @@ function Sign() {
         }
 
         try {
-            await registerUser(registerData);
-            toast.success(`¡Registro exitoso! Revisa tu correo: ${registerData.email}`, {
-                position: "top-center",
-                autoClose: 6000,
-            });
+           //Envía tarjeta y código postal
+        await fetch('http://localhost:8080/client/update', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify({
+                creditCardNumber: parseInt(registerData.tarjeta_credito),
+                postalCode: parseInt(registerData.codigo_postal)
+            })
+        });
+
+        // Genera el código de seguridad y lo envía al correo
+        await fetch('http://localhost:8080/client/createSecurityCode', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+
+        toast.success(`¡Registro exitoso! Revisa tu correo: ${registerData.email}`, {
+            position: "top-center",
+            autoClose: 6000,
+        });
+
         } catch (err) {
             console.error("Error en registro", err);
             toast.error("Ocurrió un error al intentar registrar.");
-        }
+        }finally {
+        setIsLoading(false);
+    }
     };
 
     // --- RENDERIZADO DEL COMPONENTE ---
