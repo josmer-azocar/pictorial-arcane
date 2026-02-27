@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import ArtworkDetail from './components/artworkDetail/ArtworkDetail.jsx';
 import ArtistProfile from './pages/auth/ArtistProfile.jsx';
 import Home from './pages/home/Home.jsx'
+import Footer from './components/Footer.jsx';
 
 
 function App() {
@@ -71,9 +72,17 @@ return (
           />
         } 
       />
+
+       {/*LAS RUTAS DEL FOOTER*/}
+      <Route path="/acerca-de" element={<div style={{ padding: '50px', color: 'white' }}><h1>Acerca de</h1><p>Esta es una página en blanco de prueba.</p></div>} />
+      <Route path="/galeria" element={<div style={{ padding: '50px', color: 'white' }}><h1>Galería</h1><p>Esta es una página en blanco de prueba.</p></div>} />
+      <Route path="/artistas" element={<div style={{ padding: '50px', color: 'white' }}><h1>Artistas</h1><p>Esta es una página en blanco de prueba.</p></div>} />
+      <Route path="/envios" element={<div style={{ padding: '50px', color: 'white' }}><h1>Envíos</h1><p>Esta es una página en blanco de prueba.</p></div>} />
+      <Route path="/contacto" element={<div style={{ padding: '50px', color: 'white' }}><h1>Contacto</h1><p>Esta es una página en blanco de prueba.</p></div>} />
     </Routes>
+
     </main>
-    
+    <Footer />
   </>
   );
 }
