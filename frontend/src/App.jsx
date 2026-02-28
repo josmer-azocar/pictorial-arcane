@@ -85,10 +85,12 @@ return (
       <Route path="/artistas" element={<div style={{ padding: '50px', color: 'white' }}><h1>Artistas</h1><p>Esta es una página en blanco de prueba.</p></div>} />
       <Route path="/envios" element={<div style={{ padding: '50px', color: 'white' }}><h1>Envíos</h1><p>Esta es una página en blanco de prueba.</p></div>} />
       <Route path="/contacto" element={<div style={{ padding: '50px', color: 'white' }}><h1>Contacto</h1><p>Esta es una página en blanco de prueba.</p></div>} />
+      <Route path="/quienes-somos" element={<div style={{ padding: '50px', color: 'white' }}><h1>Quiénes somos</h1><p>Esta es una página en blanco de prueba.</p></div>} />
         </Routes>
         </main>
+        <Footer />
       </AuthProvider>
   );
 }
 
-export default App 
+export default App
