@@ -25,10 +25,10 @@ const Footer = () => {
       <ul className="footer-links">
         <li><Link to="/">Home</Link></li>
         <li><Link to="/acerca-de">Acerca de</Link></li>
-        <li><Link to="/galeria">Galería</Link></li>
+        <li><Link to="/artwork">Galería</Link></li>
         <li><Link to="/artistas">Artistas</Link></li>
         <li><Link to="/envios">Envíos</Link></li>
-        <li><Link to="/contacto">Contacto</Link></li>
+        <li><Link to="/quienes-somos">Quiénes somos</Link></li>
       </ul>
 
     </footer>

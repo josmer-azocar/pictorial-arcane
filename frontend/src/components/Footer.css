@@ -10,9 +10,9 @@
   display: flex;
   flex-direction: row; /* Elementos en fila */
   flex-wrap: wrap; /* Si la pantalla es pequeña, que pasen a la línea de abajo */
-  justify-content: center; /* Centramos todo */
+  justify-content: left; /* Centramos todo */
   align-items: center; /* Alineamos verticalmente */
-  gap: 20px; /* Espacio entre el logo y los links */
+  gap: 190px; /* Espacio entre el logo y los links */
 }
 
 /* La parte del logo y el año */
@@ -35,7 +35,7 @@
   display: flex;
   flex-wrap: wrap; /* Que bajen de línea si no caben */
   justify-content: center;
-  list-style: none; /* Quitamos los puntos feos de la lista <ul> */
+  list-style: none;
   padding: 0;
   margin: 0;
   gap: 15px; /* Espacio entre cada palabra (Terms, Privacy...) */
