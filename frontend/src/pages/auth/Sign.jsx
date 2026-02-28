@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { registerUser } from '../../services/authUser.js';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../services/authContext.jsx';
 
 function Sign() {
     // Estado inicial de los datos
@@ -20,14 +22,19 @@ function Sign() {
     });
 
     const [errMessage, setErrMessage] = useState("");
+    const [loadPage, setLoadPage] = useState(false);
+    const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [confirmPassword, setConfirmPassword] = useState("");
+    const { login } = useAuth();
+
 
     // --- FUNCIONES DE NAVEGACIÓN Y VALIDACIÓN ---
 
+    // PASO 1: Validación de Identidad Básica
     const handleNext1 = () => {
         setErrMessage("");
-        const dniRegex = /^\d+$/;
+        const dniRegex = /^\d+$/; // Validar que la cédula sea numérica
         if (!registerData.nombre || !registerData.apellido || !registerData.dni) {
             setErrMessage("Por favor, completa tus datos personales.");
             return;
@@ -38,6 +45,7 @@ function Sign() {
         setStep(2);
     };
 
+    // PASO 2: Validación de Cuenta de Acceso
     const handleNext2 = () => {
         setErrMessage("");
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -54,8 +62,10 @@ function Sign() {
         setStep(3);
     };
 
+    // PASO 3: Validación de Seguridad de Recuperación (Tarea de Josue)
     const handleNext3 = () => {
         setErrMessage("");
+        // Verificamos que las 3 preguntas tengan respuesta
         if (!registerData.pregunta1 || !registerData.pregunta2 || !registerData.pregunta3) {
             setErrMessage("Responde todas las preguntas de seguridad.");
             return;
@@ -63,12 +73,14 @@ function Sign() {
         setStep(4);
     };
 
+    // PASO 4: Registro Final y Pago de Membresía
     const handleRegister = async (e) => {
         e.preventDefault();
         setErrMessage("");
+        setLoadPage(true);
         const cardRegex = /^\d{16}$/;
         const specialCharRegex = /[0-9!@#$%^&*]/;
-
+        // Validaciones finales de tarjeta y contraseña
         if (!registerData.tarjeta_credito || !registerData.codigo_postal) {
             setErrMessage("Los datos de pago son obligatorios.");
             return;
@@ -86,11 +98,13 @@ function Sign() {
         }
 
         try {
-            await registerUser(registerData);
+            const result = await registerUser(registerData);
             toast.success(`¡Registro exitoso! Revisa tu correo: ${registerData.email}`, {
                 position: "top-center",
                 autoClose: 6000,
             });
+            console.log("Usuario creado", result);
+            navigate("/auth/login");
         } catch (err) {
             console.error("Error en registro", err);
             toast.error("Ocurrió un error al intentar registrar.");
@@ -101,7 +115,7 @@ function Sign() {
 
     return (
         <section className='auth-form'>
-            <ToastContainer />
+            <ToastContainer /> {/* Revisar si la posicion de toast container está bien!!!!!!*/ }
             <form onSubmit={handleRegister}>
                 
                 {errMessage && <p style={{ color: 'red', fontWeight: 'bold' }}>{errMessage}</p>}
@@ -115,13 +129,14 @@ function Sign() {
                                     {num}
                                 </div>
                             </div>
+                            {/* La línea que conecta (no aparece después del 4) */}
                             {num < 4 && <div className={`line ${step > num ? 'active' : ''}`}></div>}
                         </React.Fragment>
                     ))}
                 </div>
 
                 {/* CONTENIDO DINÁMICO POR PASOS */}
-                
+                {/* PASO 1: Identidad (Nombre, Apellido, Cédula) */}
                 {step === 1 && (
                     <div className="form-step">
                         <h3>Paso 1: Identidad</h3>
@@ -132,6 +147,7 @@ function Sign() {
                     </div>
                 )}
 
+                {/* PASO 2: Acceso (Email y Contraseña) */}
                 {step === 2 && (
                     <div className="form-step">
                         <h3>Paso 2: Cuenta</h3>
@@ -145,6 +161,7 @@ function Sign() {
                     </div>
                 )}
 
+                {/* PASO 3: Recuperación (Preguntas de Seguridad) */}
                 {step === 3 && (
                     <div className="form-step">
                         <h3>Paso 3: Seguridad</h3>
@@ -158,6 +175,8 @@ function Sign() {
                         </div>
                     </div>
                 )}
+
+                {/* PASO 4: Pago de Membresía ($10) */}
 
                 {step === 4 && (
                     <div className="form-step">

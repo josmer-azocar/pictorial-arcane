@@ -9,6 +9,10 @@ import ArtistProfile from './pages/auth/ArtistProfile.jsx';
 import Home from './pages/home/Home.jsx'
 import Footer from './components/Footer.jsx';
 
+import AuthProvider from './services/authContext.jsx'; 
+import Dashboard from './pages/dashboard/Dashboard.jsx';
+import PrivateRoutes from './services/PrivateRoutes.jsx'
+import Admin from './pages/admin/Admin.jsx'
 
 function App() {
 
@@ -54,36 +58,36 @@ const mockArtworksByArtist = {
 }
 
 return (
-  <>
-    <Header />
-    <main className="main-content">
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<MainAuth />} />
-      <Route path='/auth/*' element={<MainAuth/>} />
-      <Route path='/artwork/*' element={<Artwork/>}/>
-      <Route path="/artworks/:id" element={<ArtworkDetail />} />
-      <Route 
-        path="/artists/:id" 
-        element={
-          <ArtistProfile 
-            mockArtists={[testArtwork.artist]} 
-            mockArtworks={mockArtworksByArtist}
+    <AuthProvider>
+        <Header />
+        <main className="main-content">
+        <Routes>
+          <Route path="/" element={<ArtworkDetail artwork={testArtwork} />} />
+          <Route path="/login" element={<MainAuth />} />
+          <Route path='/auth/*' element={<MainAuth/>} />
+          <Route path='/artwork/*' element={<Artwork/>}/>
+          <Route 
+            path="/artists/:id" 
+            element={
+              <ArtistProfile 
+                mockArtists={[testArtwork.artist]} 
+                mockArtworks={mockArtworksByArtist}
+              />
+            } 
           />
-        } 
-      />
-
-       {/*LAS RUTAS DEL FOOTER*/}
+          <Route element={<PrivateRoutes/>}>
+            <Route path='/dashboard/*' element={<Dashboard/>}/>
+            <Route path='/admin/*' element={<Admin/>}/>
+          </Route>
+          {/*LAS RUTAS DEL FOOTER*/}
       <Route path="/acerca-de" element={<div style={{ padding: '50px', color: 'white' }}><h1>Acerca de</h1><p>Esta es una página en blanco de prueba.</p></div>} />
       <Route path="/galeria" element={<div style={{ padding: '50px', color: 'white' }}><h1>Galería</h1><p>Esta es una página en blanco de prueba.</p></div>} />
       <Route path="/artistas" element={<div style={{ padding: '50px', color: 'white' }}><h1>Artistas</h1><p>Esta es una página en blanco de prueba.</p></div>} />
       <Route path="/envios" element={<div style={{ padding: '50px', color: 'white' }}><h1>Envíos</h1><p>Esta es una página en blanco de prueba.</p></div>} />
       <Route path="/contacto" element={<div style={{ padding: '50px', color: 'white' }}><h1>Contacto</h1><p>Esta es una página en blanco de prueba.</p></div>} />
-    </Routes>
-
-    </main>
-    <Footer />
-  </>
+        </Routes>
+        </main>
+      </AuthProvider>
   );
 }
 
