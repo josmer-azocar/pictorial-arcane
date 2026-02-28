@@ -2,7 +2,7 @@ import React from 'react'
 import './App.css'
 import Header from './components/Header.jsx'
 import MainAuth from './pages/auth/MainAuth.jsx'
-import Artwork from './pages/artwork/artwork.jsx'
+import Artwork from './pages/artwork/Artwork.jsx'
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import ArtworkDetail from './components/artworkDetail/ArtworkDetail.jsx';
 import ArtistProfile from './pages/auth/ArtistProfile.jsx';
@@ -59,22 +59,23 @@ const mockArtworksByArtist = {
 
 return (
     <AuthProvider>
-        <Header />
-        <main className="main-content">
-        <Routes>
-          <Route path="/" element={<ArtworkDetail artwork={testArtwork} />} />
-          <Route path="/login" element={<MainAuth />} />
-          <Route path='/auth/*' element={<MainAuth/>} />
-          <Route path='/artwork/*' element={<Artwork/>}/>
-          <Route 
-            path="/artists/:id" 
-            element={
-              <ArtistProfile 
-                mockArtists={[testArtwork.artist]} 
-                mockArtworks={mockArtworksByArtist}
-              />
-            } 
+    <Header />
+    <main className="main-content">
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<MainAuth />} />
+      <Route path='/auth/*' element={<MainAuth/>} />
+      <Route path='/artwork/*' element={<Artwork/>}/>
+      <Route path="/artworks/:id" element={<ArtworkDetail />} />
+      <Route 
+        path="/artists/:id" 
+        element={
+          <ArtistProfile 
+            mockArtists={[testArtwork.artist]} 
+            mockArtworks={mockArtworksByArtist}
           />
+        } 
+      />
           <Route element={<PrivateRoutes/>}>
             <Route path='/dashboard/*' element={<Dashboard/>}/>
             <Route path='/admin/*' element={<Admin/>}/>
