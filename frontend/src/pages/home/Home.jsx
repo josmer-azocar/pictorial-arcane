@@ -1,6 +1,7 @@
 import React from 'react'
 import './Home.css';
 import homeImage from '../../assets/home-bg.jpg';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
   return (
@@ -14,7 +15,9 @@ const Home = () => {
         <div className="hero-content">
           <h1>EXPLORA EL ARTE OCULTO</h1>
           <p>Una experiencia de compra y venta de arte diseñada para ti.</p>
-          <button className="cta-button">Ver obras</button>
+           <Link to="/artwork" className="cta-button">
+            Ver obras
+          </Link>
         </div>
       </section>
 
