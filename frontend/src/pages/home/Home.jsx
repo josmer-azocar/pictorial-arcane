@@ -24,7 +24,7 @@ const Home = () => {
         }
       });
 
-    }, 5000); 
+    }, 3000); 
 
     //detiene el reloj si el usuario se va a otra página
     return () => clearInterval(interval);
@@ -32,25 +32,27 @@ const Home = () => {
   }, []); 
   return (
     <div className="home-container">
-      <section 
-        className="hero-section" 
-        style={{ 
-          // Le decimos que busque en la lista usando el número que el reloj va cambiando
-          backgroundImage: `linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0) 100%), 
-          url(${homeImages[currentImage]})` 
-        }}
-      >
+      <section className="hero-section">
+        {homeImages.map((image, index) => (
+          <div
+            key={index}
+            className={`hero-bg-layer ${index === currentImage ? 'active' : ''}`}
+            style={{ backgroundImage: `url(${image})` }}
+          />
+        ))}
+
+        {/* La capa del gradiente oscuro */}
+        <div className="hero-overlay"></div>
+
         <div className="hero-content">
           <h1>EXPLORA EL ARTE OCULTO</h1>
           <p>Una experiencia de compra y venta de arte diseñada para ti.</p>
-           <Link to="/artwork" className="cta-button">
-            Ver obras
+          <Link to="/artwork" className="cta-button">
+            Buscar obras
           </Link>
         </div>
+
       </section>
-
-      {/* Más adelante aquí abajo pondremos otras secciones de la página */}
-
     </div>
   );
 };
