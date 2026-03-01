@@ -24,7 +24,7 @@ const Footer = () => {
       {/* Enlaces */}
       <ul className="footer-links">
         <li><Link to="/">Home</Link></li>
-        <li><Link to="/acerca-de">Acerca de</Link></li>
+        <li><Link to="/about">Acerca de</Link></li>
         <li><Link to="/artwork">Galería</Link></li>
         <li><Link to="/artistas">Artistas</Link></li>
         <li><Link to="/envios">Envíos</Link></li>

@@ -1,0 +1,110 @@
+/* Contenedor general */
+.about-container {
+  background-color: #0a0a0a; 
+  color: #e0e0e0;
+  min-height: 80vh;
+  padding-bottom: 60px;
+}
+
+/* Encabezado */
+.about-header {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #111111;
+  border-bottom: 1px solid #333;
+}
+
+.about-header h1 {
+  font-size: 3rem;
+  color: #ffffff;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px; 
+}
+
+.about-header p {
+  font-size: 1.2rem;
+  color: #aaaaaa;
+}
+
+/*Sección de Dos Columnas */
+.about-content {
+  display: flex;
+  flex-direction: row; /* colocar los elementos en fila (izquierda a derecha) */
+  align-items: center; /* Centrar verticalmente si uno es más alto que otro */
+  justify-content: space-between;
+  gap: 50px;
+  max-width: 1200px; 
+  margin: 60px auto; 
+  padding: 0 40px;
+}
+
+/*Imagen Izquierda*/
+.about-image-wrapper {
+  flex: 1; /* ocupa el 50% del espacio disponible */
+}
+
+.about-image {
+  width: 100%; 
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
+}
+
+/*Texto Derecha */
+.about-text-wrapper {
+  flex: 1; /* ocupa el otro 50% del espacio disponible */
+}
+
+.about-text-wrapper h2 {
+  font-size: 2.2rem;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.about-text-wrapper p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 15px;
+  color: #cccccc;
+}
+
+.about-text-wrapper h3 {
+  font-size: 1.5rem;
+  color: #ffffff;
+  margin-top: 30px;
+  margin-bottom: 15px;
+}
+
+/*lista de pilares */
+.about-pillars {
+  list-style-type: none; 
+  padding: 0;
+}
+
+.about-pillars li {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  margin-bottom: 10px;
+  color: #bbbbbb;
+  padding-left: 20px;
+  position: relative;
+}
+
+/* cuadradito naranja a la izquierda de cada pilar*/
+.about-pillars li::before {
+  content: "■";
+  color: #d4af37;
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 0.8rem;
+}
+
+/* RESPONSIVE  */
+@media (max-width: 768px) {
+  .about-content {
+    flex-direction: column; /* Si la pantalla es pequeña, apilamos la imagen arriba y el texto abajo */
+    gap: 30px;
+  }
+}
