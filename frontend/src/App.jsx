@@ -59,23 +59,23 @@ const mockArtworksByArtist = {
 
 return (
     <AuthProvider>
-    <Header />
-    <main className="main-content">
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<MainAuth />} />
-      <Route path='/auth/*' element={<MainAuth/>} />
-      <Route path='/artwork/*' element={<Artwork/>}/>
-      <Route path="/artworks/:id" element={<ArtworkDetail />} />
-      <Route 
-        path="/artists/:id" 
-        element={
-          <ArtistProfile 
-            mockArtists={[testArtwork.artist]} 
-            mockArtworks={mockArtworksByArtist}
+        <Header />
+        <main className="main-content">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          {/*<Route path="/" element={<ArtworkDetail artwork={testArtwork} />} />*/}
+          <Route path="/login" element={<MainAuth />} />
+          <Route path='/auth/*' element={<MainAuth/>} />
+          <Route path='/artwork/*' element={<Artwork/>}/>
+          <Route 
+            path="/artists/:id" 
+            element={
+              <ArtistProfile 
+                mockArtists={[testArtwork.artist]} 
+                mockArtworks={mockArtworksByArtist}
+              />
+            } 
           />
-        } 
-      />
           <Route element={<PrivateRoutes/>}>
             <Route path='/dashboard/*' element={<Dashboard/>}/>
             <Route path='/admin/*' element={<Admin/>}/>

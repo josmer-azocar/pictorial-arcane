@@ -1,41 +1,35 @@
-/* 1. LA CAJA PRINCIPAL (La foto de fondo) */
 .hero-section {
-  /* Le damos una altura grande. 80vh significa "el 80% de la altura de la pantalla" */
   height: 80vh; 
-  min-height: 500px; /* Para que no se encoja mucho en celulares */
-  background-size: cover;
-   background-image: linear-gradient(
+  min-height: 500px; 
+  
+  /*gradiente oscuro que empiece a la izquierda */
+  background-image: linear-gradient(
     to right, 
-    rgba(0, 0, 0, 0.8) 0%,   /* Negro al 80% de opacidad a la izquierda */
-    rgba(0, 0, 0, 0.5) 40%,  /* Negro al 50% de opacidad un poco más allá */
-    rgba(0, 0, 0, 0) 100%    /* Totalmente transparente a la derecha */
+    rgba(0, 0, 0, 0.8) 0%,   
+    rgba(0, 0, 0, 0.5) 40%,  
+    rgba(0, 0, 0, 0) 100%   
   );
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
-  align-items: center; /* Centra el contenido verticalmente */
+  align-items: center; 
   padding: 0 5%; 
 }
 
-/* 2. EL CONTENEDOR DEL TEXTO (Hacia la izquierda) */
 .hero-content {
-  /* Limitamos el ancho para que el texto no cruce toda la pantalla */
   max-width: 500px; 
-  
-  /* Flexbox en columna para apilar Título -> Subtítulo -> Botón */
   display: flex;
   flex-direction: column;
-  gap: 20px; /* Espacio exacto entre los textos y el botón */
+  gap: 20px; 
 }
 
-/* 3. TIPOGRAFÍA (Letras gigantes y en negrita) */
 .hero-content h1 {
   font-size: 4rem;
-  font-weight: 900;
-  color: #ffffff; 
+  font-weight: 900; 
+  color: #ffffff;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-  line-height: 1.1;
+  line-height: 1.1; 
   margin: 0;
   text-transform: uppercase;
 }
@@ -43,27 +37,24 @@
 .hero-content p {
   font-size: 1.5rem;
   font-weight: 600;
-   color: #eeeeee;
+  color: #eeeeee;
   margin: 0;
 }
 
-/* 4. EL BOTÓN (Estilo píldora amarilla) */
 .cta-button {
-  background-color: #ffcc00; /* El amarillo clásico de llamadas a la acción */
+  background-color: #ffcc00; 
   color: #000000;
   font-size: 1.1rem;
   font-weight: bold;
-  padding: 15px 35px; /* Relleno: 15px arriba/abajo, 35px lados */
-  border: none; /* Quitamos el borde feo por defecto */
-  border-radius: 30px; /* Bordes muy redondeados (estilo píldora) */
-  cursor: pointer; /* Que aparezca la manito al pasar el ratón */
-  width: fit-content; /* Que el botón mida solo lo que ocupa el texto */
-  
-  /* Animación suave para cuando pasemos el ratón */
+  padding: 15px 35px;
+  border: none; 
+  border-radius: 30px;
+  cursor: pointer;
+  width: fit-content;
   transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .cta-button:hover {
-  background-color: #e6b800; /* Un amarillo un poco más oscuro */
-  transform: scale(1.05); /* Que crezca un 5% al pasar el ratón */
+  background-color: #e6b800; 
+  transform: scale(1.05); 
 }
