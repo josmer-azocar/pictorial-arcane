@@ -1,28 +1,50 @@
 .hero-section {
+  position: relative;
   height: 80vh; 
-  min-height: 500px; 
-  
-  /*gradiente oscuro que empiece a la izquierda */
-  background-image: linear-gradient(
-    to right, 
-    rgba(0, 0, 0, 0.8) 0%,   
-    rgba(0, 0, 0, 0.5) 40%,  
-    rgba(0, 0, 0, 0) 100%   
-  );
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  min-height: 500px;
   display: flex;
   align-items: center; 
   padding: 0 5%; 
-  transition: background-image 1s ease-in-out;
+  overflow: hidden; 
+}
+
+.hero-bg-layer {
+  position: absolute; /* Las apilamos una encima de otra */
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0; /* Todas son transparentes por defecto y cambian suavemente */
+  transition: opacity 1s ease-in-out; 
+  z-index: 1; /* Nivel 1 (hasta el fondo) */
+}
+
+/*solo la imagen con la clase active sera visible */
+.hero-bg-layer.active {
+  opacity: 1;
+}
+
+/*capa encima de las fotos para oscurecerlas y hacer que el texto resalte */
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(to right, rgba(0,0,0,0.8)
+  0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0) 100%);
+  z-index: 2; /* capa de superposición */
 }
 
 .hero-content {
-  max-width: 500px; 
+  position: relative;
+  z-index: 3; /* capa de contenido */
+  max-width: 500px;
   display: flex;
   flex-direction: column;
-  gap: 20px; 
+  gap: 20px;
 }
 
 .hero-content h1 {
