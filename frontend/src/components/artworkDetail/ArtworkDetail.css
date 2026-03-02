@@ -1,6 +1,4 @@
-/* ============================================
-   VARIABLES ESENCIALES
-   ============================================ */
+/*  VARIABLES ESENCIALES*/
 :root {
   --bg-white: #ffffff;
   --text-dark: #0f1111;
@@ -12,9 +10,8 @@
   --shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* ============================================
-   RESET BÁSICO
-   ============================================ */
+/*RESET BÁSICO
+*/
 * {
   box-sizing: border-box;
   margin: 0;
@@ -27,9 +24,7 @@ body {
   color: var(--text-dark);
 }
 
-/* ============================================
-   LAYOUT PRINCIPAL - 2 COLUMNAS
-   ============================================ */
+/*LAYOUT PRINCIPAL - 2 COLUMNAS*/
 .artwork-detail-page {
   max-width: 1400px;
   margin: 0 auto;
@@ -43,9 +38,7 @@ body {
   align-items: start;
 }
 
-/* ============================================
-   COLUMNA IZQUIERDA - IMAGEN (50%)
-   ============================================ */
+/*  COLUMNA IZQUIERDA - IMAGEN (50%)*/
 .artwork-gallery {
   flex: 1;
   position: sticky;
@@ -86,9 +79,7 @@ body {
 .status-badge.reservada { background: var(--orange); }
 .status-badge.vendida { background: #cc0c39; }
 
-/* ============================================
-   COLUMNA DERECHA - INFO Y COMPRA (50%)
-   ============================================ */
+/*  COLUMNA DERECHA - INFO Y COMPRA (50%)*/
 .artwork-purchase-panel {
   flex: 1;
   background: #fefefe;
@@ -216,9 +207,8 @@ body {
   color: var(--text-gray);
 }
 
-/* ============================================
-   FICHA TÉCNICA - DEBAJO
-   ============================================ */
+/*
+   FICHA TÉCNICA - DEBAJO*/
 .detailed-info-grid {
   margin-top:0px;
   padding-top:0px;
@@ -280,9 +270,7 @@ body {
   color: var(--purple);
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
+/* RESPONSIVE */
 @media (max-width: 968px) {
   .product-layout {
     flex-direction: column;
@@ -292,4 +280,111 @@ body {
   .artwork-purchase-panel {
     position: static;
   }
+}
+/* ======================
+   MODAL GENERAL (compra y recuperación)
+   ====================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Título del modal */
+.modal-title {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+/* Texto explicativo pequeño */
+.modal-subtitle {
+  color: #565959;
+  font-size: 13px;
+  margin: 10px 0 20px;
+}
+
+/* Input del código */
+.modal-input {
+  width: 100%;
+  padding: 10px;
+  margin: 15px 0;
+  border: 1px solid #d5d9d9;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* Contenedor de botones principales */
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.modal-btn {
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-btn-cancel {
+  border: 1px solid #d5d9d9;
+  background: white;
+}
+
+.modal-btn-confirm {
+  background: #ff9900;
+  color: white;
+  border: none;
+}
+
+/* Enlace de "olvidé mi código" */
+.forgot-link-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.forgot-link {
+  background: none;
+  border: none;
+  color: #0066c0;
+  text-decoration: underline;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.forgot-link:hover {
+  color: #004080;
+}
+
+/* Mensaje de error/éxito en recuperación (opcional) */
+.recovery-message {
+  margin: 15px 0;
+  font-size: 14px;
+}
+
+.recovery-message.error {
+  color: #c62828;
+}
+
+.recovery-message.success {
+  color: #2e7d32;
 }

@@ -8,6 +8,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useParams } from 'react-router-dom';
 import { getArtworkById } from '../../services/fetchArtwork.js';
 
+import {
+  getAssignedSecurityQuestions,
+  recoverSecurityCodeWithAnswers,
+} from '../../services/authUser';
 
 const CertificateIcon = ({ size = 28 }) => (
   <svg 
@@ -87,6 +91,16 @@ const ArtworkDetail = ({ artwork: artworkProp }) => {
   const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
   const [showZoom, setShowZoom] = useState(false);
 
+
+   // Estados para recuperación de código de seguridad
+  const [showRecoveryModal, setShowRecoveryModal] = useState(false);
+  const [assignedQuestions, setAssignedQuestions] = useState([]);
+  const [answers, setAnswers] = useState({});
+  const [recoveryMessage, setRecoveryMessage] = useState("");
+  const [recoverySuccess, setRecoverySuccess] = useState(false);
+
+
+
   useEffect(() => {
     if (id) {
       getArtworkById(id).then(data => setArtwork(data));
@@ -97,7 +111,26 @@ const ArtworkDetail = ({ artwork: artworkProp }) => {
     return <div>Loading artwork details...</div>;
   }
 
+  useEffect(() => {
+  if (showRecoveryModal && token) {
+    const loadQuestions = async () => {
+      try {
+        const questions = await getAssignedSecurityQuestions(token);
+        setAssignedQuestions(questions);
+        const initialAnswers = {};
+        questions.forEach(q => initialAnswers[q.idQuestion] = "");
+        setAnswers(initialAnswers);
+      } catch (err) {
+        toast.error(err.message || "No se pudieron cargar las preguntas");
+        setShowRecoveryModal(false);
+      }
+    };
+    loadQuestions();
+  }
+}, [showRecoveryModal, token]);
   
+
+
   const {
     name,
     photo_url,
@@ -329,49 +362,51 @@ return (
 <ToastContainer />
 
 {showModal && (
-    <div style={{
-        position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-        background: 'rgba(0,0,0,0.5)', display: 'flex',
-        justifyContent: 'center', alignItems: 'center', zIndex: 1000
-    }}>
-        <div style={{
-            background: 'white', padding: '30px', borderRadius: '12px',
-            width: '400px', textAlign: 'center'
-        }}>
-            <h3>Ingresa tu Código de Seguridad</h3>
-            <p style={{color: '#565959', fontSize: '13px', margin: '10px 0'}}>
-                Este código fue enviado a tu correo al registrarte.
-            </p>
-            <input
-                type="text"
-                placeholder="Código de seguridad"
-                value={securityCode}
-                onChange={(e) => setSecurityCode(e.target.value)}
-                style={{
-                    width: '100%', padding: '10px', margin: '15px 0',
-                    border: '1px solid #d5d9d9', borderRadius: '6px', fontSize: '16px'
-                }}
-            />
-            <div style={{display: 'flex', gap: '10px', justifyContent: 'center'}}>
-                <button onClick={() => setShowModal(false)} style={{
-                    padding: '10px 20px', borderRadius: '20px',
-                    border: '1px solid #d5d9d9', cursor: 'pointer'
-                }}>
-                    Cancelar
-                </button>
-                <button onClick={handleReservar} style={{
-                    padding: '10px 20px', borderRadius: '20px',
-                    background: '#ff9900', color: 'white',
-                    border: 'none', cursor: 'pointer', fontWeight: '600'
-                }}>
-                    Confirmar Compra
-                </button>
-            </div>
-        </div>
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <h3 className="modal-title">Ingresa tu Código de Seguridad</h3>
+      <p className="modal-subtitle">
+        Este código fue enviado a tu correo al registrarte.
+      </p>
+
+      <input
+        type="text"
+        placeholder="Código de seguridad"
+        value={securityCode}
+        onChange={(e) => setSecurityCode(e.target.value)}
+        className="modal-input"
+      />
+
+      <div className="modal-buttons">
+        <button 
+          className="modal-btn modal-btn-cancel"
+          onClick={() => setShowModal(false)}
+        >
+          Cancelar
+        </button>
+        <button 
+          className="modal-btn modal-btn-confirm"
+          onClick={handleReservar}
+        >
+          Confirmar Compra
+        </button>
+      </div>
+
+      {/* Botón de recuperación */}
+      <div className="forgot-link-container">
+        <button
+          className="forgot-link"
+          onClick={() => { 
+            setShowModal(false); 
+            setShowRecoveryModal(true); 
+          }}
+        >
+          ¿Has olvidado tu código de seguridad?
+        </button>
+      </div>
     </div>
+  </div>
 )}
-
-
 
 
      

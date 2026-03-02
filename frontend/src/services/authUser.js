@@ -100,3 +100,39 @@ export async function fetchUserProfile(token) {
     };
 }*/
 
+// Obtener las preguntas de seguridad asignadas al usuario autenticado
+export const getAssignedSecurityQuestions = async (token) => {
+  try {
+    const response = await axios.get(`${baseUrl}/questions/getAssignedQuestions`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data; // devuelve array de idQuestion, wording 
+  } catch (error) {
+    console.error("Error al obtener preguntas de seguridad:", error);
+    throw error.response?.data?.message || "No se pudieron cargar las preguntas";
+  }
+};
+
+// Enviar las respuestas para intentar recuperar el código de seguridad
+export const recoverSecurityCodeWithAnswers = async (answersArray) => {
+  try {
+    const response = await axios.put(
+      `${baseUrl}/questions/RecoverClientCode`,
+      answersArray,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error al recuperar código con respuestas:", error);
+    throw (
+      error.response?.data?.message ||
+      "Las respuestas no son correctas o hubo un error en el servidor"
+    );
+  }
+};
