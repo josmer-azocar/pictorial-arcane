@@ -8,6 +8,7 @@ import ArtworkDetail from './components/artworkDetail/ArtworkDetail.jsx';
 import ArtistProfile from './pages/auth/ArtistProfile.jsx';
 import Home from './pages/home/Home.jsx';
 import About from './pages/about/about.jsx';
+import WhoWeAre from './pages/whoweare/WhoWeAre.jsx';
 import Footer from './components/Footer.jsx';
 
 
@@ -82,13 +83,11 @@ return (
           <Route element={<PrivateRoutes/>}>
             <Route path='/dashboard/*' element={<Dashboard/>}/>
             <Route path='/admin/*' element={<Admin/>}/>
+
+       
           </Route>
           {/*LAS RUTAS DEL FOOTER*/}
-      <Route path="/galeria" element={<div style={{ padding: '50px', color: 'white' }}><h1>Galería</h1><p>Esta es una página en blanco de prueba.</p></div>} />
-      <Route path="/artistas" element={<div style={{ padding: '50px', color: 'white' }}><h1>Artistas</h1><p>Esta es una página en blanco de prueba.</p></div>} />
-      <Route path="/envios" element={<div style={{ padding: '50px', color: 'white' }}><h1>Envíos</h1><p>Esta es una página en blanco de prueba.</p></div>} />
-      <Route path="/contacto" element={<div style={{ padding: '50px', color: 'white' }}><h1>Contacto</h1><p>Esta es una página en blanco de prueba.</p></div>} />
-      <Route path="/quienes-somos" element={<div style={{ padding: '50px', color: 'white' }}><h1>Quiénes somos</h1><p>Esta es una página en blanco de prueba.</p></div>} />
+          <Route path="/WhoWeAre" element={<WhoWeAre />} />
         </Routes>
         </main>
         <Footer />

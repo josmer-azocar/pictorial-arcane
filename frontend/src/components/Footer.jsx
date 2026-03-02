@@ -28,7 +28,7 @@ const Footer = () => {
         <li><Link to="/artwork">Galería</Link></li>
         <li><Link to="/artistas">Artistas</Link></li>
         <li><Link to="/envios">Envíos</Link></li>
-        <li><Link to="/quienes-somos">Quiénes somos</Link></li>
+        <li><Link to="/WhoWeAre">Quiénes somos</Link></li>
       </ul>
 
     </footer>
