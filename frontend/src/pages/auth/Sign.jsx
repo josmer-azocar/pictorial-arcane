@@ -36,7 +36,11 @@ function Sign() {
 //trae las preguntas del backend al llegar al paso 3
 useEffect(() => {
         if (step === 3) {
-            fetch('http://localhost:8080/questions/getAllQuestions')
+            fetch('http://localhost:8080/questions/getAllQuestions',{
+            headers: {
+                'Authorization': `Bearer ${authToken}`  
+            }
+        })
                 .then(res => res.json())
                 .then(data => setPreguntasBackend(data))
                 .catch(err => console.error("Error al obtener preguntas:", err));
