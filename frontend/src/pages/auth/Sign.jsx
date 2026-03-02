@@ -4,6 +4,13 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../services/authContext.jsx';
+import axios from 'axios';
+import {
+    registerUser,
+    updateSecurityAnswer,
+    updateClientInfo,
+    createSecurityCode
+} from '../../services/authUser.js';
 
 function Sign() {
     // Estado inicial de los datos
@@ -14,10 +21,7 @@ function Sign() {
         tarjeta_credito: "",
         codigo_postal: "",
         email: "",
-        password: "",
-        pregunta1: "",
-        pregunta2: "",
-        pregunta3: ""
+        password: ""
     });
 
     const [errMessage, setErrMessage] = useState("");
@@ -36,6 +40,7 @@ function Sign() {
 //trae las preguntas del backend al llegar al paso 3
 useEffect(() => {
         if (step === 3) {
+<<<<<<< Updated upstream
             fetch('http://localhost:8080/questions/getAllQuestions',{
             headers: {
                 'Authorization': `Bearer ${authToken}`  
@@ -43,6 +48,10 @@ useEffect(() => {
         })
                 .then(res => res.json())
                 .then(data => setPreguntasBackend(data))
+=======
+            axios.get('http://localhost:8080/questions/getAllQuestions')
+                .then(res => setPreguntasBackend(res.data))
+>>>>>>> Stashed changes
                 .catch(err => console.error("Error al obtener preguntas:", err));
         }
     }, [step]);
@@ -77,30 +86,24 @@ useEffect(() => {
         return;
     }
     
- setIsLoading(true);
+    setIsLoading(true);
     try {
-        const res = await fetch('http://localhost:8080/auth/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                dniUser: parseInt(registerData.dni),
-                email: registerData.email,
-                password: registerData.password,
-                firstName: registerData.nombre,
-                lastName: registerData.apellido,
-                role: 'CLIENT'
-            })
+        const data = await registerUser({
+            dniUser: parseInt(registerData.dni),
+            email: registerData.email,
+            password: registerData.password,
+            firstName: registerData.nombre,
+            lastName: registerData.apellido,
+            role: 'CLIENT'
         });
-        const data = await res.json();
         setAuthToken(data.token);
         setStep(3);
     } catch (err) {
-         console.error("Error al crear la cuenta:", err); 
+        console.error("Error al crear la cuenta:", err);
     } finally {
         setIsLoading(false);
     }
-
-    };
+};
 
   const handleNext3 = async () => {
     setErrMessage("");
@@ -114,15 +117,7 @@ useEffect(() => {
     setIsLoading(true);
     try {
         for (const r of respuestas) {
-            // Llamada 1: PUT /questions/updateQuestion?questionId=4  body: "Rocky"
-            await fetch(`http://localhost:8080/questions/updateQuestion?questionId=${r.idQuestion}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`
-                },
-                body: JSON.stringify(r.answer) // Solo envía la respuesta como string
-            });
+            await updateSecurityAnswer(r.idQuestion, r.answer, authToken);
         }
         setStep(4);
     } catch (err) {
@@ -158,25 +153,14 @@ useEffect(() => {
 
         try {
            //Envía tarjeta y código postal
-        await fetch('http://localhost:8080/client/update', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${authToken}`
-            },
-            body: JSON.stringify({
-                creditCardNumber: parseInt(registerData.tarjeta_credito),
-                postalCode: parseInt(registerData.codigo_postal)
-            })
-        });
+        await updateClientInfo(
+            parseInt(registerData.tarjeta_credito),
+            parseInt(registerData.codigo_postal),
+            authToken
+        );
 
         // Genera el código de seguridad y lo envía al correo
-        await fetch('http://localhost:8080/client/createSecurityCode', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${authToken}`
-            }
-        });
+        await createSecurityCode(authToken);
 
         toast.success(`¡Registro exitoso! Revisa tu correo: ${registerData.email}`, {
             position: "top-center",

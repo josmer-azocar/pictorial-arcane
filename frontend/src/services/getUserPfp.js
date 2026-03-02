@@ -5,11 +5,10 @@ const getProfile = async (token) => {
     try {
         const pfp = await axios.get(`${url}/dashboard`, {
             headers: {
-                'Authorization': `Bearer ${token}` //deja de ser un request anónimo lo que no se puede dar con dashboard estando protegida
+                'Authorization': `Bearer ${token}`
             }});
         console.log(pfp);
         return pfp.data;
-        
     } catch (error) {
         console.log(error);
         throw error;

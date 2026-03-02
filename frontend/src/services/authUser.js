@@ -1,22 +1,80 @@
 import axios from 'axios';
-const url = "http://localhost:8080/auth";
 
+// we keep two base URLs: one for auth endpoints and one general server url
+const authUrl = "http://localhost:8080/auth";
+const baseUrl = "http://localhost:8080";
 
-/*export async function logUser(credentials){
-
-    const response = await axios.post(`${url}/login`, credentials);
-    return response.data;
-}*/
-
-export async function registerUser(credentials) {
-    const response = await axios.post(`${url}/signUp`, credentials);
+export async function logUser(credentials) {
+    const response = await axios.post(`${authUrl}/login`, credentials);
     return response.data;
 }
 
-export async function logUser(credentials) {
+// register a new user - used during handleNext2 in Sign.jsx
+export async function registerUser(registerData) {
+    // registerData should match the DTO expected by the backend
+    const response = await axios.post(`${authUrl}/register`, registerData);
+    return response.data; // caller will handle token, etc.
+}
+
+// update a single security question answer for the authenticated client
+export async function updateSecurityAnswer(questionId, answer, token) {
+    const response = await axios.put(
+        `${baseUrl}/questions/updateQuestion?questionId=${questionId}`,
+        answer,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+    return response.data;
+}
+
+// update client payment/membership information
+export async function updateClientInfo(creditCardNumber, postalCode, token) {
+    const response = await axios.put(
+        `${baseUrl}/client/update`,
+        { creditCardNumber, postalCode },
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+    return response.data;
+}
+
+// create a security code for the client after registration
+export async function createSecurityCode(token) {
+    const response = await axios.post(
+        `${baseUrl}/client/createSecurityCode`,
+        null,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+    return response.data;
+}
+
+// fetch authenticated user's profile (existing getUserPfp uses /dashboard but we keep same)
+export async function fetchUserProfile(token) {
+    const response = await axios.get(`${baseUrl}/dashboard`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+    return response.data;
+}
+
+
+/*export async function logUser(credentials) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (credentials.email === "test@test.com" && credentials.password === "12345678") {
+      if (credentials.email === "test@test.com" && credentials.password === "1234") {
         resolve({
           status: "success",
           user: { name: "Tester", email: "test@test.com" },
@@ -28,7 +86,7 @@ export async function logUser(credentials) {
       }
     }, 1500);
   });
-}
+}*/
 
 //funcion para hacer pruebas
 
@@ -41,61 +99,4 @@ export async function logUser(credentials) {
         user: credentials.nombre
     };
 }*/
-
-// *Artistas
-// Trae un artista por su id - GET /artists/{id}
-export async function getArtistById(id) {
-  const url = `http://localhost:8080/artists/${id}`;
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(response.status);
-    return await response.json();
-  } catch (error) {
-    console.error("Error al obtener artista:", error);
-    throw error;
-  }
-}
-
-// *Obras 
-// Trae todas las obras de un artista - GET /artworks?artistId={id}
-export async function getArtworksByArtist(artistId) {
-  const url = `http://localhost:8080/artworks?artistId=${artistId}`;
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(response.status);
-    return await response.json();
-  } catch (error) {
-    console.error("Error al obtener obras:", error);
-    throw error;
-  }
-}
-// Trae una obra por su id - GET /artworks/{id}
-export async function getArtworkById(id) {
-  const url = `http://localhost:8080/artworks/${id}`;
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(response.status);
-    return await response.json();
-  } catch (error) {
-    console.error("Error al obtener obra:", error);
-    throw error;
-  }
-}
-// Reserva una obra - POST /artworks/{id}/reserve
-export async function reserveArtwork(artworkId, securityCode) {
-  const url = `http://localhost:8080/artworks/${artworkId}/reserve`;
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ security_code: securityCode })
-    });
-    if (!response.ok) throw new Error(response.status);
-    return await response.json();
-  } catch (error) {
-    console.error("Error al reservar obra:", error);
-    throw error;
-  }
-}
-/*hola*/
 
