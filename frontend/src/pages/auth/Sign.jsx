@@ -21,7 +21,12 @@ function Sign() {
         tarjeta_credito: "",
         codigo_postal: "",
         email: "",
-        password: ""
+        password: "",
+        securityAnswers: [          
+        { idQuestion: "", answer: "" },
+        { idQuestion: "", answer: "" },
+        { idQuestion: "", answer: "" }
+    ]
     });
 
     const [errMessage, setErrMessage] = useState("");
@@ -32,24 +37,34 @@ function Sign() {
     const [authToken, setAuthToken] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [preguntasBackend, setPreguntasBackend] = useState([]);
-    const [respuestas, setRespuestas] = useState([
-    { idQuestion: "", answer: "" },
-    { idQuestion: "", answer: "" },
-    { idQuestion: "", answer: "" },
-]);
-//trae las preguntas del backend al llegar al paso 3
+  
+const [isLoadingPreguntas, setIsLoadingPreguntas] = useState(false);
+const [errorPreguntas, setErrorPreguntas] = useState(null);
+
 useEffect(() => {
-    if (step === 3) {
-        console.log("Token en paso 3:", authToken);
-        axios.get('http://localhost:8080/questions/getAllQuestions', {
+    if (step === 3 && authToken) {
+        setIsLoadingPreguntas(true);
+        setErrorPreguntas(null);
+
+        axios.get('/api/questions/getAllQuestions', {  // ← confirma puerto
             headers: {
-                Authorization: 'Bearer ${authToken}'
+                Authorization: `Bearer ${authToken}`
             }
         })
-        .then(res => setPreguntasBackend(res.data))
-        .catch(err => console.error("Error al obtener preguntas:", err));
+        .then(res => {
+            console.log("Preguntas OK:", res.data);
+            setPreguntasBackend(res.data || []);  // fuerza array
+        })
+        .catch(err => {
+            console.error("Error preguntas:", err);
+            setErrorPreguntas("No se pudieron cargar las preguntas");
+            setPreguntasBackend([]); // evita undefined
+        })
+        .finally(() => {
+            setIsLoadingPreguntas(false);
+        });
     }
-}, [step]);
+}, [step, authToken]);
 
     // --- FUNCIONES DE NAVEGACIÓN Y VALIDACIÓN ---
 
@@ -100,10 +115,10 @@ useEffect(() => {
     }
 };
 
-  const handleNext3 = async () => {
+ const handleNext3 = async () => {
     setErrMessage("");
 
-    const incompletas = respuestas.some(r => !r.idQuestion || !r.answer.trim());
+    const incompletas = registerData.securityAnswers.some(r => !r.idQuestion || !r.answer.trim());
     if (incompletas) {
         setErrMessage("Selecciona una pregunta y escribe tu respuesta en cada campo.");
         return;
@@ -111,7 +126,7 @@ useEffect(() => {
 
     setIsLoading(true);
     try {
-        for (const r of respuestas) {
+        for (const r of registerData.securityAnswers) {
             await updateSecurityAnswer(r.idQuestion, r.answer, authToken);
         }
         setStep(4);
@@ -223,44 +238,46 @@ useEffect(() => {
         <p style={{ fontSize: '17px' }}> Elige 3 preguntas de seguridad y escribe tu respuesta. 
     Las necesitarás si algún día olvidas tu <b>código de seguridad</b></p>
 
-        {respuestas.map((r, i) => (
-            <div key={i} className="question-card">
-                <span className="question-label">Pregunta {i + 1}</span>
-                <select
-                    value={r.idQuestion}
-                    onChange={(e) => {
-                        const nuevas = [...respuestas];
-                        nuevas[i].idQuestion = e.target.value;
-                        setRespuestas(nuevas);
-                    }}
-                >
-                    <option value="">-- Pregunta {i + 1} --</option>
-                    {preguntasBackend.map(p => (
-                        <option key={p.idQuestion} value={p.idQuestion}>
-                            {p.wording}
-                        </option>
-                    ))}
-                </select>
-                <input
-                    type="text"
-                    placeholder="Tu respuesta"
-                    value={r.answer}
-                    onChange={(e) => {
-                        const nuevas = [...respuestas];
-                        nuevas[i].answer = e.target.value;
-                        setRespuestas(nuevas);
-                    }}
-                />
-            </div>
-        ))}
-
-        <div style={{ display: "flex", gap: "10px" }}>
-            <button type="button" onClick={() => setStep(2)}>Atrás</button>
-            <button type="button" onClick={handleNext3} disabled={isLoading}>
-                {isLoading ? 'Guardando...' : 'Siguiente'}
-            </button>
-        </div>
+       {registerData.securityAnswers.map((r, i) => (
+    <div key={i} className="question-card">
+        <span className="question-label">Pregunta {i + 1}</span>
+        <select
+            value={r.idQuestion}
+            onChange={(e) => {
+                const nuevas = [...registerData.securityAnswers];
+                nuevas[i].idQuestion = e.target.value;
+                setRegister({ ...registerData, securityAnswers: nuevas });
+            }}
+        >
+            <option value="">-- Pregunta {i + 1} --</option>
+            {preguntasBackend?.length > 0 ? (
+                preguntasBackend.map(p => (
+                    <option key={p.idQuestion} value={p.idQuestion}>
+                        {p.wording}
+                    </option>
+                ))
+            ) : (
+                <option disabled>No hay preguntas disponibles</option>
+            )}
+        </select>
+        <input
+            type="text"
+            placeholder="Tu respuesta"
+            value={r.answer}
+            onChange={(e) => {
+                const nuevas = [...registerData.securityAnswers];
+                nuevas[i].answer = e.target.value;
+                setRegister({ ...registerData, securityAnswers: nuevas });
+            }}
+        />
     </div>
+))}
+          <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+         <button type="button" onClick={handleNext3} disabled={isLoading}>
+           {isLoading ? 'Guardando...' : 'Siguiente'}
+           </button>
+            </div>
+            </div>
 )}
 
                 {/* PASO 4: Pago de Membresía ($10) */}
@@ -270,10 +287,9 @@ useEffect(() => {
                         <p style={{ fontSize: '14px' }}>Membresía de activación: <b>$10</b></p>
                         <input type="text" placeholder='Tarjeta de Crédito (16 dígitos)' value={registerData.tarjeta_credito} onChange={(e) => setRegister({ ...registerData, tarjeta_credito: e.target.value })} />
                         <input type="text" placeholder='Código Postal' value={registerData.codigo_postal} onChange={(e) => setRegister({ ...registerData, codigo_postal: e.target.value })} />
-                        <div style={{ display: "flex", gap: "10px" }}>
-                            <button type="button" onClick={() => setStep(3)}>Atrás</button>
-                            <input type="submit" value="Pagar $10 y Registrar" />
-                        </div>
+                        <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+                          <input type="submit" value="Registrar" />
+                           </div>
                     </div>
                 )}
 
