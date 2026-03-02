@@ -39,22 +39,17 @@ function Sign() {
 ]);
 //trae las preguntas del backend al llegar al paso 3
 useEffect(() => {
-        if (step === 3) {
-<<<<<<< Updated upstream
-            fetch('http://localhost:8080/questions/getAllQuestions',{
+    if (step === 3) {
+        console.log("Token en paso 3:", authToken);
+        axios.get('http://localhost:8080/questions/getAllQuestions', {
             headers: {
-                'Authorization': `Bearer ${authToken}`  
+                Authorization: 'Bearer ${authToken}'
             }
         })
-                .then(res => res.json())
-                .then(data => setPreguntasBackend(data))
-=======
-            axios.get('http://localhost:8080/questions/getAllQuestions')
-                .then(res => setPreguntasBackend(res.data))
->>>>>>> Stashed changes
-                .catch(err => console.error("Error al obtener preguntas:", err));
-        }
-    }, [step]);
+        .then(res => setPreguntasBackend(res.data))
+        .catch(err => console.error("Error al obtener preguntas:", err));
+    }
+}, [step]);
 
     // --- FUNCIONES DE NAVEGACIÓN Y VALIDACIÓN ---
 
