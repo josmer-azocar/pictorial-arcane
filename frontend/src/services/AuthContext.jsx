@@ -17,13 +17,14 @@ export const AuthProvider = ({children}) => {
             if (savedToken) {
 
                 try {
-                    const tokenToDecode = savedToken.startsWith("Bearer ") 
+                    /*const tokenToDecode = savedToken.startsWith("Bearer ") 
                     ? savedToken.split(" ")[1] 
                     : savedToken;
                     console.log("Attempting to decode:", tokenToDecode);
-                    const decoded = jwtDecode(tokenToDecode);
+                    const decoded = jwtDecode(tokenToDecode);*/
                     setIsLoggedIn(true);
-                    setUser({ name: decoded.userName || "Usuario", pfp: "https://fastly.picsum.photos/id/55/4608/3072.jpg?hmac=ahGhylwdN52ULB37deeMZX6T_G7NiERtoPhwydMvUKQ" });
+                    setUser({ name: savedToken.userName || "Usuario", pfp: "https://fastly.picsum.photos/id/55/4608/3072.jpg?hmac=ahGhylwdN52ULB37deeMZX6T_G7NiERtoPhwydMvUKQ" });
+                    //CAMBIAR A decoded.userName
 
                     const data = await getProfile(savedToken);
                     setUser( 
@@ -48,6 +49,7 @@ export const AuthProvider = ({children}) => {
     const login = (userName, token) => {
         setIsLoggedIn(true);
         localStorage.setItem("token", token);
+        console.log(userName);
         setUser({name: userName, pfp: "https://picsum.photos/200"});
     }
 
