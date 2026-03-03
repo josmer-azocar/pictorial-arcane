@@ -157,4 +157,3 @@ export async function reserveArtwork(artworkId, securityCode) {
   }
 }
 /*hola*/
-

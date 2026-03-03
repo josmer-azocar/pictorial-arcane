@@ -1,4 +1,4 @@
-/*  VARIABLES ESENCIALES*/
+/* VARIABLES ESENCIALES*/
 :root {
   --bg-white: #ffffff;
   --text-dark: #0f1111;
@@ -10,8 +10,7 @@
   --shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/*RESET BÁSICO
-*/
+/*RESET BÁSICO*/
 * {
   box-sizing: border-box;
   margin: 0;
@@ -36,23 +35,24 @@ body {
   grid-template-columns: 500px 1fr 1fr; /* 3 columnas */
   gap: 30px;
   align-items: start;
+  height: 100%;
+  align-items: flex-start;
 }
 
-/*  COLUMNA IZQUIERDA - IMAGEN (50%)*/
+/* COLUMNA IZQUIERDA - IMAGEN (50%)*/
 .artwork-gallery {
-  flex: 1;
-  position: sticky;
-  top: 20px;
-
-  overflow: visible; 
+  flex: 0 0 500px;           /* fija ancho imagen */
+  position: static;          /* CORREGIDO: cambiado de sticky a static */
+  align-self: flex-start;
+  min-width: 0;
 }
 
 .image-frame {
-  position: relative;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-   overflow: visible;
-  background: var(--bg-white);
+  border: 12px solid #e8e3d9;
+  border-image: linear-gradient(to bottom right, #e8e3d9, #d9c9a8) 1;
+  border-radius: 6px;
+  box-shadow: inset 0 4px 12px rgba(0,0,0,0.08);
+  background: white;
 }
 
 .main-artwork-img {
@@ -79,15 +79,14 @@ body {
 .status-badge.reservada { background: var(--orange); }
 .status-badge.vendida { background: #cc0c39; }
 
-/*  COLUMNA DERECHA - INFO Y COMPRA (50%)*/
+/* COLUMNA DERECHA - INFO Y COMPRA (50%)*/
 .artwork-purchase-panel {
   flex: 1;
   background: #fefefe;
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 24px;
-  position: sticky;
-  top: 20px;
+  position:static;
 }
 
 /* Título */
@@ -210,16 +209,12 @@ body {
 /*
    FICHA TÉCNICA - DEBAJO*/
 .detailed-info-grid {
-  margin-top:0px;
-  padding-top:0px;
-  
-
-   display: flex;
+  flex: 1;
+  min-width: 300px;
+  display: flex;
   gap: 20px;
-
-    border: none; 
+  border: none; 
   box-shadow: none; 
-
 }
 
 .info-card {
@@ -236,7 +231,6 @@ body {
   font-weight: 600;
   margin-bottom: 12px;
 }
-
 
 .info-card h2 {
   font-size: 20px;
@@ -278,9 +272,11 @@ body {
   
   .artwork-gallery,
   .artwork-purchase-panel {
-    position: static;
+   flex: 0 0 380px;           /* o el ancho que tenga ahora */
+  align-self: flex-start;
   }
 }
+
 /* ======================
    MODAL GENERAL (compra y recuperación)
    ====================== */
