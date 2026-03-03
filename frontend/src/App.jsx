@@ -8,6 +8,7 @@ import ArtworkDetail from './components/artworkDetail/ArtworkDetail.jsx';
 import ArtistProfile from './pages/auth/ArtistProfile.jsx';
 import Home from './pages/home/Home.jsx';
 import About from './pages/about/about.jsx';
+import Shipment from './pages/shipment/shipment.jsx';
 import WhoWeAre from './pages/whoweare/WhoWeAre.jsx';
 import Footer from './components/Footer.jsx';
 
@@ -16,6 +17,7 @@ import AuthProvider from './services/authContext.jsx';
 import Dashboard from './pages/dashboard/Dashboard.jsx';
 import PrivateRoutes from './services/PrivateRoutes.jsx'
 import Admin from './pages/admin/Admin.jsx';
+
 
 function App() {
 
@@ -67,6 +69,7 @@ return (
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
+          <Route path="/shipment" element={<Shipment />} />
           {/*<Route path="/" element={<ArtworkDetail artwork={testArtwork} />} />*/}
           <Route path="/login" element={<MainAuth />} />
           <Route path='/auth/*' element={<MainAuth/>} />
