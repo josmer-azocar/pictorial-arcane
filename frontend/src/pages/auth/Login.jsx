@@ -29,8 +29,9 @@ function Login() {
         try {
             await new Promise(resolve => setTimeout(resolve, 1000));
             const data = await logUser({email, password});
-
-            login(data.userName || "Usuario", data.token);
+            console.log(data.user?.name);
+            console.log(data.token);
+            login(data.user?.name || "Usuario", data.token);
             console.log('Fetch Exitoso ', data);
             navigate("/dashboard");
         } catch (err) {

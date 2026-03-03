@@ -4,10 +4,10 @@ import axios from 'axios';
 const authUrl = "http://localhost:8080/auth";
 const baseUrl = "http://localhost:8080";
 
-export async function logUser(credentials) {
+/*export async function logUser(credentials) {
     const response = await axios.post(`${authUrl}/login`, credentials);
     return response.data;
-}
+}*/
 
 // register a new user - used during handleNext2 in Sign.jsx
 export async function registerUser(registerData) {
@@ -71,7 +71,7 @@ export async function fetchUserProfile(token) {
 }
 
 
-/*export async function logUser(credentials) {
+export async function logUser(credentials) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (credentials.email === "test@test.com" && credentials.password === "1234") {
@@ -86,7 +86,7 @@ export async function fetchUserProfile(token) {
       }
     }, 1500);
   });
-}*/
+}
 
 //funcion para hacer pruebas
 
