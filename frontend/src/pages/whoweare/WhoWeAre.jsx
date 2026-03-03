@@ -1,14 +1,14 @@
 import React from 'react';
 import './WhoWeAre.css';
-import Lismarxs from '../../assets/lismarsx.jpg';
-import Ines from '../../assets/ines.jpg';
-import Licett from '../../assets/licett.jpg';
+import Lismarx from '../../assets/lismarx.jpeg';
+import Ines from '../../assets/ines.jpeg';
+import Licett from '../../assets/licett.jpeg';
 import Josmer from '../../assets/josmer.jpg';
 import Josue from '../../assets/josue.jpg';
 
 const WhoWeAre = () => {
   const frontendMembers = [
-    { name: 'Lismarxs Gamboa', role: 'Frontend Developer', image: Lismarxs },
+    { name: 'Lismarx Gamboa', role: 'Frontend Developer', image: Lismarx },
     { name: 'Ines Salazar', role: 'Frontend Developer', image: Ines },
     { name: 'Licett Avendaño', role: 'Frontend Developer', image: Licett }
   ];
