@@ -7,11 +7,15 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { useParams } from 'react-router-dom';
 import { getArtworkById } from '../../services/fetchArtwork.js';
-
+import axios from 'axios';
 import {
-  getAssignedSecurityQuestions,
-  recoverSecurityCodeWithAnswers,
+  getAssignedSecurityQuestions
 } from '../../services/authUser';
+import { useAuth } from '../../services/authContext.jsx';
+
+
+// ICONOS SVG (decorativos, no modificar)
+
 
 const CertificateIcon = ({ size = 28 }) => (
   <svg 
@@ -83,35 +87,44 @@ const GlobalShippingIcon = ({ size = 28 }) => (
   </svg>
 );
 
+// COMPONENTE PRINCIPAL
 const ArtworkDetail = ({ artwork: artworkProp }) => {
+
+  // --- URL params ---
   const { id } = useParams();
+
+  // --- Auth ---
+  const { token } = useAuth();
+
+  // --- Estados generales ---
   const [artwork, setArtwork] = useState(artworkProp || null);
-  const [showModal, setShowModal] = useState(false);
-  const [securityCode, setSecurityCode] = useState("");
   const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
   const [showZoom, setShowZoom] = useState(false);
 
+  // --- Estados modal de compra ---
+  const [showModal, setShowModal] = useState(false);
+  const [securityCode, setSecurityCode] = useState("");
 
-   // Estados para recuperación de código de seguridad
+  // --- Estados modal de recuperación de código ---
   const [showRecoveryModal, setShowRecoveryModal] = useState(false);
   const [assignedQuestions, setAssignedQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
-  const [recoveryMessage, setRecoveryMessage] = useState("");
-  const [recoverySuccess, setRecoverySuccess] = useState(false);
 
+  
+ 
 
+// EFFECT: Cargar obra de arte desde el backend por ID
 
   useEffect(() => {
     if (id) {
       getArtworkById(id).then(data => setArtwork(data));
     }
   }, [id]);
+  
+// EFFECT: Cargar preguntas de seguridad cuando se abre el modal
+  // Endpoint: GET /questions/getAssignedQuestions (requiere token)
 
-  if (!artwork) {
-    return <div>Loading artwork details...</div>;
-  }
-
-  useEffect(() => {
+useEffect(() => {
   if (showRecoveryModal && token) {
     const loadQuestions = async () => {
       try {
@@ -128,8 +141,48 @@ const ArtworkDetail = ({ artwork: artworkProp }) => {
     loadQuestions();
   }
 }, [showRecoveryModal, token]);
+
+  // --- Loading mientras carga la obra ---
+  if (!artwork) {
+    return <div>Loading artwork details...</div>;
+  }
+
   
 
+
+
+
+
+/*useEffect(() => {
+  if (showRecoveryModal /* && token *//*) {  // comenta la condición de token por ahora
+  /*  const loadQuestions = async () => {
+      // Simulamos 1.5 segundos de espera (como si fuera una llamada real)
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // Datos falsos que devuelve el backend (estructura real según tu API)
+      const fakeQuestions = [
+        { idQuestion: 1, wording: "¿Cuál es el nombre de tu primera mascota?" },
+        { idQuestion: 2, wording: "¿En qué ciudad naciste?" },
+        { idQuestion: 3, wording: "¿Cuál era el nombre de tu escuela primaria?" },
+      ];
+
+      setAssignedQuestions(fakeQuestions);
+
+      const initialAnswers = {};
+      fakeQuestions.forEach(q => initialAnswers[q.idQuestion] = "");
+      setAnswers(initialAnswers);
+
+      // toast.info("Preguntas cargadas (modo prueba)"); // opcional
+    };
+
+    loadQuestions().catch(err => {
+      console.error(err);
+      toast.error("Error simulado en carga de preguntas");
+    });
+  }
+}, [showRecoveryModal /* , token ]);*/ 
+  
+// --- Desestructurar datos de la obra ---
 
   const {
     name,
@@ -141,26 +194,30 @@ const ArtworkDetail = ({ artwork: artworkProp }) => {
     genre,
   } = artwork;
 
-  const handleReservar = async () => {
-    try {
-        // Aquí va el endpoint 
-        const response = await fetch(`/api/reservar/${artwork.id}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ security_code: securityCode })
-        });
-
-        if (response.ok) {
-            toast.success("¡Obra reservada exitosamente!");
-            setShowModal(false);
-        } else {
-            toast.error("Código de seguridad incorrecto.");
-        }
-    } catch (err) {
-        toast.error("Error al procesar la reserva.");
-    }
+   // HANDLER: Reservar obra
+  // Endpoint: POST /sale/reserve (requiere token)
+  // Params: id_obra, security_code
+  
+const handleReservar = async () => {
+  try {
+    await axios.post(
+      "http://localhost:8080/sale/reserve",
+      null,
+      {
+        params: {
+          id_obra: artwork.idArtWork,
+          security_code: securityCode
+        },
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+    toast.success("¡Obra reservada exitosamente!");
+    setShowModal(false);
+  } catch (err) {
+    toast.error("Código de seguridad incorrecto.");
+  }
 }
-  // Renderizado condicional de detalles específicos según el género
+  // RENDER: Detalles específicos según el género de la obra
 
   const renderSpecificDetails = () => {
     switch (genre) {
@@ -236,10 +293,7 @@ const ArtworkDetail = ({ artwork: artworkProp }) => {
     }
 
 
-
-
-
-
+     // ============================================================
   };
 return (
   <div className="artwork-detail-page">
@@ -261,7 +315,7 @@ return (
   <img src={photo_url} alt={name} className="main-artwork-img" />
   <div className={`status-badge ${status.toLowerCase()}`}>{status}</div>
 
-  {/* Caja de zoom */}
+    {/* Lupa de zoom al hacer hover */}
   {showZoom && (
     <div style={{
       position: 'absolute', top: 0, right: '-310px',
@@ -292,6 +346,7 @@ return (
                   })
                 : 'No especificada'}
             
+             {/* Link al perfil del artista */}
              <div className="artist-attribution">
           Artista: 
           <Link 
@@ -309,16 +364,16 @@ return (
           <span className="verified-check">✓</span>
         </div>
           
+             {/* Detalles específicos según género */}
             {renderSpecificDetails()}
           </div>
         </div>
       </section>
+
+
+
       {/* COLUMNA 3: INFO Y COMPRA */}
       <section className="artwork-purchase-panel">
-        
-        
-       
-
         <div className="price-container">
           <span className="currency">$</span>
           <span className="amount">{price?.toLocaleString()}</span>
@@ -340,6 +395,7 @@ return (
           )}
         </div>
 
+      {/* Sellos de confianza */}
        <div className="trust-signals">
        <div className="signal">
         <SecureIcon size={28} />
@@ -359,8 +415,8 @@ return (
       </section>
 
 
-<ToastContainer />
 
+ {/* MODAL: INGRESAR CÓDIGO DE SEGURIDAD PARA COMPRAR */}
 {showModal && (
   <div className="modal-overlay">
     <div className="modal-content">
@@ -384,6 +440,7 @@ return (
         >
           Cancelar
         </button>
+          {/* Llama a POST /sale/reserve */}
         <button 
           className="modal-btn modal-btn-confirm"
           onClick={handleReservar}
@@ -408,9 +465,83 @@ return (
   </div>
 )}
 
+ {/* MODAL: RECUPERAR CÓDIGO DE SEGURIDAD */}
+{showRecoveryModal && (
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <h3 className="modal-title">Recuperar Código de Seguridad</h3>
+      <p className="modal-subtitle">Responde tus preguntas de seguridad</p>
 
+
+  {/* Muestra "Cargando..." o las preguntas cuando llegan del backend */}
+      {assignedQuestions.length === 0 ? (
+        <p style={{ textAlign: 'center', color: '#888' }}>Cargando preguntas...</p>
+      ) : (
+        assignedQuestions.map((q) => (
+          <div key={q.idQuestion} style={{ marginBottom: '16px' }}>
+            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
+              {q.wording}
+            </label>
+            <input
+              type="text"
+              placeholder="Tu respuesta"
+              value={answers[q.idQuestion] || ""}
+              onChange={(e) =>
+                setAnswers(prev => ({ ...prev, [q.idQuestion]: e.target.value }))
+              }
+              className="modal-input"
+            />
+          </div>
+        ))
+      )}
+
+      
+      <div className="modal-buttons">
+        <button
+          className="modal-btn modal-btn-cancel"
+          onClick={() => {
+            setShowRecoveryModal(false);
+            
+            setAssignedQuestions([]);
+          }}
+        >
+          Cancelar
+        </button>
+           {/* Llama a PUT /questions/RecoverClientCode  */}
+       <button
+  className="modal-btn modal-btn-confirm"
+  onClick={async () => {
+    try {
+      const answersArray = assignedQuestions.map(q => ({
+        idQuestion: q.idQuestion,
+        Answer: answers[q.idQuestion] || ""
+      }));
+
+      await axios.put(
+        "http://localhost:8080/questions/RecoverClientCode",
+        answersArray, {
+          headers: { Authorization: `Bearer ${token}` }  // ← tocken 
+        }
+      );
+
+      toast.success("✓ Código enviado a tu correo registrado.");
+      setShowRecoveryModal(false);
+      setAssignedQuestions([]);
+
+    } catch (err) {
+      toast.error("Respuestas incorrectas. Inténtalo de nuevo.");
+    }
+  }}
+>
+  Recuperar Código
+</button>
+        
+      </div>
+    </div>
+  </div>
+)}
      
-
+<ToastContainer />
     </main>
   </div>
 );
