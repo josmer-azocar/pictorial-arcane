@@ -116,7 +116,7 @@ export const getAssignedSecurityQuestions = async (token) => {
 };
 
 // Enviar las respuestas para intentar recuperar el código de seguridad
-export const recoverSecurityCodeWithAnswers = async (answersArray) => {
+export const recoverSecurityCode = async (answersArray) => {
   try {
     const response = await axios.put(
       `${baseUrl}/questions/RecoverClientCode`,

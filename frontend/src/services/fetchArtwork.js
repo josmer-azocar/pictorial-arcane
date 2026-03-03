@@ -2,9 +2,15 @@ import axios from "axios";
 const url = "http://localhost:8080";
 
 
-/*export async function showArtwork(page = 0){
+/*export async function showArtwork(page = 0, sortBy = '', direction = 'asc', art_genre = ''){
     try {
-        const fetchedArtwork = await axios.get(`${url}/artwork/all?page=${page}`, {timeout: 0});
+        const fetchedArtwork = await axios.get(`${url}/artwork/all?page=${page}`, {
+            params: {
+                page: page,
+                sort: sortBy,
+                dir: direction,
+                genre: art_genre
+            });
         console.log(fetchedArtwork);
         return fetchedArtwork.data;
         
@@ -28,30 +34,52 @@ export async function showArtist() {
 }*/
 
 
-export async function showArtwork(page = 0) {
+export async function showArtwork(page = 0, sortBy = '', direction = 'asc', genre = '') {
     return new Promise((resolve) => {
         setTimeout(() => {
-            const page0 = [
-                { id: 1, name: "Noche Estrellada", image: "https://picsum.photos/id/10/400/500", id_artist: 101, description: "Un cielo vibrante", precio: 100.00 },
-                { id: 2, name: "La Persistence de la Memoria", image: "https://picsum.photos/id/20/400/500", id_artist: 102, description: "Relojes derretidos", precio: 100.00 },
-                { id: 3, name: "El Grito", image: "https://picsum.photos/id/30/400/500", id_artist: 103, description: "Expresión pura", precio: 150.00 },
-                { id: 4, name: "Guernica", image: "https://picsum.photos/id/40/400/500", id_artist: 102, description: "Guerra y paz", precio: 120.00 }
+
+          let allArtworks = [
+                { id: 1, name: "Noche Estrellada", image: "https://picsum.photos/id/10/400/500", id_artist: 101, genre: "Impresionismo", precio: 100.00 },
+                { id: 2, name: "La Persistencia de la Memoria", image: "https://picsum.photos/id/20/400/500", id_artist: 102, genre: "Surrealismo", precio: 110.00 },
+                { id: 3, name: "El Grito", image: "https://picsum.photos/id/30/400/500", id_artist: 103, genre: "Expresionismo", precio: 150.00 },
+                { id: 4, name: "Guernica", image: "https://picsum.photos/id/40/400/500", id_artist: 102, genre: "Cubismo", precio: 120.00 },
+                { id: 5, name: "La Joven de la Perla", image: "https://picsum.photos/id/50/400/500", id_artist: 104, genre: "Barroco", precio: 190.00 },
+                { id: 6, name: "El Nacimiento de Venus", image: "https://picsum.photos/id/60/400/500", id_artist: 105, genre: "Renacimiento", precio: 125.00 },
+                { id: 7, name: "Las Meninas", image: "https://picsum.photos/id/70/400/500", id_artist: 106, genre: "Barroco", precio: 210.00 },
+                { id: 8, name: "La Creación de Adán", image: "https://picsum.photos/id/80/400/500", id_artist: 107, genre: "Renacimiento", precio: 130.00 },
+                { id: 9, name: "La Libertad guiando al pueblo", image: "https://picsum.photos/id/90/400/500", id_artist: 108, genre: "Romanticismo", precio: 175.00 },
+                { id: 10, name: "Impresión, sol naciente", image: "https://picsum.photos/id/100/400/500", id_artist: 101, genre: "Impresionismo", precio: 95.00 },
+                { id: 11, name: "El jardín de las delicias", image: "https://picsum.photos/id/110/400/500", id_artist: 109, genre: "Renacimiento", precio: 300.00 },
+                { id: 12, name: "Composición VIII", image: "https://picsum.photos/id/120/400/500", id_artist: 110, genre: "Abstracto", precio: 140.00 }
             ];
 
-            const page1 = [
-                { id: 5, name: "La Joven de la Perla", image: "https://picsum.photos/id/50/400/500", id_artist: 104, description: "Mirada enigmática", precio: 190.00 },
-                { id: 6, name: "El Nacimiento de Venus", image: "https://picsum.photos/id/60/400/500", id_artist: 105, description: "Belleza clásica", precio: 120.00 },
-                { id: 7, name: "Las Meninas", image: "https://picsum.photos/id/70/400/500", id_artist: 106, description: "Perspectiva real", precio: 210.00 },
-                { id: 8, name: "La Creación de Adán", image: "https://picsum.photos/id/80/400/500", id_artist: 107, description: "Toque divino", precio: 120.00 }
-            ];
+            // 2. filtrar por genero
+            if (genre) {
+                allArtworks = allArtworks.filter(art => art.genre === genre);
+            }
+
+            // 3. precio
+            if (sortBy === 'precio') {
+                allArtworks.sort((a, b) => direction === 'asc' ? a.precio - b.precio : b.precio - a.precio);
+            } else if (sortBy === 'name') {
+                allArtworks.sort((a, b) => {
+                    return direction === 'asc' 
+                        ? a.name.localeCompare(b.name) 
+                        : b.name.localeCompare(a.name);
+                });
+            }
+
+            // 4. Paginacion
+            const pageSize = 4;
+            const startIndex = page * pageSize;
+            const paginatedContent = allArtworks.slice(startIndex, startIndex + pageSize);
 
             resolve({
-
-                content: page === 0? page0 : page1,
-                totalPages: 5, 
-                totalElements: 20,
-                size: 4,
-                number: page 
+                content: paginatedContent,
+                totalPages: Math.ceil(allArtworks.length / pageSize),
+                totalElements: allArtworks.length,
+                size: pageSize,
+                number: page
             });
         }, 500);
     });
@@ -129,4 +157,3 @@ export async function reserveArtwork(artworkId, securityCode) {
   }
 }
 /*hola*/
-

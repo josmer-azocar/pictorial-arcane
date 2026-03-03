@@ -1,0 +1,187 @@
+
+:root {
+  --bg-deep: #080808;
+  --bg-sidebar: #0e0e0e;
+  --bg-main: #0b0b0b;
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
+  --gold: #c9a84c;
+  --text-main: #eeede8;
+  --text-muted: #e7e5e5; /* Mejor contraste que #555 */
+  --border: #1a1a1a;
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-sans: 'Montserrat', sans-serif;
+}
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-deep);
+  font-family: var(--font-serif);
+  color: var(--text-main);
+}
+
+/* ── SIDEBAR ── */
+.admin-sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 40px 0;
+  transition: all 0.3s ease;
+}
+
+.admin-sidebar-label {
+  font-family: var(--font-sans);
+  font-size: 11px; /* Aumentado de 8px */
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #444;
+  padding: 0 32px;
+  margin-bottom: 16px;
+}
+
+.admin-nav-btn {
+  width: 100%;
+  padding: 16px 32px;
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  color: var(--text-muted);
+  font-family: var(--font-serif);
+  font-size: 18px; /* Aumentado para mejor legibilidad */
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-nav-btn:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.03);
+  border-left-color: #444;
+  padding-left: 40px;
+}
+
+.admin-nav-btn.active {
+  color: var(--text-main);
+  background: rgba(124, 58, 237, 0.1);
+  border-left-color: var(--accent);
+  padding-left: 40px;
+  font-weight: 500;
+}
+
+.admin-sidebar-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 32px;
+}
+
+.admin-create-btn {
+  margin: auto 24px 0;
+  padding: 16px;
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 12px; /* Aumentado de 10px */
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.admin-create-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+}
+
+/* ── MAIN ── */
+.admin-main {
+  flex: 1;
+  background: var(--bg-main);
+  padding: 60px 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Marca de agua más sutil y elegante */
+.admin-main::after {
+  content: 'PA';
+  position: absolute;
+  right: -20px;
+  bottom: -40px;
+  font-family: var(--font-serif);
+  font-size: 350px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.02);
+  pointer-events: none;
+  line-height: 0.8;
+  
+}
+
+.admin-eyebrow {
+  font-family: var(--font-sans);
+  font-size: 12px; /* Aumentado de 9px */
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 24px;
+  display: block;
+}
+
+.admin-title {
+  font-family: var(--font-serif);
+  font-size: clamp(48px, 6vw, 82px); /* Tamaño responsivo */
+  font-weight: 300;
+  line-height: 1.1;
+  color: var(--text-main);
+  margin-bottom: 32px;
+  max-width: 900px;
+}
+
+.admin-title em {
+  font-style: italic;
+  color: var(--gold);
+  font-weight: 400;
+}
+
+.admin-line {
+  width: 80px; /* Un poco más larga */
+  height: 2px;
+  background: linear-gradient(to right, var(--accent), transparent);
+  margin-bottom: 40px;
+}
+
+.admin-subtitle {
+  font-family: var(--font-sans);
+  font-size: 15px; /* Aumentado de 12px para UX de lectura */
+  font-weight: 300;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+  line-height: 1.8;
+  max-width: 500px;
+}
+
+/* Mejoras para pantallas medianas */
+@media (max-width: 1024px) {
+  .admin-main {
+    padding: 40px;
+  }
+  .admin-sidebar {
+    width: 240px;
+    min-width: 240px;
+  }
+}
