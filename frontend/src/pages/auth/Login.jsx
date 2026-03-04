@@ -33,7 +33,12 @@ function Login() {
             console.log(data.token);
             login(data.user?.name || "Usuario", data.token);
             console.log('Fetch Exitoso ', data);
-            navigate("/dashboard");
+            if (data.user?.role === "client" || data.user?.role === "CLIENT") {
+                navigate("/dashboard");
+            } else if (data.user?.role === "admin" || data.user?.role === "ADMIN" ) {
+                navigate("/admin");
+            }
+            
         } catch (err) {
             if (err.response?.status === 401) {
                 setErrMsg("Correo o contraseña incorrectos.");
