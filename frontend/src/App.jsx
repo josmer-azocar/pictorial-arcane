@@ -3,7 +3,7 @@ import Header from './components/Header.jsx';
 import MainAuth from './pages/auth/MainAuth.jsx';
 import Artwork from './pages/artwork/Artwork.jsx';
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
-import { Routes, Route } from 'react-router-dom';
+//import { Routes, Route } from 'react-router-dom';
 import ArtworkDetail from './components/artworkDetail/ArtworkDetail.jsx';
 import ArtistProfile from './pages/auth/ArtistProfile.jsx';
 import Home from './pages/home/Home.jsx';
@@ -73,7 +73,7 @@ return (
           <Route path="/login" element={<MainAuth />} />
           <Route path='/auth/*' element={<MainAuth/>} />
           <Route path='/artwork/*' element={<Artwork/>}/>
-          
+        
           
           <Route 
             path="/artists/:id" 
