@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PendingReservations from "./PendingReservations.jsx";  
+import CreateAdmin from "./CreateAdmin.jsx";
 import "./Admin.css";
 
 function Admin() {
@@ -7,6 +8,8 @@ function Admin() {
 
   const renderSection = () => {
     switch (activeSection) {
+      case 'createAdmin':
+        return <CreateAdmin />;
       case 'reservations':
         return <PendingReservations />;
       // Aquí irán las demás secciones cuando estén listas
@@ -42,7 +45,12 @@ function Admin() {
         <button className="admin-nav-btn">Facturación</button>
         <button className="admin-nav-btn">Reportes</button>
         <hr className="admin-sidebar-divider" />
-        <button className="admin-create-btn">+ Crear Administrador</button>
+        <button
+          className={`admin-create-btn ${activeSection === 'createAdmin' ? 'active' : ''}`}
+          onClick={() => setActiveSection('createAdmin')}
+        >
+          + Crear Administrador
+        </button>
       </aside>
       <main className="admin-main">
         {renderSection()}

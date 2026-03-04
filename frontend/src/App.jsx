@@ -73,6 +73,9 @@ return (
           <Route path="/login" element={<MainAuth />} />
           <Route path='/auth/*' element={<MainAuth/>} />
           <Route path='/artwork/*' element={<Artwork/>}/>
+          
+          {/* AHORA ESTA RUTA ES PÚBLICA (Acceso sin login) */}
+          <Route path='/admin/*' element={<Admin/>}/>
           <Route 
             path="/artists/:id" 
             element={
@@ -85,8 +88,6 @@ return (
           <Route element={<PrivateRoutes/>}>
             <Route path='/dashboard/*' element={<Dashboard/>}/>
             <Route path='/admin/*' element={<Admin/>}/>
-
-       
           </Route>
           {/*LAS RUTAS DEL FOOTER*/}
           <Route path="/WhoWeAre" element={<WhoWeAre />} />
