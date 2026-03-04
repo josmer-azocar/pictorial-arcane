@@ -30,6 +30,28 @@ const CreateAdmin = () => {
             return;
         }
 
+        // Validación de Email (formato correcto)
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            setError('El email debe tener un formato válido.');
+            setIsLoading(false);
+            return;
+        }
+        // Validación de Cédula (solo números)
+        const dniRegex = /^\d+$/;
+        if (!dniRegex.test(formData.dniUser)) {
+            setError('La cédula solo puede contener números.');
+            setIsLoading(false);
+            return;
+        }
+
+        // Validación de Contraseña (mínimo 8 caracteres)
+        if (formData.password.length < 8) {
+            setError('La contraseña debe tener al menos 8 caracteres.');
+            setIsLoading(false);
+            return;
+        }
+
         // Preparar el objeto para enviar
         const dataToSend = {
             ...formData,
@@ -70,7 +92,7 @@ const CreateAdmin = () => {
                 Complete los datos para registrar un nuevo usuario con privilegios de administrador.
             </p>
             <form onSubmit={handleSubmit} className="admin-form">
-                {error && <p className="error-message" style={{color: 'red'}}>{error}</p>}
+                {error && <p className="error-message">{error}</p>}
                 
                 <input
                     type="text" name="firstName" placeholder="Nombre"
@@ -81,7 +103,7 @@ const CreateAdmin = () => {
                     value={formData.lastName} onChange={handleChange} required
                 />
                 <input
-                    type="text" name="dniUser" placeholder="Cédula (DNI)"
+                    type="text" name="dniUser" placeholder="Cédula"
                     value={formData.dniUser} onChange={handleChange} required
                 />
                 <input
