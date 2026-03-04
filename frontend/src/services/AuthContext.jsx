@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { jwtDecode } from "jwt-decode";
-import getProfile from "./getUserPfp.js"
+//import getProfile from "./getUserPfp.js"
 
 const AuthContext = createContext(null); //crea un objeto contexto
 
@@ -23,16 +23,12 @@ export const AuthProvider = ({children}) => {
                     console.log("Attempting to decode:", tokenToDecode);
                     const decoded = jwtDecode(tokenToDecode);*/
                     setIsLoggedIn(true);
-                    setUser({ name: savedToken.userName || "Usuario", pfp: "https://fastly.picsum.photos/id/55/4608/3072.jpg?hmac=ahGhylwdN52ULB37deeMZX6T_G7NiERtoPhwydMvUKQ" });
-                    //CAMBIAR A decoded.userName
+                    setUser({ name: savedToken.name || "Usuario", 
+                        pfp: "https://fastly.picsum.photos/id/55/4608/3072.jpg?hmac=ahGhylwdN52ULB37deeMZX6T_G7NiERtoPhwydMvUKQ",
+                        role: savedToken.role
+                    });
+                    //CAMBIAR A decoded.userName cuando se conecte el backend
 
-                    const data = await getProfile(savedToken);
-                    setUser( 
-                        prev => ({ 
-                            ...prev, 
-                            pfp: data.profilePicture || prev.pfp 
-                        })
-                    );
                 } catch (error) {
                     console.error("Token inválido");
                     logout();
