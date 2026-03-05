@@ -8,7 +8,32 @@ import { getPendingSales } from '../../services/fetchSales';
 
 const BASE_URL = 'http://localhost:8080';
 
-
+const mockReservations = [
+  {
+    idSale: 1,
+    artworkTitle: 'Mármol Eterno',
+    clientFullName: 'Carlos Pérez',
+    price: 2500, taxAmount: 400, totalPaid: 2900,
+    date: new Date(Date.now() - 30 * 60 * 60 * 1000).toISOString(),
+    saleStatus: 'PENDING',
+  },
+  {
+    idSale: 2,
+    artworkTitle: 'Luz Nocturna',
+    clientFullName: 'Ana Gómez',
+    price: 4800, taxAmount: 768, totalPaid: 5568,
+    date: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    saleStatus: 'PENDING',
+  },
+  {
+    idSale: 3,
+    artworkTitle: 'Fragmentos',
+    clientFullName: 'Pedro López',
+    price: 1200, taxAmount: 192, totalPaid: 1392,
+    date: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString(),
+    saleStatus: 'PENDING',
+  },
+];
 
 
 
@@ -29,7 +54,7 @@ function PendingReservations() {
   const [loading, setLoading] = useState(true);
   const [selectedReservation, setSelectedReservation] = useState(null);
 
-  const [reservations, setReservations] = useState([]);
+  const [reservations, setReservations] = useState(mockReservations);
   const prevCountRef = useRef(0);
 
   // Obtener token del localStorage 
@@ -62,7 +87,7 @@ function PendingReservations() {
 
   // polling every 30s
   useEffect(() => {
-    const id = setInterval(fetchPendingSales, 30000);
+    const id = setInterval(fetchPendingSales, 70000);
     return () => clearInterval(id);
   }, []);
 
@@ -98,13 +123,17 @@ function PendingReservations() {
       {/* ── CABECERA ── */}
       <div className="section-header">
         <div>
-          <h1 className="section-title">Pending Reservations</h1>
-          <p className="section-sub">{reservations.length} active reservations</p>
+          <h1 className="section-title">Reservas Pendientes</h1>
+          <p className="section-sub">{reservations.length} reservas activas</p>
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           {overdueCount > 0 && (
             <div className="alert-badge">
-              ⚠ {overdueCount} overdue {overdueCount === 1 ? 'reservation' : 'reservations'} (+24h)
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{marginRight: '6px', verticalAlign: 'middle'}}>
+  <path d="M18.7491 9.70957V9.00497C18.7491 5.13623 15.7274 2 12 2C8.27256 2 5.25087 5.13623 5.25087 9.00497V9.70957C5.25087 10.5552 5.00972 11.3818 4.5578 12.0854L3.45036 13.8095C2.43882 15.3843 3.21105 17.5249 4.97036 18.0229C9.57274 19.3257 14.4273 19.3257 19.0296 18.0229C20.789 17.5249 21.5612 15.3843 20.5496 13.8095L19.4422 12.0854C18.9903 11.3818 18.7491 10.5552 18.7491 9.70957Z" stroke="#f87171" strokeWidth="1.5"/>
+  <path d="M7.5 19C8.15503 20.7478 9.92246 22 12 22C14.0775 22 15.845 20.7478 16.5 19" stroke="#f87171" strokeWidth="1.5" strokeLinecap="round"/>
+</svg>
+{overdueCount} {overdueCount === 1 ? 'reserva vencida' : 'reservas vencidas'} (+24h)
             </div>
           )}
           <button className="btn-secondary" onClick={fetchPendingSales}>
