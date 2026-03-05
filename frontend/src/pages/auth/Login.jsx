@@ -29,10 +29,16 @@ function Login() {
         try {
             await new Promise(resolve => setTimeout(resolve, 1000));
             const data = await logUser({email, password});
-
-            login(data.userName || "Usuario", data.token);
+            console.log(data.user?.name);
+            console.log(data.token);
+            login(data.user?.name || "Usuario", data.token);
             console.log('Fetch Exitoso ', data);
-            navigate("/dashboard");
+            if (data.user?.role === "client" || data.user?.role === "CLIENT") {
+                navigate("/dashboard");
+            } else if (data.user?.role === "admin" || data.user?.role === "ADMIN" ) {
+                navigate("/admin");
+            }
+            
         } catch (err) {
             if (err.response?.status === 401) {
                 setErrMsg("Correo o contraseña incorrectos.");

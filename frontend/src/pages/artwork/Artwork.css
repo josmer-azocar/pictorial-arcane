@@ -1,3 +1,48 @@
+#titulo-galeria{
+    font-family: 'Roboto Flex', Arial, Helvetica, sans-serif;
+    font-weight: 100;
+    font-size: 4rem;
+    text-align: center;
+    background-color: gray;
+    padding: 5%;
+    color: antiquewhite;
+}
+
+#sort-galery{
+    display: flex;
+    justify-content: end;
+    gap: 10px;
+    margin: 10px 0;
+    color: black;
+}
+
+#botton-filtrado{
+    display: flex;
+    gap: 10px;
+}
+
+#botton-filtrado button, #botton-filtrado select{
+    font-family: 'Roboto Flex', Arial, Helvetica, sans-serif;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    background-color: transparent;
+}
+
+#botton-filtrado button:hover, #botton-filtrado select:hover{
+    cursor: pointer;
+    background-color: rgb(202, 146, 255);
+}
+
+#botton-filtrado select option {
+    background-color: white;
+    color: black;
+}
+
+#botton-filtrado option:hover{
+    background-color: transparent;
+}
+
 #art-display{
     background-color: rgb(255, 255, 255);
     margin: 25px;

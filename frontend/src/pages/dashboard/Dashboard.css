@@ -4,10 +4,12 @@
     margin: 70px;
     align-items: center;
     gap: 40px;
+    background-color: rgb(43, 43, 43);
+    color: antiquewhite;
 
 }
 #pfp-moment{
-    background-color: blueviolet;
+    background-color: rgb(54, 26, 80);
     color: antiquewhite;
     padding: 40px;
     min-height: 80vh;
@@ -24,6 +26,18 @@
     max-width: 200px;
 }
 
+#user-info ul {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
 #user-info li {
     list-style-type: none;
+    
+}
+
+#message-user p {
+    font-size: 2rem;
 }

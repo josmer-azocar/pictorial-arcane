@@ -17,7 +17,10 @@ function Dashboard() {
                 </ul>
             </div>
             </div>
-            <p>Bienvenid@ {user?.name}</p>          
+            <div id='message-user'>
+                <p>Bienvenid@ {user?.name}</p>  
+            </div>
+                    
         </section>
         
     );

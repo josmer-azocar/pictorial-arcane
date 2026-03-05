@@ -27,7 +27,7 @@ const Footer = () => {
         <li><Link to="/about">Acerca de</Link></li>
         <li><Link to="/artwork">Galería</Link></li>
         <li><Link to="/artistas">Artistas</Link></li>
-        <li><Link to="/envios">Envíos</Link></li>
+        <li><Link to="/shipment">Envíos</Link></li>
         <li><Link to="/WhoWeAre">Quiénes somos</Link></li>
       </ul>
 

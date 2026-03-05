@@ -3,18 +3,20 @@ import Header from './components/Header.jsx';
 import MainAuth from './pages/auth/MainAuth.jsx';
 import Artwork from './pages/artwork/Artwork.jsx';
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+//import { Routes, Route } from 'react-router-dom';
 import ArtworkDetail from './components/artworkDetail/ArtworkDetail.jsx';
 import ArtistProfile from './pages/auth/ArtistProfile.jsx';
 import Home from './pages/home/Home.jsx';
 import About from './pages/about/about.jsx';
+import Shipment from './pages/shipment/shipment.jsx';
 import WhoWeAre from './pages/whoweare/WhoWeAre.jsx';
 import Footer from './components/Footer.jsx';
 
-
-import AuthProvider from './services/authContext.jsx'; 
+import AuthProvider from './services/AuthContext.jsx'; 
 import Dashboard from './pages/dashboard/Dashboard.jsx';
 import PrivateRoutes from './services/PrivateRoutes.jsx'
 import Admin from './pages/admin/Admin.jsx';
+
 
 function App() {
 
@@ -66,10 +68,13 @@ return (
         <Routes>
           <Route path="/" element={<Admin />} />
           <Route path="/about" element={<About />} />
+          <Route path="/shipment" element={<Shipment />} />
           {/*<Route path="/" element={<ArtworkDetail artwork={testArtwork} />} />*/}
           <Route path="/login" element={<MainAuth />} />
           <Route path='/auth/*' element={<MainAuth/>} />
           <Route path='/artwork/*' element={<Artwork/>}/>
+        
+          
           <Route 
             path="/artists/:id" 
             element={
@@ -82,8 +87,6 @@ return (
           <Route element={<PrivateRoutes/>}>
             <Route path='/dashboard/*' element={<Dashboard/>}/>
             <Route path='/admin/*' element={<Admin/>}/>
-
-       
           </Route>
           {/*LAS RUTAS DEL FOOTER*/}
           <Route path="/WhoWeAre" element={<WhoWeAre />} />
