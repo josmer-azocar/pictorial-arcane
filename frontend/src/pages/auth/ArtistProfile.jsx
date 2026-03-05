@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import './ArtistProfile.css';
+import { getArtistById, getArtworksByArtist } from '../../services/fetchArtwork';
 
-const ArtistProfile = ({ mockArtists, mockArtworks }) => {
+/*const ArtistProfile = ({ mockArtists, mockArtworks }) */
+
+const ArtistProfile = () => {
   const { id } = useParams();
   const artistId = parseInt(id);
 
   const [artist, setArtist] = useState(null);
   const [artworksByGenre, setArtworksByGenre] = useState({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); 
 
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchMockData = () => {
       setLoading(true);
       setTimeout(() => {
@@ -24,8 +28,37 @@ const ArtistProfile = ({ mockArtists, mockArtworks }) => {
       }, 500);
     };
     fetchMockData();
-  }, [artistId, mockArtists, mockArtworks]);
+  }, [artistId, mockArtists, mockArtworks]);*/
 
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [artistData, artworksData] = await Promise.all([
+        getArtistById(id),
+        getArtworksByArtist(id)
+      ]);
+      setArtist(artistData);
+
+      const grouped = artworksData.reduce((acc, obra) => {
+        const genre = obra.genre || 'Sin género';
+        if (!acc[genre]) acc[genre] = [];
+        acc[genre].push(obra);
+        return acc;
+      }, {});
+      setArtworksByGenre(grouped);
+
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchData();
+}, [id]);
+
+
+  if (error) return <div className="artp-page"><p>Error: {error}</p></div>;
   if (loading) return <div className="artp-page"><p>Cargando...</p></div>;
   if (!artist) return <div className="artp-page"><h2>Artista no encontrado</h2></div>;
 
@@ -53,7 +86,7 @@ const ArtistProfile = ({ mockArtists, mockArtworks }) => {
   
      
     
-<div className="artp-layout-split">
+<div className="artp-layout-split">{/*contenedor Flex */}
 
   {/* IZQUIERDA: Biografía  */}
   <aside className="artp-side-info">
@@ -81,7 +114,7 @@ const ArtistProfile = ({ mockArtists, mockArtworks }) => {
       <div key={genre} className="artp-genre-card">
         <h3 className="artp-genre-title">{genre}</h3>
         
-        {/* En lugar de artworks[0], recorremos la lista de obras del género */}
+        {/*obras del género */}
         <div className="artp-works-container">
           {artworks.map((work) => (
             <div key={work.id} className="artp-work-mini-card">

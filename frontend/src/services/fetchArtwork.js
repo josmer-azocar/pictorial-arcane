@@ -106,9 +106,8 @@ export async function showArtist() {
 export async function getArtistById(id) {
   const url = `http://localhost:8080/artists/${id}`;
   try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(response.status);
-    return await response.json();
+    const response = await axios.get(url);
+    return response.data;
   } catch (error) {
     console.error("Error al obtener artista:", error);
     throw error;
@@ -120,9 +119,8 @@ export async function getArtistById(id) {
 export async function getArtworksByArtist(artistId) {
   const url = `http://localhost:8080/artworks?artistId=${artistId}`;
   try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(response.status);
-    return await response.json();
+    const response = await axios.get(url);
+    return response.data;
   } catch (error) {
     console.error("Error al obtener obras:", error);
     throw error;
@@ -132,9 +130,8 @@ export async function getArtworksByArtist(artistId) {
 export async function getArtworkById(id) {
   const url = `http://localhost:8080/artworks/${id}`;
   try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(response.status);
-    return await response.json();
+    const response = await axios.get(url);
+    return response.data;
   } catch (error) {
     console.error("Error al obtener obra:", error);
     throw error;
@@ -144,13 +141,14 @@ export async function getArtworkById(id) {
 export async function reserveArtwork(artworkId, securityCode) {
   const url = `http://localhost:8080/artworks/${artworkId}/reserve`;
   try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ security_code: securityCode })
+    const response = await axios.post(url, {
+      security_code: securityCode
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
-    if (!response.ok) throw new Error(response.status);
-    return await response.json();
+    return response.data;
   } catch (error) {
     console.error("Error al reservar obra:", error);
     throw error;
