@@ -1,39 +1,13 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import InvoiceModal from './InvoiceModal.jsx';
 import './Admin.css';
+import { getPendingSales } from '../../services/fetchSales';
 
 const BASE_URL = 'http://localhost:8080';
 
-// Agrega esto arriba del componente
-const mockReservations = [
-  {
-    idSale: 1,
-    artworkTitle: 'Mármol Eterno',
-    clientFullName: 'Carlos Pérez',
-    price: 2500, taxAmount: 400, totalPaid: 2900,
-    date: new Date(Date.now() - 30 * 60 * 60 * 1000).toISOString(), // ROJO
-    saleStatus: 'PENDING',
-  },
-  {
-    idSale: 2,
-    artworkTitle: 'Luz Nocturna',
-    clientFullName: 'Ana Gómez',
-    price: 4800, taxAmount: 768, totalPaid: 5568,
-    date: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // OK
-    saleStatus: 'PENDING',
-  },
-  {
-    idSale: 3,
-    artworkTitle: 'Fragmentos',
-    clientFullName: 'Pedro López',
-    price: 1200, taxAmount: 192, totalPaid: 1392,
-    date: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString(), // ROJO
-    saleStatus: 'PENDING',
-  },
-];
 
 
 
@@ -52,11 +26,11 @@ const formatDate = (dateStr) => {
 };
 
 function PendingReservations() {
-  //const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedReservation, setSelectedReservation] = useState(null);
 
-  const [reservations, setReservations] = useState(mockReservations);
+  const [reservations, setReservations] = useState([]);
+  const prevCountRef = useRef(0);
 
   // Obtener token del localStorage 
   const token = localStorage.getItem('token');
@@ -65,17 +39,10 @@ function PendingReservations() {
   const fetchPendingSales = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${BASE_URL}/admin/getAllPendingSales`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      // 204 = no hay ventas pendientes
-      setReservations(res.data || []);
+      const data = await getPendingSales(token);
+      setReservations(data || []);
     } catch (err) {
-      if (err.response?.status === 204) {
-        setReservations([]);
-      } else {
-        toast.error('Error al cargar las reservas pendientes.');
-      }
+      toast.error('Error al cargar las reservas pendientes.');
     } finally {
       setLoading(false);
     }
@@ -83,6 +50,20 @@ function PendingReservations() {
 
   useEffect(() => {
     fetchPendingSales();
+  }, []);
+
+  // notify when new reservation arrives
+  useEffect(() => {
+    if (reservations.length > prevCountRef.current && prevCountRef.current !== 0) {
+      toast.info('🔔 Nueva reserva recibida');
+    }
+    prevCountRef.current = reservations.length;
+  }, [reservations]);
+
+  // polling every 30s
+  useEffect(() => {
+    const id = setInterval(fetchPendingSales, 30000);
+    return () => clearInterval(id);
   }, []);
 
   // ── PUT /admin/rejectPendingSale/{saleId} ─────────────────

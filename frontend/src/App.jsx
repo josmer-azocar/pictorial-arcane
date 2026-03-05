@@ -64,7 +64,7 @@ return (
         <Header />
         <main className="main-content">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Admin />} />
           <Route path="/about" element={<About />} />
           {/*<Route path="/" element={<ArtworkDetail artwork={testArtwork} />} />*/}
           <Route path="/login" element={<MainAuth />} />

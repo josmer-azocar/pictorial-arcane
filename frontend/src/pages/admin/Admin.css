@@ -185,3 +185,148 @@
     min-width: 240px;
   }
 }
+
+/* Table and admin section styling */
+.admin-section {
+  padding: 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  margin: 0;
+}
+
+.section-sub {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: #777;
+  margin-top: 4px;
+}
+
+.table-wrapper {
+  border: 1px solid #1a1a1a;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent;
+}
+
+.admin-table thead tr {
+  border-bottom: 1px solid #1a1a1a;
+  background: #0e0e0e;
+}
+
+.admin-table th {
+  padding: 16px 20px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #555;
+  text-align: left;
+}
+
+.admin-table td {
+  padding: 18px 20px;
+  border-bottom: 1px solid #111;
+  font-size: 15px;
+  color: #eee;
+  vertical-align: middle;
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tbody tr:hover td {
+  background: rgba(255,255,255,0.02);
+  transition: background 0.2s ease;
+}
+
+.td-id {
+  color: #555;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.td-artwork {
+  font-weight: 500;
+  color: #eeede8;
+}
+
+.td-price {
+  font-weight: 600;
+  color: #c9a84c;
+}
+
+.btn-invoice {
+  background: #7c3aed;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: transform 0.2s ease;
+}
+
+.btn-invoice:hover {
+  transform: translateY(-1px);
+}
+
+.btn-cancel {
+  background: transparent;
+  color: #666;
+  border: 1px solid #333;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btn-cancel:hover {
+  color: #e86868;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px;
+  color: #444;
+  font-size: 14px;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid #333;
+  color: #888;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  border-color: #555;
+}
