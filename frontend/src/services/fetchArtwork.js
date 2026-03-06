@@ -154,4 +154,18 @@ export async function reserveArtwork(artworkId, securityCode) {
     throw error;
   }
 }
-/*hola*/
+
+/**
+ * Crea una nueva escultura en el backend.
+ * @param {object} sculptureData - Los datos de la escultura.
+ * @param {string} token - El token de autenticación del administrador.
+ */
+export const createSculpture = async (sculptureData, token) => {
+    // Endpoint: /admin/artworks/sculpture
+    const response = await axios.post(`${url}/admin/artworks/sculpture`, sculptureData, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    return response.data;
+};
