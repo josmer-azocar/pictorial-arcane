@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import PendingReservations from "./PendingReservations.jsx";  
 import CreateAdmin from "./CreateAdmin.jsx";
+import CreateArtwork from "./CreateArtwork.jsx";
 import "./Admin.css";
 
 function Admin() {
   const [activeSection, setActiveSection] = useState(null);
+  const [isArtworksMenuOpen, setArtworksMenuOpen] = useState(false);
 
   const renderSection = () => {
     switch (activeSection) {
@@ -12,8 +14,14 @@ function Admin() {
         return <CreateAdmin />;
       case 'reservations':
         return <PendingReservations />;
-      // Aquí irán las demás secciones cuando estén listas
-      // case 'reports': return <SalesReport />;
+      case 'createArtwork':
+        return <CreateArtwork />;
+      // case 'viewArtwork':
+      //   return <ViewArtwork />;
+      // case 'updateArtwork':
+      //   return <UpdateArtwork />;
+      // case 'deleteArtwork':
+      //   return <DeleteArtwork />;
       default:
         return (
           <>
@@ -32,7 +40,40 @@ function Admin() {
     <div className="admin-layout">
       <aside className="admin-sidebar">
         <p className="admin-sidebar-label">Gestión</p>
-        <button className="admin-nav-btn">Gestión de Obras</button>
+        <button
+          className="admin-nav-btn"
+          onClick={() => setArtworksMenuOpen(!isArtworksMenuOpen)}
+        >
+          Gestión de Obras
+        </button>
+        {isArtworksMenuOpen && (
+          <div className="admin-submenu">
+            <button
+              className={`admin-nav-btn ${activeSection === 'createArtwork' ? 'active' : ''}`}
+              onClick={() => setActiveSection('createArtwork')}
+            >
+              Crear Obra
+            </button>
+            <button
+              className={`admin-nav-btn ${activeSection === 'viewArtwork' ? 'active' : ''}`}
+              onClick={() => setActiveSection('viewArtwork')}
+            >
+              Ver Obra
+            </button>
+            <button
+              className={`admin-nav-btn ${activeSection === 'updateArtwork' ? 'active' : ''}`}
+              onClick={() => setActiveSection('updateArtwork')}
+            >
+              Actualizar Obra
+            </button>
+            <button
+              className={`admin-nav-btn ${activeSection === 'deleteArtwork' ? 'active' : ''}`}
+              onClick={() => setActiveSection('deleteArtwork')}
+            >
+              Borrar Obra
+            </button>
+          </div>
+        )}
         <button className="admin-nav-btn">Gestión de Artistas</button>
         <hr className="admin-sidebar-divider" />
         <p className="admin-sidebar-label">Operaciones</p>
