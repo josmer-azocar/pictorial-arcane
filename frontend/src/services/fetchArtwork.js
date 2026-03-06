@@ -161,11 +161,45 @@ export async function reserveArtwork(artworkId, securityCode) {
  * @param {string} token - El token de autenticación del administrador.
  */
 export const createSculpture = async (sculptureData, token) => {
-    // Endpoint: /admin/artworks/sculpture
-    const response = await axios.post(`${url}/admin/artworks/sculpture`, sculptureData, {
+    const response = await axios.post(`${url}/artwork/sculpture/add`, sculptureData, {
         headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
         }
     });
     return response.data;
+};
+
+/**
+ * Crea una nueva fotografía en el backend.
+ * @param {object} photographyData - Los datos de la fotografía.
+ * @param {string} token - El token de autenticación del administrador.
+ */
+export const createPhotography = async (photographyData, token) => {
+    const response = await axios.post(`${url}/artwork/photography/add`, photographyData, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+    return response.data;
+};
+
+/**
+ * Sube una imagen para una obra de arte.
+ * @param {number} artworkId - El ID de la obra para la que se sube la imagen.
+ * @param {File} file - El archivo de imagen a subir.
+ * @param {string} token - El token de autenticación del administrador.
+ * @returns {Promise<any>} La respuesta del servidor.
+ */
+export const uploadArtworkImage = async (artworkId, file, token) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return await axios.post(`${url}/admin/${artworkId}/artorkImage`, formData, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+        }
+    });
 };
