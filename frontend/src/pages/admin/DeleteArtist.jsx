@@ -15,9 +15,7 @@ function DeleteArtist() {
   useEffect(() => {
     const fetchArtists = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/artists`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+       const res = await axios.get(`${BASE_URL}/artist/all`);
         setArtists(res.data);
       } catch (err) {
         toast.error('Error al cargar artistas.');
