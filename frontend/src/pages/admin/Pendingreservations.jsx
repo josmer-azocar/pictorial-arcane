@@ -30,16 +30,24 @@ const mockReservations = [
     artworkTitle: 'Fragmentos',
     clientFullName: 'Pedro López',
     price: 1200, taxAmount: 192, totalPaid: 1392,
-    date: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString(),
+    date: new Date(Date.now() - 23 * 60 * 60 * 1000).toISOString(),
     saleStatus: 'PENDING',
   },
 ];
 
 
 
-// Calcula horas transcurridas desde una fecha
-const hoursElapsed = (dateStr) => {
-  return (Date.now() - new Date(dateStr)) / (1000 * 60 * 60);
+// Calcula horas restantes hasta 24h
+const timeRemaining = (dateStr) => {
+  return 24 - (Date.now() - new Date(dateStr)) / (1000 * 60 * 60);
+};
+
+const formatRemaining = (dateStr) => {
+  const hours = timeRemaining(dateStr);
+  if (hours <= 0) return { label: 'Vencida', cls: 'expired' };
+  if (hours < 1) return { label: `${Math.floor(hours * 60)}min restantes`, cls: 'critical' };
+  if (hours < 2) return { label: `${Math.floor(hours)}h restante`, cls: 'warning' };
+  return { label: `${Math.floor(hours)}h restantes`, cls: 'ok' };
 };
 
 const formatDate = (dateStr) => {
@@ -114,7 +122,10 @@ function PendingReservations() {
     toast.success('Factura emitida correctamente. Obra marcada como Vendida.');
   };
 
-  const overdueCount = reservations.filter(r => hoursElapsed(r.date) > 24).length;
+  const criticalCount = reservations.filter(r => {
+    const hours = 24 - (Date.now() - new Date(r.date)) / (1000 * 60 * 60);
+    return hours > 0 && hours < 2;
+  }).length;
 
   return (
     <div className="admin-section">
@@ -127,13 +138,13 @@ function PendingReservations() {
           <p className="section-sub">{reservations.length} reservas activas</p>
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          {overdueCount > 0 && (
+          {criticalCount > 0 && (
             <div className="alert-badge">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{marginRight: '6px', verticalAlign: 'middle'}}>
-  <path d="M18.7491 9.70957V9.00497C18.7491 5.13623 15.7274 2 12 2C8.27256 2 5.25087 5.13623 5.25087 9.00497V9.70957C5.25087 10.5552 5.00972 11.3818 4.5578 12.0854L3.45036 13.8095C2.43882 15.3843 3.21105 17.5249 4.97036 18.0229C9.57274 19.3257 14.4273 19.3257 19.0296 18.0229C20.789 17.5249 21.5612 15.3843 20.5496 13.8095L19.4422 12.0854C18.9903 11.3818 18.7491 10.5552 18.7491 9.70957Z" stroke="#f87171" strokeWidth="1.5"/>
-  <path d="M7.5 19C8.15503 20.7478 9.92246 22 12 22C14.0775 22 15.845 20.7478 16.5 19" stroke="#f87171" strokeWidth="1.5" strokeLinecap="round"/>
-</svg>
-{overdueCount} {overdueCount === 1 ? 'reserva vencida' : 'reservas vencidas'} (+24h)
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{marginRight: '6px', verticalAlign: 'middle'}}>
+                <path d="M18.7491 9.70957V9.00497C18.7491 5.13623 15.7274 2 12 2C8.27256 2 5.25087 5.13623 5.25087 9.00497V9.70957C5.25087 10.5552 5.00972 11.3818 4.5578 12.0854L3.45036 13.8095C2.43882 15.3843 3.21105 17.5249 4.97036 18.0229C9.57274 19.3257 14.4273 19.3257 19.0296 18.0229C20.789 17.5249 21.5612 15.3843 20.5496 13.8095L19.4422 12.0854C18.9903 11.3818 18.7491 10.5552 18.7491 9.70957Z" stroke="#f87171" strokeWidth="1.5"/>
+                <path d="M7.5 19C8.15503 20.7478 9.92246 22 12 22C14.0775 22 15.845 20.7478 16.5 19" stroke="#f87171" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              {criticalCount} {criticalCount === 1 ? 'reserva por vencer' : 'reservas por vencer'} (-2h)
             </div>
           )}
           <button className="btn-secondary" onClick={fetchPendingSales}>
@@ -157,17 +168,15 @@ function PendingReservations() {
                 <th>IVA</th>
                 <th>Total</th>
                 <th>Reserved At</th>
-                <th>Time Elapsed</th>
+                <th>Tiempo Restante</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {reservations.map((r) => {
-                const hours = hoursElapsed(r.date);
-                const isOverdue = hours > 24;
                 return (
-                  <tr key={r.idSale} className={isOverdue ? 'row-overdue' : ''}>
+                  <tr key={r.idSale}>
                     <td className="td-id">#{r.idSale}</td>
                     <td className="td-artwork">{r.artworkTitle}</td>
                     <td>
@@ -180,9 +189,10 @@ function PendingReservations() {
                     <td className="td-price">${r.totalPaid?.toLocaleString()}</td>
                     <td>{formatDate(r.date)}</td>
                     <td>
-                      <span className={`time-chip ${isOverdue ? 'overdue' : 'ok'}`}>
-                        {isOverdue ? '⚠ ' : '✓ '}{Math.floor(hours)}h ago
-                      </span>
+                      {(() => {
+                        const { label, cls } = formatRemaining(r.date);
+                        return <span className={`time-chip ${cls}`}>{label}</span>;
+                      })()}
                     </td>
                     <td>
                       <span className={`time-chip ${r.saleStatus === 'PENDING' ? 'ok' : 'overdue'}`}>
