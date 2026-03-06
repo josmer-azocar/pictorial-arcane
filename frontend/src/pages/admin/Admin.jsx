@@ -3,10 +3,11 @@ import PendingReservations from "./PendingReservations.jsx";
 import CreateAdmin from "./CreateAdmin.jsx";
 import CreateArtwork from "./CreateArtwork.jsx";
 import "./Admin.css";
-
+import CreateArtist from "./CreateArtist.jsx";
 function Admin() {
   const [activeSection, setActiveSection] = useState(null);
   const [isArtworksMenuOpen, setArtworksMenuOpen] = useState(false);
+  const [isArtistsMenuOpen, setArtistsMenuOpen] = useState(false);
 
   const renderSection = () => {
     switch (activeSection) {
@@ -16,6 +17,8 @@ function Admin() {
         return <PendingReservations />;
       case 'createArtwork':
         return <CreateArtwork />;
+        case 'createArtist':
+  return <CreateArtist />;
       // case 'viewArtwork':
       //   return <ViewArtwork />;
       // case 'updateArtwork':
@@ -74,7 +77,40 @@ function Admin() {
             </button>
           </div>
         )}
-        <button className="admin-nav-btn">Gestión de Artistas</button>
+       <button
+  className="admin-nav-btn"
+  onClick={() => setArtistsMenuOpen(!isArtistsMenuOpen)}
+>
+  Gestión de Artistas
+</button>
+{isArtistsMenuOpen && (
+  <div className="admin-submenu">
+    <button
+      className={`admin-nav-btn ${activeSection === 'createArtist' ? 'active' : ''}`}
+      onClick={() => setActiveSection('createArtist')}
+    >
+      Crear Artista
+    </button>
+    <button
+      className={`admin-nav-btn ${activeSection === 'viewArtist' ? 'active' : ''}`}
+      onClick={() => setActiveSection('viewArtist')}
+    >
+      Ver Artista
+    </button>
+    <button
+      className={`admin-nav-btn ${activeSection === 'updateArtist' ? 'active' : ''}`}
+      onClick={() => setActiveSection('updateArtist')}
+    >
+      Actualizar Artista
+    </button>
+    <button
+      className={`admin-nav-btn ${activeSection === 'deleteArtist' ? 'active' : ''}`}
+      onClick={() => setActiveSection('deleteArtist')}
+    >
+      Borrar Artista
+    </button>
+  </div>
+)}
         <hr className="admin-sidebar-divider" />
         <p className="admin-sidebar-label">Operaciones</p>
         <button
