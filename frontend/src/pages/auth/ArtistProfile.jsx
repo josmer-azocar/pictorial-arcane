@@ -41,7 +41,7 @@ useEffect(() => {
       setArtist(artistData);
 
       const grouped = artworksData.reduce((acc, obra) => {
-        const genre = obra.genre || 'Sin género';
+        const genre = obra.gender || 'Sin género';
         if (!acc[genre]) acc[genre] = [];
         acc[genre].push(obra);
         return acc;

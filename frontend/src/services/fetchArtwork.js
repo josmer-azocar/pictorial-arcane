@@ -104,7 +104,7 @@ export async function showArtist() {
 // *Artistas
 // Trae un artista por su id - GET /artists/{id}
 export async function getArtistById(id) {
-  const url = `http://localhost:8080/artists/${id}`;
+  const url =`http://localhost:8080/artist/${id}`;
   try {
     const response = await axios.get(url);
     return response.data;
@@ -115,12 +115,12 @@ export async function getArtistById(id) {
 }
 
 // *Obras 
-// Trae todas las obras de un artista - GET /artworks?artistId={id}
+// Trae todas las obras de un artista - GET /artwork/search?idArtist={artistId}
 export async function getArtworksByArtist(artistId) {
-  const url = `http://localhost:8080/artworks?artistId=${artistId}`;
+  const url = `http://localhost:8080/artwork/search?idArtist=${artistId}`;
   try {
     const response = await axios.get(url);
-    return response.data;
+    return response.data.content;
   } catch (error) {
     console.error("Error al obtener obras:", error);
     throw error;
@@ -134,23 +134,6 @@ export async function getArtworkById(id) {
     return response.data;
   } catch (error) {
     console.error("Error al obtener obra:", error);
-    throw error;
-  }
-}
-// Reserva una obra - POST /artworks/{id}/reserve
-export async function reserveArtwork(artworkId, securityCode) {
-  const url = `http://localhost:8080/artworks/${artworkId}/reserve`;
-  try {
-    const response = await axios.post(url, {
-      security_code: securityCode
-    }, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error al reservar obra:", error);
     throw error;
   }
 }
@@ -169,3 +152,5 @@ export const createSculpture = async (sculptureData, token) => {
     });
     return response.data;
 };
+
+/*hola*/

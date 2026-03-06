@@ -5,6 +5,7 @@ import CreateArtwork from "./CreateArtwork.jsx";
 import "./Admin.css";
 import CreateArtist from "./CreateArtist.jsx";
 import DeleteArtist from './DeleteArtist.jsx';
+import UpdateArtist from './UpdateArtist.jsx';
 function Admin() {
   const [activeSection, setActiveSection] = useState(null);
   const [isArtworksMenuOpen, setArtworksMenuOpen] = useState(false);
@@ -22,6 +23,8 @@ function Admin() {
             return <CreateArtist />;
       case 'deleteArtist':
         return <DeleteArtist />;
+      case 'updateArtist':
+        return <UpdateArtist />;
       // case 'viewArtwork':
       //   return <ViewArtwork />;
       // case 'updateArtwork':
