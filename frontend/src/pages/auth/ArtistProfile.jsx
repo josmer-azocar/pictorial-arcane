@@ -73,13 +73,13 @@ useEffect(() => {
         <aside className="artp-main-header">
           <div className="artp-avatar-frame">
             <img 
-              src={artist.photo_url} 
+              src={artist.imageUrl} 
               alt={artist.first_name} 
               className="artp-circle-img" 
             />
           </div>
           <h1 className="artp-artist-name">
-            {artist.first_name} {artist.last_name}
+            {artist.name} {artist.lastName}
           </h1>
         </aside>
       </div>
@@ -93,7 +93,7 @@ useEffect(() => {
     <div className="artp-card">
       <div className="artp-field">
         <span className="artp-label">Fecha de nacimiento:</span>
-        <span className="artp-value">{artist.birth_date}</span>
+        <span className="artp-value">{artist.birthdate}</span>
       </div>
       <div className="artp-field">
         <span className="artp-label">Nacionalidad:</span>
