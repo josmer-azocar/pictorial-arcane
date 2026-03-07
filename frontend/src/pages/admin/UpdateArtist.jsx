@@ -267,10 +267,10 @@ setLoading(false);
               @keyframes spin { to { transform: rotate(360deg); } }
               .spinner { width: 30px; height: 30px; border: 3px solid rgba(255, 255, 255, 0.3); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
             `}</style>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '12px', marginBottom: '1.5rem' }}>
               <div
                 style={{
-                  position: 'relative', width: '70px', height: '70px',
+                  position: 'relative', width: '120px', height: '120px',
                   borderRadius: '50%', border: '3px solid #7c3aed',
                   overflow: 'hidden', flexShrink: 0, background: '#1a0a2e',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -287,7 +287,7 @@ setLoading(false);
                       <img src={selectedArtist.imageUrl} alt={selectedArtist.name}
                         style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'filter 0.3s ease', filter: imageHovered ? 'brightness(0.4)' : 'brightness(1)' }} />
                     ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="#7c3aed" strokeWidth="1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none" viewBox="0 0 24 24" stroke="#7c3aed" strokeWidth="1">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                       </svg>
                     )}
@@ -328,11 +328,11 @@ setLoading(false);
                 )}
               </div>
             <div>
-              <h2 className="section-title" style={{ fontSize: '1.1rem', marginBottom: '4px' }}>
+              <h2 className="section-title" style={{ fontSize: '1.25rem', fontWeight: '600', color: '#f3f4f6', marginBottom: '2px' }}>
                 Editando a: {selectedArtist.name} {selectedArtist.lastName}
               </h2>
-              <span className="form-label">ID: #{selectedArtist.idArtist}</span>
-              <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '4px' }}>🖱️ Pasa el cursor sobre la foto para cambiarla</p>
+              <span className="form-label" style={{ fontSize: '0.85rem', color: '#9ca3af' }}>ID: #{selectedArtist.idArtist}</span>
+              <p style={{ fontSize: '0.78rem', color: '#6b7280', marginTop: '4px' }}>🖱️ Pasa el cursor sobre la foto para cambiarla</p>
             </div>
           </div>
           <div className="admin-line"></div>
