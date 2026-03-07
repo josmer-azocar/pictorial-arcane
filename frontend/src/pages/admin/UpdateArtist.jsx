@@ -294,24 +294,31 @@ setLoading(false);
                     {imageHovered && !uploadingImage && (
                       <div style={{
                         position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
                         animation: 'fadeIn 0.3s'
                       }}>
-                        <button onClick={() => fileInputRef.current.click()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15.5 10.5C15.5 12.433 13.933 14 12 14C10.067 14 8.5 12.433 8.5 10.5C8.5 8.567 10.067 7 12 7C13.933 7 15.5 8.567 15.5 10.5Z" stroke="white" strokeWidth="1.5"/>
-                            <path d="M19 2H5C3.34315 2 2 3.34315 2 5V19C2 20.6569 3.34315 22 5 22H19C20.6569 22 22 20.6569 22 19V5C22 3.34315 20.6569 2 19 2Z" stroke="white" strokeWidth="1.5"/>
-                            <path d="M18 7.5H18.01" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-                          </svg>
-                        </button>
-                        {selectedArtist.imageUrl && (
-                          <button onClick={(e) => { e.stopPropagation(); handleDeleteImage(selectedArtist.idArtist); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        {selectedArtist.imageUrl ? (
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleDeleteImage(selectedArtist.idArtist); }} 
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                          >
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path d="M10 12V17" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                               <path d="M14 12V17" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                               <path d="M4 7H20" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                               <path d="M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                               <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </button>
+                        ) : (
+                          <button 
+                            onClick={() => fileInputRef.current.click()} 
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                          >
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M15.5 10.5C15.5 12.433 13.933 14 12 14C10.067 14 8.5 12.433 8.5 10.5C8.5 8.567 10.067 7 12 7C13.933 7 15.5 8.567 15.5 10.5Z" stroke="white" strokeWidth="1.5"/>
+                              <path d="M19 2H5C3.34315 2 2 3.34315 2 5V19C2 20.6569 3.34315 22 5 22H19C20.6569 22 22 20.6569 22 19V5C22 3.34315 20.6569 2 19 2Z" stroke="white" strokeWidth="1.5"/>
+                              <path d="M18 7.5H18.01" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
                             </svg>
                           </button>
                         )}
