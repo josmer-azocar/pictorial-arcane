@@ -26,6 +26,28 @@ function DeleteArtist() {
     fetchArtists();
   }, []);
 
+ /* useEffect(() => {
+    const fetchArtists = async () => {
+      try {
+        // DATOS FALSOS TEMPORALES — borrar cuando el backend esté listo
+        const mockArtists = [
+          { idArtist: 1, name: 'Leonardo', lastName: 'Da Vinci', nationality: 'Italiana' },
+          { idArtist: 2, name: 'Pablo', lastName: 'Picasso', nationality: 'Española' },
+          { idArtist: 3, name: 'Frida', lastName: 'Kahlo', nationality: 'Mexicana' },
+          { idArtist: 4, name: 'Vincent', lastName: 'Van Gogh', nationality: 'Neerlandesa' },
+        ];
+        setArtists(mockArtists);
+        // const res = await axios.get(`${BASE_URL}/artist/all`);
+        // setArtists(res.data);
+      } catch (err) {
+        toast.error('Error al cargar artistas.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchArtists();
+  }, []);*/
+
   // DELETE /artists/{id}
   const handleDelete = async (id, name) => {
     if (!window.confirm(`¿Eliminar a ${name}? Esta acción no se puede deshacer.`)) return;
@@ -61,14 +83,15 @@ function DeleteArtist() {
             </thead>
             <tbody>
               {artists.map(a => (
-                <tr key={a.id}>
-                  <td className="td-id">#{a.id}</td>
-                  <td className="td-artwork">{a.first_name} {a.last_name}</td>
+              
+                  <tr key={a.idArtist}>
+                  <td className="td-id">#{a.idArtist}</td>
+                  <td className="td-artwork">{a.name} {a.lastName}</td>
                   <td>{a.nationality}</td>
                   <td>
                     <button className="btn-cancel"
                       style={{ color: '#f87171', borderColor: '#7f1d1d' }}
-                      onClick={() => handleDelete(a.id, `${a.first_name} ${a.last_name}`)}>
+                      onClick={() => handleDelete(a.idArtist, `${a.name} ${a.lastName}`)}>
                       Eliminar
                     </button>
                   </td>
