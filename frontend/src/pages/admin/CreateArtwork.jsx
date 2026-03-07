@@ -3,7 +3,7 @@ import './Admin.css';
 import FormSculpture from './FormSculpture.jsx';
 import FormPainting from './FormPainting.jsx';
 import FormPhotography from './FormPhotography.jsx';
-import FormCeramics from './FormCeramics.jsx';
+import FormCeramic from './FormCeramic.jsx';
 import FormGoldsmithing from './FormGoldsmithing.jsx';
 
 const CreateArtwork = () => {
@@ -12,7 +12,7 @@ const CreateArtwork = () => {
     const artworkTypes = [
         { id: 'SCULPTURE', label: 'Escultura', icon: '🗿' },
         { id: 'PHOTOGRAPHY', label: 'Fotografía', icon: '📷' },
-        { id: 'CERAMICS', label: 'Cerámica', icon: '🏺' },
+        { id: 'CERAMIC', label: 'Cerámica', icon: '🏺' },
         { id: 'GOLDSMITHING', label: 'Orfebrería', icon: '💍' },
         { id: 'PAINTING', label: 'Pintura', icon: '🎨' }
     ];
@@ -31,8 +31,8 @@ const CreateArtwork = () => {
                 return <FormPainting />;
             case 'PHOTOGRAPHY':
                 return <FormPhotography />;
-            case 'CERAMICS':
-                return <FormCeramics />;
+            case 'CERAMIC':
+                return <FormCeramic />;
             case 'GOLDSMITHING':
                 return <FormGoldsmithing />;
             default:

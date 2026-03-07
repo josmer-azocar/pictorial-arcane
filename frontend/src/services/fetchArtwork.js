@@ -53,12 +53,12 @@ export async function showArtwork(page = 0, sortBy = '', direction = 'asc', genr
                 { id: 12, name: "Composición VIII", image: "https://picsum.photos/id/120/400/500", id_artist: 110, genre: "Abstracto", precio: 140.00 }
             ];
 
-            // 2. filtrar por genero
+            // filtrar por genero
             if (genre) {
                 allArtworks = allArtworks.filter(art => art.genre === genre);
             }
 
-            // 3. precio
+            // precio
             if (sortBy === 'precio') {
                 allArtworks.sort((a, b) => direction === 'asc' ? a.precio - b.precio : b.precio - a.precio);
             } else if (sortBy === 'name') {
@@ -69,7 +69,7 @@ export async function showArtwork(page = 0, sortBy = '', direction = 'asc', genr
                 });
             }
 
-            // 4. Paginacion
+            // Paginacion
             const pageSize = 4;
             const startIndex = page * pageSize;
             const paginatedContent = allArtworks.slice(startIndex, startIndex + pageSize);
@@ -177,6 +177,21 @@ export const createSculpture = async (sculptureData, token) => {
  */
 export const createPhotography = async (photographyData, token) => {
     const response = await axios.post(`${url}/artwork/photography/add`, photographyData, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+    return response.data;
+};
+
+/**
+ * Crea una nueva ceramica en el backend.
+ * @param {object} ceramicData - Los datos de la cerámica.
+ * @param {string} token - El token de autenticación del administrador.
+ */
+export const createCeramic = async (ceramicData, token) => {
+    const response = await axios.post(`${url}/artwork/ceramic/add`, ceramicData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
