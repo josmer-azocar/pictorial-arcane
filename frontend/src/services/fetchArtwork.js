@@ -186,3 +186,14 @@ export const uploadArtworkImage = async (artworkId, file, token) => {
         }
     });
 };
+
+export const uploadArtistImage = async (artistId, file, token) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return await axios.post(`${url}/admin/${artistId}/artistImage`, formData, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+};
