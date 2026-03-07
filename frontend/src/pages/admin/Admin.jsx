@@ -13,6 +13,7 @@ import AddPhotography from './AddPhotography.jsx';
 import AddCeramic from './AddCeramic.jsx';
 import AddGoldsmith from './AddGoldsmith.jsx';
 
+import UpdateArtist from './UpdateArtist.jsx';
 function Admin() {
   const [activeSection, setActiveSection] = useState(null); // Vista actual
   const [artworkToEditId, setArtworkToEditId] = useState(null); // ID de la obra a editar
@@ -91,6 +92,8 @@ function Admin() {
             return <CreateArtist />;
       case 'deleteArtist':
         return <DeleteArtist />;
+      case 'updateArtist':
+        return <UpdateArtist />;
       // case 'viewArtwork':
       //   return <p>Aquí irá la vista de todas las obras</p>;
       // case 'deleteArtwork':

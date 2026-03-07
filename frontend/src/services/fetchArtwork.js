@@ -104,7 +104,7 @@ export async function showArtist() {
 // *Artistas
 // Trae un artista por su id - GET /artists/{id}
 export async function getArtistById(id) {
-  const url = `http://localhost:8080/artists/${id}`;
+  const url =`http://localhost:8080/artist/${id}`;
   try {
     const response = await axios.get(url);
     return response.data;
@@ -115,12 +115,12 @@ export async function getArtistById(id) {
 }
 
 // *Obras 
-// Trae todas las obras de un artista - GET /artworks?artistId={id}
+// Trae todas las obras de un artista - GET /artwork/search?idArtist={artistId}
 export async function getArtworksByArtist(artistId) {
-  const url = `http://localhost:8080/artworks?artistId=${artistId}`;
+  const url = `http://localhost:8080/artwork/search?idArtist=${artistId}`;
   try {
     const response = await axios.get(url);
-    return response.data;
+    return response.data.content;
   } catch (error) {
     console.error("Error al obtener obras:", error);
     throw error;
@@ -272,6 +272,17 @@ export const uploadArtworkImage = async (artworkId, file, token) => {
     formData.append('file', file);
 
     return await axios.post(`${url}/admin/${artworkId}/artorkImage`, formData, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+};
+
+export const uploadArtistImage = async (artistId, file, token) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return await axios.post(`${url}/admin/${artistId}/artistImage`, formData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
