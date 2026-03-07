@@ -3,7 +3,7 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Admin.css';
-import './Form.css';
+import './AddArtwork.css';
 
 const BASE_URL = 'http://localhost:8080';
 

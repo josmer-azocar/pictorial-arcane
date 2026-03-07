@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import './Admin.css';
-import FormSculpture from './FormSculpture.jsx';
-import FormPainting from './FormPainting.jsx';
-import FormPhotography from './FormPhotography.jsx';
-import FormCeramic from './FormCeramic.jsx';
-import FormGoldsmithing from './FormGoldsmithing.jsx';
+import AddSculpture from './AddSculpture.jsx';
+import AddPainting from './AddPainting.jsx';
+import AddPhotography from './AddPhotography.jsx';
+import AddCeramic from './AddCeramic.jsx';
+import AddGoldsmith from './AddGoldsmith.jsx';
 
 const CreateArtwork = () => {
     const [selectedType, setSelectedType] = useState(null);
@@ -13,7 +13,7 @@ const CreateArtwork = () => {
         { id: 'SCULPTURE', label: 'Escultura', icon: '🗿' },
         { id: 'PHOTOGRAPHY', label: 'Fotografía', icon: '📷' },
         { id: 'CERAMIC', label: 'Cerámica', icon: '🏺' },
-        { id: 'GOLDSMITHING', label: 'Orfebrería', icon: '💍' },
+        { id: 'GOLDSMITH', label: 'Orfebrería', icon: '💍' },
         { id: 'PAINTING', label: 'Pintura', icon: '🎨' }
     ];
 
@@ -26,15 +26,15 @@ const CreateArtwork = () => {
     const renderForm = () => {
         switch (selectedType) {
             case 'SCULPTURE':
-                return <FormSculpture />;
+                return <AddSculpture />;
             case 'PAINTING':
-                return <FormPainting />;
+                return <AddPainting />;
             case 'PHOTOGRAPHY':
-                return <FormPhotography />;
+                return <AddPhotography />;
             case 'CERAMIC':
-                return <FormCeramic />;
-            case 'GOLDSMITHING':
-                return <FormGoldsmithing />;
+                return <AddCeramic />;
+            case 'GOLDSMITH':
+                return <AddGoldsmith />;
             default:
                 return <p>Formulario no encontrado.</p>;
         }

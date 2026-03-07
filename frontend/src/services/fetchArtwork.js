@@ -35,23 +35,23 @@ export async function showArtist() {
 
 
 export async function showArtwork(page = 0, sortBy = '', direction = 'asc', genre = '') {
-    return new Promise((resolve) => {
-        setTimeout(() => {
+  return new Promise((resolve) => {
+      setTimeout(() => {
 
           let allArtworks = [
-                { id: 1, name: "Noche Estrellada", image: "https://picsum.photos/id/10/400/500", id_artist: 101, genre: "Impresionismo", precio: 100.00 },
-                { id: 2, name: "La Persistencia de la Memoria", image: "https://picsum.photos/id/20/400/500", id_artist: 102, genre: "Surrealismo", precio: 110.00 },
-                { id: 3, name: "El Grito", image: "https://picsum.photos/id/30/400/500", id_artist: 103, genre: "Expresionismo", precio: 150.00 },
-                { id: 4, name: "Guernica", image: "https://picsum.photos/id/40/400/500", id_artist: 102, genre: "Cubismo", precio: 120.00 },
-                { id: 5, name: "La Joven de la Perla", image: "https://picsum.photos/id/50/400/500", id_artist: 104, genre: "Barroco", precio: 190.00 },
-                { id: 6, name: "El Nacimiento de Venus", image: "https://picsum.photos/id/60/400/500", id_artist: 105, genre: "Renacimiento", precio: 125.00 },
-                { id: 7, name: "Las Meninas", image: "https://picsum.photos/id/70/400/500", id_artist: 106, genre: "Barroco", precio: 210.00 },
-                { id: 8, name: "La Creación de Adán", image: "https://picsum.photos/id/80/400/500", id_artist: 107, genre: "Renacimiento", precio: 130.00 },
-                { id: 9, name: "La Libertad guiando al pueblo", image: "https://picsum.photos/id/90/400/500", id_artist: 108, genre: "Romanticismo", precio: 175.00 },
-                { id: 10, name: "Impresión, sol naciente", image: "https://picsum.photos/id/100/400/500", id_artist: 101, genre: "Impresionismo", precio: 95.00 },
-                { id: 11, name: "El jardín de las delicias", image: "https://picsum.photos/id/110/400/500", id_artist: 109, genre: "Renacimiento", precio: 300.00 },
-                { id: 12, name: "Composición VIII", image: "https://picsum.photos/id/120/400/500", id_artist: 110, genre: "Abstracto", precio: 140.00 }
-            ];
+              { id: 1, name: "Noche Estrellada", image: "https://picsum.photos/id/10/400/500", id_artist: 101, genre: "Impresionismo", type: "PAINTING", precio: 100.00, status: 'AVAILABLE', technique: 'Óleo sobre lienzo', holder: 'Lienzo', style: 'Postimpresionismo', framed: 'true', width: 92, height: 73 },
+              { id: 2, name: "La Persistencia de la Memoria", image: "https://picsum.photos/id/20/400/500", id_artist: 102, genre: "Surrealismo", type: "PAINTING", precio: 110.00, status: 'AVAILABLE', technique: 'Óleo sobre lienzo', holder: 'Lienzo', style: 'Surrealismo', framed: 'false', width: 33, height: 24 },
+              { id: 3, name: "El Grito", image: "https://picsum.photos/id/30/400/500", id_artist: 103, genre: "Expresionismo", type: "PAINTING", precio: 150.00, status: 'RESERVED', technique: 'Óleo, temple y pastel sobre cartón', holder: 'Cartón', style: 'Expresionismo', framed: 'true', width: 73.5, height: 91 },
+              { id: 4, name: "El Pensador", image: "https://picsum.photos/id/40/400/500", id_artist: 102, genre: "Realismo", type: "SCULPTURE", precio: 120.00, status: 'AVAILABLE', material: 'Bronce', weight: 650, length: 60, width: 80, depth: 145 },
+              { id: 5, name: "La Joven de la Perla", image: "https://picsum.photos/id/50/400/500", id_artist: 104, genre: "Barroco", type: "PAINTING", precio: 190.00, status: 'AVAILABLE', technique: 'Óleo sobre lienzo', holder: 'Lienzo', style: 'Barroco', framed: 'true', width: 39, height: 44.5 },
+              { id: 6, name: "El Nacimiento de Venus", image: "https://picsum.photos/id/60/400/500", id_artist: 105, genre: "Renacimiento", type: "PAINTING", precio: 125.00, status: 'AVAILABLE', technique: 'Temple sobre lienzo', holder: 'Lienzo', style: 'Renacimiento', framed: 'false', width: 278.5, height: 172.5 },
+              { id: 7, name: "Ansel Adams en Yosemite", image: "https://picsum.photos/id/70/400/500", id_artist: 106, genre: "Paisaje", type: "PHOTOGRAPHY", precio: 210.00, status: 'AVAILABLE', printType: 'Gelatin silver print', resolution: 'N/A', color: 'B&N', serialNumber: '1/1', camera: 'view camera' },
+              { id: 8, name: "Jarrón Griego", image: "https://picsum.photos/id/80/400/500", id_artist: 107, genre: "Clásico", type: "CERAMIC", precio: 130.00, status: 'AVAILABLE', materialType: 'Terracota', technique: 'Figura roja', finish: 'Esmaltado', cookingTemperature: 900, weight: 5, width: 20, height: 35 },
+              { id: 9, name: "Anillo de la Corona", image: "https://picsum.photos/id/90/400/500", id_artist: 108, genre: "Joyería", type: "GOLDSMITH", precio: 175.00, status: 'RESERVED', material: 'Oro 24k', preciousStones: 'Diamante, 12 Zafiros', weight: 250 },
+              { id: 10, name: "Impresión, sol naciente", image: "https://picsum.photos/id/100/400/500", id_artist: 101, genre: "Impresionismo", type: "PAINTING", precio: 95.00, status: 'AVAILABLE', technique: 'Óleo sobre lienzo', holder: 'Lienzo', style: 'Impresionismo', framed: 'true', width: 63, height: 48 },
+              { id: 11, name: "David", image: "https://picsum.photos/id/110/400/500", id_artist: 109, genre: "Renacimiento", type: "SCULPTURE", precio: 300.00, status: 'AVAILABLE', material: 'Mármol', weight: 5660, length: 199, width: 199, depth: 517 },
+              { id: 12, name: "Composición VIII", image: "https://picsum.photos/id/120/400/500", id_artist: 110, genre: "Abstracto", type: "PAINTING", precio: 140.00, status: 'AVAILABLE', technique: 'Óleo sobre lienzo', holder: 'Lienzo', style: 'Abstracto', framed: 'false', width: 201, height: 140 }
+          ];
 
             // filtrar por genero
             if (genre) {
@@ -82,7 +82,7 @@ export async function showArtwork(page = 0, sortBy = '', direction = 'asc', genr
                 number: page
             });
         }, 500);
-    });
+  });
 }
 
 export async function showArtist() {
@@ -126,6 +126,7 @@ export async function getArtworksByArtist(artistId) {
     throw error;
   }
 }
+/*
 // Trae una obra por su id - GET /artworks/{id}
 export async function getArtworkById(id) {
   const url = `http://localhost:8080/artworks/${id}`;
@@ -136,6 +137,35 @@ export async function getArtworkById(id) {
     console.error("Error al obtener obra:", error);
     throw error;
   }
+}
+*/
+
+// Mock para obtener una obra por ID
+export async function getArtworkById(id) {
+  const allArtworks = [
+      { id: 1, name: "Noche Estrellada", image: "https://picsum.photos/id/10/400/500", id_artist: 101, genre: "Impresionismo", type: "PAINTING", precio: 100.00, status: 'AVAILABLE', technique: 'Óleo sobre lienzo', holder: 'Lienzo', style: 'Postimpresionismo', framed: 'true', width: 92, height: 73 },
+      { id: 2, name: "La Persistencia de la Memoria", image: "https://picsum.photos/id/20/400/500", id_artist: 102, genre: "Surrealismo", type: "PAINTING", precio: 110.00, status: 'AVAILABLE', technique: 'Óleo sobre lienzo', holder: 'Lienzo', style: 'Surrealismo', framed: 'false', width: 33, height: 24 },
+      { id: 3, name: "El Grito", image: "https://picsum.photos/id/30/400/500", id_artist: 103, genre: "Expresionismo", type: "PAINTING", precio: 150.00, status: 'RESERVED', technique: 'Óleo, temple y pastel sobre cartón', holder: 'Cartón', style: 'Expresionismo', framed: 'true', width: 73.5, height: 91 },
+      { id: 4, name: "El Pensador", image: "https://picsum.photos/id/40/400/500", id_artist: 102, genre: "Realismo", type: "SCULPTURE", precio: 120.00, status: 'AVAILABLE', material: 'Bronce', weight: 650, length: 60, width: 80, depth: 145 },
+      { id: 5, name: "La Joven de la Perla", image: "https://picsum.photos/id/50/400/500", id_artist: 104, genre: "Barroco", type: "PAINTING", precio: 190.00, status: 'AVAILABLE', technique: 'Óleo sobre lienzo', holder: 'Lienzo', style: 'Barroco', framed: 'true', width: 39, height: 44.5 },
+      { id: 6, name: "El Nacimiento de Venus", image: "https://picsum.photos/id/60/400/500", id_artist: 105, genre: "Renacimiento", type: "PAINTING", precio: 125.00, status: 'AVAILABLE', technique: 'Temple sobre lienzo', holder: 'Lienzo', style: 'Renacimiento', framed: 'false', width: 278.5, height: 172.5 },
+      { id: 7, name: "Ansel Adams en Yosemite", image: "https://picsum.photos/id/70/400/500", id_artist: 106, genre: "Paisaje", type: "PHOTOGRAPHY", precio: 210.00, status: 'AVAILABLE', printType: 'Gelatin silver print', resolution: 'N/A', color: 'B&N', serialNumber: '1/1', camera: 'view camera' },
+      { id: 8, name: "Jarrón Griego", image: "https://picsum.photos/id/80/400/500", id_artist: 107, genre: "Clásico", type: "CERAMIC", precio: 130.00, status: 'AVAILABLE', materialType: 'Terracota', technique: 'Figura roja', finish: 'Esmaltado', cookingTemperature: 900, weight: 5, width: 20, height: 35 },
+      { id: 9, name: "Anillo de la Corona", image: "https://picsum.photos/id/90/400/500", id_artist: 108, genre: "Joyería", type: "GOLDSMITH", precio: 175.00, status: 'RESERVED', material: 'Oro 24k', preciousStones: 'Diamante, 12 Zafiros', weight: 250 },
+      { id: 10, name: "Impresión, sol naciente", image: "https://picsum.photos/id/100/400/500", id_artist: 101, genre: "Impresionismo", type: "PAINTING", precio: 95.00, status: 'AVAILABLE', technique: 'Óleo sobre lienzo', holder: 'Lienzo', style: 'Impresionismo', framed: 'true', width: 63, height: 48 },
+      { id: 11, name: "David", image: "https://picsum.photos/id/110/400/500", id_artist: 109, genre: "Renacimiento", type: "SCULPTURE", precio: 300.00, status: 'AVAILABLE', material: 'Mármol', weight: 5660, length: 199, width: 199, depth: 517 },
+      { id: 12, name: "Composición VIII", image: "https://picsum.photos/id/120/400/500", id_artist: 110, genre: "Abstracto", type: "PAINTING", precio: 140.00, status: 'AVAILABLE', technique: 'Óleo sobre lienzo', holder: 'Lienzo', style: 'Abstracto', framed: 'false', width: 201, height: 140 }
+  ];
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const artwork = allArtworks.find(art => art.id === id);
+      if (artwork) {
+        resolve(artwork);
+      } else {
+        reject(new Error("Artwork not found"));
+      }
+    }, 300);
+  });
 }
 // Reserva una obra - POST /artworks/{id}/reserve
 export async function reserveArtwork(artworkId, securityCode) {
@@ -192,6 +222,36 @@ export const createPhotography = async (photographyData, token) => {
  */
 export const createCeramic = async (ceramicData, token) => {
     const response = await axios.post(`${url}/artwork/ceramic/add`, ceramicData, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+    return response.data;
+};
+
+/**
+ * Crea una nueva pintura en el backend.
+ * @param {object} paintingData - Los datos de la pintura.
+ * @param {string} token - El token de autenticación del administrador.
+ */
+export const createPainting = async (paintingData, token) => {
+    const response = await axios.post(`${url}/artwork/painting/add`, paintingData, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+    return response.data;
+};
+
+/**
+ * Crea una nueva pieza de orfebrería en el backend.
+ * @param {object} goldsmithData - Los datos de la orfebrería.
+ * @param {string} token - El token de autenticación del administrador.
+ */
+export const createGoldsmith = async (goldsmithData, token) => {
+    const response = await axios.post(`${url}/artwork/goldsmith/add`, goldsmithData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
