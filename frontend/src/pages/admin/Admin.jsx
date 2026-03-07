@@ -6,12 +6,13 @@ import "./Admin.css";
 import CreateArtist from "./CreateArtist.jsx";
 import DeleteArtist from './DeleteArtist.jsx';
 import UpdateArtwork from './UpdateArtwork.jsx';
-import { getArtworkById } from '../../services/fetchArtwork.js';
+import { getArtworkByIdMock } from '../../services/fetchArtwork.js';
 import AddSculpture from './AddSculpture.jsx';
 import AddPainting from './AddPainting.jsx';
 import AddPhotography from './AddPhotography.jsx';
 import AddCeramic from './AddCeramic.jsx';
 import AddGoldsmith from './AddGoldsmith.jsx';
+import DeleteArtwork from './DeleteArtwork.jsx';
 
 import UpdateArtist from './UpdateArtist.jsx';
 function Admin() {
@@ -39,7 +40,7 @@ function Admin() {
     const fetchArtworkToEdit = async () => {
       setLoadingEdit(true);
       try {
-        const data = await getArtworkById(artworkToEditId);
+        const data = await getArtworkByIdMock(artworkToEditId);
         setArtworkToEdit(data);
       } catch (error) {
         console.error("Error al cargar la obra para editar:", error);
@@ -96,8 +97,8 @@ function Admin() {
         return <UpdateArtist />;
       // case 'viewArtwork':
       //   return <p>Aquí irá la vista de todas las obras</p>;
-      // case 'deleteArtwork':
-      //   return <DeleteArtwork />;
+      case 'deleteArtwork':
+        return <DeleteArtwork />;
       case 'updateArtwork':
         return artworkToEditId ?
           renderUpdateForm() :

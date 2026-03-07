@@ -1,33 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { showArtworkMock, searchArtworksMock, showArtistMock } from '../../services/fetchArtwork';
+import { showArtworkMock, searchArtworksMock, showArtistMock, deleteArtworkMock } from '../../services/fetchArtwork';
 import './Admin.css';
 
-const UpdateArtwork = ({ onEditSelect }) => {
+const DeleteArtwork = () => {
   const [artworks, setArtworks] = useState([]);
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ id: '', artistId: '', genre: '' });
 
-  useEffect(() => {
-    const fetchArtworks = async () => {
-      setLoading(true);
-      try {
-        // Usamos la función MOCK para tus pruebas
-        const response = await showArtworkMock(0);
-        setArtworks(response.content);
+  // Carga inicial de datos
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const response = await showArtworkMock(0);
+      setArtworks(response.content);
+      
+      const artistsData = await showArtistMock();
+      setArtists(artistsData);
+    } catch (err) {
+      toast.error('Error al cargar las obras.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        // Cargar artistas para el filtro desde el MOCK
-        const artistsData = await showArtistMock();
-        setArtists(artistsData);
-      } catch (err) {
-        toast.error('Error al cargar las obras.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchArtworks();
+  useEffect(() => {
+    loadData();
   }, []);
 
   const handleFilterChange = (e) => {
@@ -52,36 +52,47 @@ const UpdateArtwork = ({ onEditSelect }) => {
 
   const handleClear = async () => {
     setFilters({ id: '', artistId: '', genre: '' });
-    setLoading(true);
-    try {
-      const response = await showArtworkMock(0);
-      setArtworks(response.content);
-    } catch (err) {
-      toast.error('Error al recargar las obras.');
-    } finally {
-      setLoading(false);
-    }
+    loadData();
   };
 
-  const handleEdit = (artworkId) => {
-    // Llama a la función pasada por props para notificar al componente padre (Admin.jsx)
-    // que se ha seleccionado una obra para editar.
-    onEditSelect(artworkId);
+  const handleDelete = async (id, name) => {
+    // Confirmación simple del navegador
+    if (window.confirm(`¿Estás seguro de que deseas eliminar la obra "${name}"? Esta acción no se puede deshacer.`)) {
+        try {
+            // Usamos el mock para la prueba
+            await deleteArtworkMock(id);
+            toast.success(`La obra "${name}" ha sido eliminada.`);
+            
+            // Recargamos la lista para ver los cambios
+            if (filters.id || filters.artistId || filters.genre) {
+                // Si había filtros activos, repetimos la búsqueda
+                const response = await searchArtworksMock(filters);
+                setArtworks(response.content || []);
+            } else {
+                // Si no, recargamos todo
+                const response = await showArtworkMock(0);
+                setArtworks(response.content);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Error al eliminar la obra.");
+        }
+    }
   };
 
   return (
     <div className="admin-section">
       <ToastContainer position="top-center" theme="dark" />
-      <h1 className="section-title">Actualizar Obra</h1>
+      <h1 className="section-title">Borrar Obra</h1>
       <div className="admin-line"></div>
       <p className="admin-subtitle">
-        Selecciona la obra que deseas editar.
+        Busca y elimina obras del sistema permanentemente.
       </p>
 
-      {/* Barra de Filtros */}
+      {/* Barra de Filtros (Reutilizada de UpdateArtwork) */}
       <form className="admin-form" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: '15px', maxWidth: '100%', marginTop: '20px', marginBottom: '30px' }} onSubmit={handleSearch}>
         <div style={{ flex: 1, minWidth: '150px' }}>
-          <input type="number" name="id" placeholder="Buscar por ID de Obra" value={filters.id} onChange={handleFilterChange} style={{ margin: 0 }} />
+          <input type="number" name="id" placeholder="Buscar por ID" value={filters.id} onChange={handleFilterChange} style={{ margin: 0 }} />
         </div>
         <div style={{ flex: 1, minWidth: '200px' }}>
           <select name="artistId" value={filters.artistId} onChange={handleFilterChange} style={{ margin: 0 }}>
@@ -94,12 +105,8 @@ const UpdateArtwork = ({ onEditSelect }) => {
         <div style={{ flex: 1, minWidth: '200px' }}>
           <input type="text" name="genre" placeholder="Filtrar por Género" value={filters.genre} onChange={handleFilterChange} style={{ margin: 0 }} />
         </div>
-        <button type="submit" className="btn-primary" style={{ height: '50px', marginTop: '0' }} disabled={loading}>
-          {loading ? 'Buscando...' : 'Buscar'}
-        </button>
-        <button type="button" className="btn-secondary" onClick={handleClear} style={{ height: '50px', marginTop: '0' }} disabled={loading}>
-          Limpiar
-        </button>
+        <button type="submit" className="btn-primary" style={{ height: '50px', marginTop: '0' }} disabled={loading}>Buscar</button>
+        <button type="button" className="btn-secondary" onClick={handleClear} style={{ height: '50px', marginTop: '0' }} disabled={loading}>Limpiar</button>
       </form>
 
       {loading ? (
@@ -108,13 +115,7 @@ const UpdateArtwork = ({ onEditSelect }) => {
         <div className="table-wrapper" style={{ marginTop: '40px' }}>
           <table className="admin-table">
             <thead>
-              <tr>
-                <th>ID</th>
-                <th>Obra</th>
-                <th>Género</th>
-                <th>Precio</th>
-                <th>Acciones</th>
-              </tr>
+              <tr><th>ID</th><th>Obra</th><th>Género</th><th>Precio</th><th>Acciones</th></tr>
             </thead>
             <tbody>
               {artworks.map(art => (
@@ -125,14 +126,12 @@ const UpdateArtwork = ({ onEditSelect }) => {
                   <td className="td-price">${art.precio?.toLocaleString()}</td>
                   <td>
                     <div className="action-buttons">
-                      <button className="btn-invoice" onClick={() => handleEdit(art.id)}>Seleccionar para Editar</button>
+                      <button className="btn-cancel" onClick={() => handleDelete(art.id, art.name)}>Eliminar</button>
                     </div>
                   </td>
                 </tr>
               ))}
-              {artworks.length === 0 && (
-                <tr><td colSpan="5" className="empty-state">No hay obras registradas.</td></tr>
-              )}
+              {artworks.length === 0 && <tr><td colSpan="5" className="empty-state">No hay obras registradas.</td></tr>}
             </tbody>
           </table>
         </div>
@@ -141,4 +140,4 @@ const UpdateArtwork = ({ onEditSelect }) => {
   );
 };
 
-export default UpdateArtwork;
+export default DeleteArtwork;
