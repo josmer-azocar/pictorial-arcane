@@ -9,7 +9,36 @@ export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const login = (userData, token) => {
+    setIsLoggedIn(true);
+    setUser(userData); // Now user state has email, surname, etc.
+    localStorage.setItem("token", token);
+    // Save the object as a string so it survives a page refresh
+    localStorage.setItem("user_info", JSON.stringify(userData));
+};
+
+// 2. Update the initializeUser (useEffect)
     useEffect(() => {
+        const initializeUser = () => {
+            const savedToken = localStorage.getItem("token");
+            const savedUserInfo = localStorage.getItem("user_info");
+
+            if (savedToken && savedUserInfo) {
+                try {
+                    const parsedUser = JSON.parse(savedUserInfo);
+                    setIsLoggedIn(true);
+                    setUser(parsedUser); 
+                } catch (error) {
+                    console.error("Error parsing user data");
+                    logout();
+                }
+            }
+            setLoading(false);
+        };
+        initializeUser();
+    }, []);
+
+    /*useEffect(() => {
 
         const initializeUser = async () => {
             const savedToken = localStorage.getItem("token");
@@ -17,17 +46,20 @@ export const AuthProvider = ({children}) => {
             if (savedToken) {
 
                 try {
-                    /*const tokenToDecode = savedToken.startsWith("Bearer ") 
+                    const tokenToDecode = savedToken.startsWith("Bearer ") 
                     ? savedToken.split(" ")[1] 
                     : savedToken;
                     console.log("Attempting to decode:", tokenToDecode);
-                    const decoded = jwtDecode(tokenToDecode);*/
+                    const decoded = jwtDecode(tokenToDecode);
                     setIsLoggedIn(true);
-                    setUser({ name: savedToken.name || "Usuario", 
+                    setUser({ name: decoded.name || "Usuario", 
                         pfp: "https://fastly.picsum.photos/id/55/4608/3072.jpg?hmac=ahGhylwdN52ULB37deeMZX6T_G7NiERtoPhwydMvUKQ",
-                        role: savedToken.role
+                        role: decoded.role,
+                        surname: decoded.surname,
+                        email: decoded.email,
+
                     });
-                    //CAMBIAR A decoded.userName cuando se conecte el backend
+                    //CAMBIAR A decoded.name cuando se conecte el backend
 
                 } catch (error) {
                     console.error("Token inválido");
@@ -40,14 +72,19 @@ export const AuthProvider = ({children}) => {
         }
         initializeUser();
 
-    }, []);
+    }, []); */
 
-    const login = (userName, token) => {
+    /*const login = (userData, token) => {
         setIsLoggedIn(true);
         localStorage.setItem("token", token);
-        console.log(userName);
-        setUser({name: userName, pfp: "https://picsum.photos/200"});
-    }
+        console.log(userData);
+            setUser({
+            name: userData.name,
+            surname: userData.surname,
+            email: userData.email,
+            pfp: "https://picsum.photos/200"
+        });
+    }*/
 
     const logout = () => {
         setIsLoggedIn(false);
