@@ -121,58 +121,35 @@ function CreateArtist() {
           <label className="form-label">Foto del Artista</label>
           <label
             htmlFor="artist-image-upload"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              border: '2px dashed #6b46c1',
-              borderRadius: '12px',
-              padding: '32px 16px',
-              cursor: 'pointer',
-              backgroundColor: imageFile ? '#1a0a2e' : 'transparent',
-              transition: 'all 0.2s ease',
-              color: '#a78bfa',
-              textAlign: 'center'
-            }}
+            className={`image-upload-area ${imageFile ? 'has-file' : ''}`}
           >
             {imageFile ? (
               <>
                 <img
                   src={URL.createObjectURL(imageFile)}
                   alt="preview"
-                  style={{
-                    width: '120px',
-                    height: '120px',
-                    objectFit: 'cover',
-                    borderRadius: '50%',
-                    border: '3px solid #6b46c1',
-                    marginBottom: '8px'
-                  }}
+                  className="image-upload-preview"
                 />
-                <span style={{ fontSize: '0.85rem', color: '#c4b5fd' }}>
-                  {imageFile.name}
-                </span>
-                <span style={{ fontSize: '0.75rem', color: '#7c6f9f' }}>
-                  Haz clic para cambiar la imagen
-                </span>
+                <span className="image-upload-filename">{imageFile.name}</span>
+                <span className="image-upload-subtitle">Haz clic para cambiar</span>
               </>
             ) : (
               <>
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-                  fill="none" viewBox="0 0 24 24" stroke="#6b46c1" strokeWidth="1.5">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="image-upload-icon"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="#7c3aed"
+                  strokeWidth="1.5"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round"
-                    d="M12 16v-8m0 0-3 3m3-3 3 3M4.5 19.5h15a1.5 1.5 0 
-                    001.5-1.5V8.25a1.5 1.5 0 00-1.5-1.5H15.75l-1.5-3h-4.5l-1.5 
-                    3H4.5A1.5 1.5 0 003 8.25V18a1.5 1.5 0 001.5 1.5z" />
+                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 
+                    2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 
+                    4.5M12 3v13.5" />
                 </svg>
-                <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>
-                  Haz clic para subir una foto
-                </span>
-                <span style={{ fontSize: '0.78rem', color: '#7c6f9f' }}>
-                  PNG, JPG, WEBP — máx. 5MB
-                </span>
+                <span className="image-upload-title">Haz clic para subir una foto</span>
+                <span className="image-upload-subtitle">PNG, JPG, WEBP — máx. 5MB</span>
               </>
             )}
           </label>
@@ -180,8 +157,8 @@ function CreateArtist() {
             id="artist-image-upload"
             type="file"
             accept="image/*"
+            className="image-upload-input"
             onChange={handleImageChange}
-            style={{ display: 'none' }}
           />
         </div>
 
