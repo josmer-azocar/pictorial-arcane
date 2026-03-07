@@ -3,7 +3,7 @@ import { useState } from 'react';
 import {logUser} from '../../services/authUser.js';
 import { useNavigate } from 'react-router-dom';
 import Loading from '../../components/Loading.jsx'
-import { useAuth } from '../../services/authContext.jsx';
+import { useAuth } from '../../services/AuthContext.jsx';
 
 function Login() {
 
@@ -31,7 +31,7 @@ function Login() {
             const data = await logUser({email, password});
             console.log(data.user?.name);
             console.log(data.token);
-            login(data.user?.name || "Usuario", data.token);
+            login(data.user, data.token);
             console.log('Fetch Exitoso ', data);
             if (data.user?.role === "client" || data.user?.role === "CLIENT") {
                 navigate("/dashboard");

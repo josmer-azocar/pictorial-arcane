@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useParams } from 'react-router-dom';
-import { useAuth } from '../../services/authContext.jsx';
+import { useAuth } from '../../services/AuthContext.jsx';
 import { getArtworkById } from '../../services/fetchArtwork.js';
 import { reserveArtwork } from '../../services/fetchSales.js';
 import { getAssignedSecurityQuestions, recoverSecurityCode } from '../../services/authUser.js';
