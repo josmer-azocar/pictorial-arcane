@@ -1,6 +1,6 @@
 import axios from "axios";
-const url = "http://localhost:8080";
-
+//const url = "http://localhost:8080";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 /*export async function showArtwork(page = 0, sortBy = '', direction = 'asc', art_genre = ''){
     try {
@@ -104,9 +104,9 @@ export async function showArtist() {
 // *Artistas
 // Trae un artista por su id - GET /artists/{id}
 export async function getArtistById(id) {
-  const url =`http://localhost:8080/artist/${id}`;
+  //const url =`http://localhost:8080/artist/${id}`;
   try {
-    const response = await axios.get(url);
+    const response = await axios.get(`${API_BASE_URL}/artist/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error al obtener artista:", error);
@@ -117,9 +117,9 @@ export async function getArtistById(id) {
 // *Obras 
 // Trae todas las obras de un artista - GET /artwork/search?idArtist={artistId}
 export async function getArtworksByArtist(artistId) {
-  const url = `http://localhost:8080/artwork/search?idArtist=${artistId}`;
+  //const url = `http://localhost:8080/artwork/search?idArtist=${artistId}`;
   try {
-    const response = await axios.get(url);
+    const response = await axios.get(`${API_BASE_URL}/artwork/search?idArtist=${artistId}`);
     return response.data.content;
   } catch (error) {
     console.error("Error al obtener obras:", error);
@@ -129,9 +129,9 @@ export async function getArtworksByArtist(artistId) {
 /*
 // Trae una obra por su id - GET /artworks/{id}
 export async function getArtworkById(id) {
-  const url = `http://localhost:8080/artworks/${id}`;
+  //const url = `http://localhost:8080/artworks/${id}`;
   try {
-    const response = await axios.get(url);
+    const response = await axios.get(`${API_BASE_URL}/artworks/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error al obtener obra:", error);
@@ -169,9 +169,9 @@ export async function getArtworkById(id) {
 }
 // Reserva una obra - POST /artworks/{id}/reserve
 export async function reserveArtwork(artworkId, securityCode) {
-  const url = `http://localhost:8080/artworks/${artworkId}/reserve`;
+  //const url = `http://localhost:8080/artworks/${artworkId}/reserve`;
   try {
-    const response = await axios.post(url, {
+    const response = await axios.post(`${API_BASE_URL}/artworks/${artworkId}/reserve`, {
       security_code: securityCode
     }, {
       headers: {
@@ -191,7 +191,7 @@ export async function reserveArtwork(artworkId, securityCode) {
  * @param {string} token - El token de autenticación del administrador.
  */
 export const createSculpture = async (sculptureData, token) => {
-    const response = await axios.post(`${url}/artwork/sculpture/add`, sculptureData, {
+    const response = await axios.post(`${API_BASE_URL}/artwork/sculpture/add`, sculptureData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -206,7 +206,7 @@ export const createSculpture = async (sculptureData, token) => {
  * @param {string} token - El token de autenticación del administrador.
  */
 export const createPhotography = async (photographyData, token) => {
-    const response = await axios.post(`${url}/artwork/photography/add`, photographyData, {
+    const response = await axios.post(`${API_BASE_URL}/artwork/photography/add`, photographyData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -221,7 +221,7 @@ export const createPhotography = async (photographyData, token) => {
  * @param {string} token - El token de autenticación del administrador.
  */
 export const createCeramic = async (ceramicData, token) => {
-    const response = await axios.post(`${url}/artwork/ceramic/add`, ceramicData, {
+    const response = await axios.post(`${API_BASE_URL}/artwork/ceramic/add`, ceramicData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -236,7 +236,7 @@ export const createCeramic = async (ceramicData, token) => {
  * @param {string} token - El token de autenticación del administrador.
  */
 export const createPainting = async (paintingData, token) => {
-    const response = await axios.post(`${url}/artwork/painting/add`, paintingData, {
+    const response = await axios.post(`${API_BASE_URL}/artwork/painting/add`, paintingData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -251,7 +251,7 @@ export const createPainting = async (paintingData, token) => {
  * @param {string} token - El token de autenticación del administrador.
  */
 export const createGoldsmith = async (goldsmithData, token) => {
-    const response = await axios.post(`${url}/artwork/goldsmith/add`, goldsmithData, {
+    const response = await axios.post(`${API_BASE_URL}/artwork/goldsmith/add`, goldsmithData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -271,7 +271,7 @@ export const uploadArtworkImage = async (artworkId, file, token) => {
     const formData = new FormData();
     formData.append('file', file);
 
-    return await axios.post(`${url}/admin/${artworkId}/artorkImage`, formData, {
+    return await axios.post(`${API_BASE_URL}/admin/${artworkId}/artorkImage`, formData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
@@ -282,7 +282,7 @@ export const uploadArtworkImage = async (artworkId, file, token) => {
 export const uploadArtistImage = async (artistId, file, token) => {
     const formData = new FormData();
     formData.append('file', file);
-    return await axios.post(`${url}/admin/${artistId}/artistImage`, formData, {
+    return await axios.post(`${API_BASE_URL}/admin/${artistId}/artistImage`, formData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
