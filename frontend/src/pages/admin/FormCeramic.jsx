@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { createPhotography, uploadArtworkImage } from '../../services/fetchArtwork.js';
+import { createCeramic, uploadArtworkImage } from '../../services/fetchArtwork.js';
 import { useAuth } from '../../services/AuthContext';
 import './Form.css';
 
@@ -9,14 +9,16 @@ const initialState = {
     name: '',
     status: 'AVAILABLE',
     price: '',
-    printType: '',
-    resolution: '',
-    color: '',
-    serialNumber: '',
-    camera: ''
+    materialType: '',
+    technique: '',
+    finish: '',
+    cookingTemperature: '',
+    weight: '',
+    width: '',
+    height: ''
 };
 
-const FormPhotography = () => {
+const FormCeramic = () => {
     const { token } = useAuth();
     const [formData, setFormData] = useState(initialState);
     const [isLoading, setIsLoading] = useState(false);
@@ -49,43 +51,38 @@ const FormPhotography = () => {
             toast.error(msg);
             return;
         }
-
         setIsLoading(true);
         let newArtworkId = null;
 
         try {
-            // Crear la fotografía
-            const photographyData = {
+            //Crear laCERAMICA
+            const ceramicData = {
                 ...formData,
                 price: parseFloat(formData.price)
             };
-
-            const createdResponse = await createPhotography(photographyData, token);
+            const createdResponse = await createCeramic(ceramicData, token);
             newArtworkId = createdResponse?.artWork?.id;
 
             if (!newArtworkId) {
                 throw new Error("La respuesta del servidor no contenía el ID de la obra tras su creación.");
             }
-
-            // Subir la imagen
+            //Subir la imagen
             await uploadArtworkImage(newArtworkId, imageFile, token);
 
-            toast.success('¡Fotografía y su imagen han sido registradas con éxito!');
+            toast.success('¡Cerámica y su imagen han sido registradas con éxito!');
             setFormData(initialState);
             setImageFile(null);
             if (document.getElementById('image-upload')) {
                 document.getElementById('image-upload').value = '';
             }
-
         } catch (err) {
             let finalErrorMessage;
             const serverMessage = err.response?.data?.message || err.message;
-
             if (newArtworkId) {
-                finalErrorMessage = `La fotografía se creó (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
-                toast.warning('La fotografía se creó pero la imagen no se pudo subir. Por favor, intente subir la imagen desde el panel de edición.');
+                finalErrorMessage = `La cerámica se creó (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
+                toast.warning('La cerámica se creó pero la imagen no se pudo subir. Por favor, intente subir la imagen desde el panel de edición.');
             } else {
-                finalErrorMessage = `Error al crear la fotografía: ${serverMessage}`;
+                finalErrorMessage = `Error al crear la cerámica: ${serverMessage}`;
                 toast.error(finalErrorMessage);
             }
             setError(finalErrorMessage);
@@ -107,15 +104,15 @@ const FormPhotography = () => {
                 pauseOnHover
                 theme="dark"
             />
-            <h2 className="section-title">Nueva Fotografía</h2>
-            <p className="admin-subtitle">Detalles específicos para fotografía (resolución, tipo de impresión, edición).</p>
-            
+            <h2 className="section-title">Nueva Cerámica</h2>
+            <p className="admin-subtitle">Detalles específicos para cerámica (material, técnica, temperatura de cocción...).</p>
+
             <form className="admin-form" onSubmit={handleSubmit}>
                 {error && <p className="error-message">{error}</p>}
 
                 <div className="form-group">
                     <label className="form-label">Título de la Obra</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Ej: Atardecer Urbano" required />
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Ej: Pirámide Amarilla" required />
                 </div>
 
                 <div className="form-group">
@@ -138,21 +135,25 @@ const FormPhotography = () => {
                 </div>
 
                 <div className="form-row">
-                    <div className="form-group"><label className="form-label">Cámara</label><input type="text" name="camera" value={formData.camera} onChange={handleChange} placeholder="Ej: Canon EOS R5" required /></div>
-                    <div className="form-group"><label className="form-label">Resolución</label><input type="text" name="resolution" value={formData.resolution} onChange={handleChange} placeholder="Ej: 300dpi, 4K" required /></div>
+                    <div className="form-group"><label className="form-label">Material</label><input type="text" name="materialType" value={formData.materialType} onChange={handleChange} placeholder="Ej: Arcilla Roja, Porcelana" required /></div>
+                    <div className="form-group"><label className="form-label">Técnica</label><input type="text" name="technique" value={formData.technique} onChange={handleChange} placeholder="Ej: Modelado a mano, torno alfarero, moldeo" required /></div>
                 </div>
 
                 <div className="form-row">
-                    <div className="form-group"><label className="form-label">Tipo de Impresión</label><input type="text" name="printType" value={formData.printType} onChange={handleChange} placeholder="Ej: Papel Fine Art" required /></div>
-                    <div className="form-group"><label className="form-label">Color</label><input type="text" name="color" value={formData.color} onChange={handleChange} placeholder="Ej: B&N, Color" required /></div>
+                    <div className="form-group"><label className="form-label">Acabado</label><input type="text" name="finish" value={formData.finish} onChange={handleChange} placeholder="Ej: brillante, mate, satinado..." required /></div>
+                    <div className="form-group"><label className="form-label">Temperatura de Cocción</label><input type="number" name="cookingTemperature" value={formData.cookingTemperature} onChange={handleChange} placeholder="0 °C" min="0" required /></div>
                 </div>
 
-                <div className="form-group"><label className="form-label">Número de Serie</label><input type="text" name="serialNumber" value={formData.serialNumber} onChange={handleChange} placeholder="Ej: 1/50" required /></div>
+                <div className="form-row">
+                    <div className="form-group"><label className="form-label">Peso (kg)</label><input type="number" name="weight" value={formData.weight} onChange={handleChange} placeholder="0.00" min="0" required /></div>
+                    <div className="form-group"><label className="form-label">Ancho (cm)</label><input type="number" name="width" value={formData.width} onChange={handleChange} placeholder="0.00" min="0" required /></div>
+                    <div className="form-group"><label className="form-label">Alto (cm)</label><input type="number" name="height" value={formData.height} onChange={handleChange} placeholder="0.00" min="0" required /></div>
+                </div>
 
-                <button type="submit" className="admin-create-btn" disabled={isLoading}>{isLoading ? 'Registrando...' : 'Registrar Fotografía'}</button>
+                <button type="submit" className="admin-create-btn" disabled={isLoading}>{isLoading ? 'Registrando...' : 'Registrar Cerámica'}</button>
             </form>
         </div>
     );
 };
 
-export default FormPhotography;
+export default FormCeramic;
