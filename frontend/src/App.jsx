@@ -12,7 +12,7 @@ import Shipment from './pages/shipment/shipment.jsx';
 import WhoWeAre from './pages/whoweare/WhoWeAre.jsx';
 import Footer from './components/Footer.jsx';
 
-import AuthProvider from './services/AuthContext.jsx'; 
+import AuthProvider from './services/authContext.jsx'; 
 import Dashboard from './pages/dashboard/Dashboard.jsx';
 import PrivateRoutes from './services/PrivateRoutes.jsx'
 import Admin from './pages/admin/Admin.jsx';
@@ -66,7 +66,7 @@ return (
         <Header />
         <main className="main-content">
         <Routes>
-          <Route path="/" element={<Admin />} />
+          <Route path="/" element={<Home/>} />
           <Route path="/about" element={<About />} />
           <Route path="/shipment" element={<Shipment />} />
           {/*<Route path="/" element={<ArtworkDetail artwork={testArtwork} />} />*/}
