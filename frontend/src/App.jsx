@@ -66,7 +66,7 @@ return (
         <Header />
         <main className="main-content">
         <Routes>
-          <Route path="/" element={<Home/>} />
+          <Route path="/" element={<Admin/>} />
           <Route path="/about" element={<About />} />
           <Route path="/shipment" element={<Shipment />} />
           {/*<Route path="/" element={<ArtworkDetail artwork={testArtwork} />} />*/}

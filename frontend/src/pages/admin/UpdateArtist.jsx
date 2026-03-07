@@ -1,10 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Admin.css';
 
-const BASE_URL = 'http://localhost:8080';
+//const BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+// const res = await axios.get(`${API_BASE_URL}/artist/all`);
+// setArtists(Array.isArray(res.data) ? res.data : res.data?.content || []);
+
 
 function UpdateArtist() {
   const token = localStorage.getItem('token');
@@ -20,13 +25,91 @@ function UpdateArtist() {
     imageUrl: ''
   });
   const [loading, setLoading] = useState(true);
+  const [imageHovered, setImageHovered] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleChangeImage = async (artistId, file) => {
+    if (!file) return;
+    setUploadingImage(true);
+    try {
+      await axios.delete(`${API_BASE_URL}/admin/${artistId}/artistImage`, {
+        headers: { Authorization: `Bearer ${token}` }
+      }).catch(err => console.warn("No se pudo borrar la imagen anterior (quizás no existía)", err));
+
+      const formDataImg = new FormData();
+      formDataImg.append('file', file);
+      await axios.post(`${API_BASE_URL}/admin/${artistId}/artistImage`, formDataImg, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      const newImageUrl = URL.createObjectURL(file);
+      setArtists(prev => prev.map(a => a.idArtist === artistId ? { ...a, imageUrl: newImageUrl } : a));
+      setSelectedArtist(prev => ({ ...prev, imageUrl: newImageUrl }));
+      toast.success('Imagen actualizada correctamente.');
+    } catch (err) {
+      toast.error('Error al actualizar la imagen.');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleDeleteImage = async (artistId) => {
+    if (!window.confirm('¿Seguro que quieres eliminar la imagen de este artista?')) return;
+    try {
+      await axios.delete(`${API_BASE_URL}/admin/${artistId}/artistImage`, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success('Imagen eliminada.');
+      setArtists(prev => prev.map(a => a.idArtist === artistId ? { ...a, imageUrl: '' } : a));
+      setSelectedArtist(prev => ({ ...prev, imageUrl: '' }));
+    } catch (err) {
+      toast.error('Error al eliminar la imagen.');
+    }
+  };
 
   // PASO 1: Cargar todos los artistas al montar
 useEffect(() => {
     const fetchArtists = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/artist/all`);
-        setArtists(res.data);
+   /*     const res = await axios.get(`${API_BASE_URL}/artist/all`);
+      setArtists(Array.isArray(res.data) ? res.data : res.data?.content || []);*/
+
+    setArtists([
+  {
+    idArtist: 1,
+    name: 'Leonardo',
+    lastName: 'Da Vinci',
+    nationality: 'Italiana',
+    birthdate: '1452-04-15',
+    biography: 'Pintor del Renacimiento italiano.',
+    commissionRate: 0.08,
+    imageUrl: '/imagen/v.jpg'
+  },
+  {
+    idArtist: 2,
+    name: 'Pablo',
+    lastName: 'Picasso',
+    nationality: 'Española',
+    birthdate: '1881-10-25',
+    biography: 'Cofundador del cubismo.',
+    commissionRate: 0.10,
+    imageUrl: ''
+  },
+  {
+    idArtist: 3,
+    name: 'Frida',
+    lastName: 'Kahlo',
+    nationality: 'Mexicana',
+    birthdate: '1907-07-06',
+    biography: 'Conocida por sus autorretratos.',
+    commissionRate: 0.07,
+    imageUrl: ''
+  },
+]);
+setLoading(false);
+
       } catch (err) {
         if (!err.response) {
           console.error('[UpdateArtist] Sin conexión con el backend:', err.message);
@@ -52,62 +135,7 @@ useEffect(() => {
     fetchArtists();
   }, []);
   // PASO 1: Cargar todos los artistas al montar
-  /* useEffect(() => {
-    const fetchArtists = async () => {
-      try {
-        // DATOS FALSOS TEMPORALES — borrar cuando el backend esté listo
-        const mockArtists = [
-          {
-            idArtist: 1,
-            name: 'Leonardo',
-            lastName: 'Da Vinci',
-            nationality: 'Italiana',
-            birthdate: '1452-04-15',
-            biography: 'Pintor, escultor e inventor del Renacimiento italiano.',
-            commissionRate: 0.08,
-            imageUrl: ''
-          },
-          {
-            idArtist: 2,
-            name: 'Pablo',
-            lastName: 'Picasso',
-            nationality: 'Española',
-            birthdate: '1881-10-25',
-            biography: 'Cofundador del cubismo y figura clave del arte moderno.',
-            commissionRate: 0.10,
-            imageUrl: ''
-          },
-          {
-            idArtist: 3,
-            name: 'Frida',
-            lastName: 'Kahlo',
-            nationality: 'Mexicana',
-            birthdate: '1907-07-06',
-            biography: 'Conocida por sus autorretratos inspirados en la naturaleza de México.',
-            commissionRate: 0.07,
-            imageUrl: ''
-          },
-        ];
-        setArtists(mockArtists);
-        /* — descomentar para usar backend real:
-        const res = await axios.get(`${BASE_URL}/artist/all`);
-        setArtists(res.data);
-        */
-  /*    } catch (err) {
-        if (!err.response) {
-          console.error('[UpdateArtist] Sin conexión con el backend:', err.message);
-          toast.error('No se pudo conectar con el servidor.');
-        } else {
-          const msg = err.response?.data?.message || 'Error al cargar artistas.';
-          toast.error(msg);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchArtists();
-  }, []);*/
-
+ 
        
   // PASO 2: Seleccionar artista para editar
   const handleSelectArtist = (artist) => {
@@ -153,7 +181,7 @@ useEffect(() => {
       return;
     }
     try {
-      await axios.put(`${BASE_URL}/artist/update/${selectedArtist.idArtist}`, formData, {
+      await axios.put(`${API_BASE_URL}/artist/update/${selectedArtist.idArtist}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -234,37 +262,80 @@ useEffect(() => {
             style={{ maxWidth: '500px', width: '90%', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}
             onClick={(e) => e.stopPropagation()}
           >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-            <div style={{
-              width: '70px', height: '70px',
-              borderRadius: '50%',
-              border: '3px solid #7c3aed',
-              overflow: 'hidden',
-              flexShrink: 0,
-              background: '#1a0a2e',
-              display: 'flex', alignItems: 'center', justifyContent: 'center'
-            }}>
-              {selectedArtist.imageUrl ? (
-                <img src={selectedArtist.imageUrl} alt={selectedArtist.name}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"
-                  fill="none" viewBox="0 0 24 24" stroke="#7c3aed" strokeWidth="1">
-                  <path strokeLinecap="round" strokeLinejoin="round"
-                    d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 
-                    0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 
-                    0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                </svg>
-              )}
-            </div>
+            <style>{`
+              @keyframes fadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+              @keyframes spin { to { transform: rotate(360deg); } }
+              .spinner { width: 30px; height: 30px; border: 3px solid rgba(255, 255, 255, 0.3); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
+            `}</style>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+              <div
+                style={{
+                  position: 'relative', width: '70px', height: '70px',
+                  borderRadius: '50%', border: '3px solid #7c3aed',
+                  overflow: 'hidden', flexShrink: 0, background: '#1a0a2e',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={() => setImageHovered(true)}
+                onMouseLeave={() => setImageHovered(false)}
+              >
+                {uploadingImage ? (
+                  <div className="spinner"></div>
+                ) : (
+                  <>
+                    {selectedArtist.imageUrl ? (
+                      <img src={selectedArtist.imageUrl} alt={selectedArtist.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'filter 0.3s ease', filter: imageHovered ? 'brightness(0.4)' : 'brightness(1)' }} />
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="#7c3aed" strokeWidth="1">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                      </svg>
+                    )}
+                    {imageHovered && !uploadingImage && (
+                      <div style={{
+                        position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                        animation: 'fadeIn 0.3s'
+                      }}>
+                        <button onClick={() => fileInputRef.current.click()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15.5 10.5C15.5 12.433 13.933 14 12 14C10.067 14 8.5 12.433 8.5 10.5C8.5 8.567 10.067 7 12 7C13.933 7 15.5 8.567 15.5 10.5Z" stroke="white" strokeWidth="1.5"/>
+                            <path d="M19 2H5C3.34315 2 2 3.34315 2 5V19C2 20.6569 3.34315 22 5 22H19C20.6569 22 22 20.6569 22 19V5C22 3.34315 20.6569 2 19 2Z" stroke="white" strokeWidth="1.5"/>
+                            <path d="M18 7.5H18.01" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                          </svg>
+                        </button>
+                        {selectedArtist.imageUrl && (
+                          <button onClick={(e) => { e.stopPropagation(); handleDeleteImage(selectedArtist.idArtist); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M10 12V17" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M14 12V17" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M4 7H20" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
             <div>
               <h2 className="section-title" style={{ fontSize: '1.1rem', marginBottom: '4px' }}>
                 Editando a: {selectedArtist.name} {selectedArtist.lastName}
               </h2>
               <span className="form-label">ID: #{selectedArtist.idArtist}</span>
+              <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '4px' }}>🖱️ Pasa el cursor sobre la foto para cambiarla</p>
             </div>
           </div>
           <div className="admin-line"></div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            accept="image/*"
+            onChange={(e) => handleChangeImage(selectedArtist.idArtist, e.target.files[0])}
+          />
           <div>
             <div className="form-group">
               <label className="form-label">Nombre</label>
