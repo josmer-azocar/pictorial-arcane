@@ -56,6 +56,7 @@ function Reports() {
                                 <tr>
                                     <th>Fecha</th>
                                     <th>Obra</th>
+                                    <th>Estado</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -63,6 +64,7 @@ function Reports() {
                                     <tr key={sale.idSale}>
                                         <td>{sale.date}</td>
                                         <td>{sale.artWork?.name}</td>
+                                        <td>{sale.saleStatus}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -70,11 +72,51 @@ function Reports() {
                     </div>
                 )};
             case 'billing':
+                //if (data.length === 0) return <p>No hay datos para el periodo seleccionado.</p>;
+                const totalRecaudado = data.reduce((sum, sale) => sum + (sale.totalPaid || 0), 0);
+                const totalGanancia = data.reduce((sum, sale) => sum + (sale.profitAmount || 0), 0);
+
                 return (
+                    
                     <div className="report-view">
                         <h3>Resumen de Facturación</h3>
                         <p>Total Recaudado | Ganancia Museo | Impuestos</p>
-                        {/* Table logic for Billing using SaleEntity fields like profitAmount and taxAmount */}
+                        <table className="report-table">
+                            <thead>
+                                <tr>
+                                    <th>Código de Factura</th>
+                                    <th>Fecha</th>
+                                    <th>Obra</th>
+                                    <th>Precio ($)</th>
+                                    <th>Estado</th>
+                                    <th>Ganancia del Museo ($)</th>
+                                    <th>Ganancia del Museo (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.map((sale) => (
+                                    <tr key={sale.idSale}>
+                                        <td>{sale.idSale}</td>
+                                        <td>{sale.date}</td>
+                                        <td>{sale.artWork?.name}</td>
+                                        <td>{sale.price}</td>
+                                        <td>{sale.saleStatus}</td>
+                                        <td>{sale.profitAmount}</td>
+                                        <td>{sale.profitPercentage}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        <div className="report-summary-footer">
+                            <div className="summary-item">
+                                <span>Total Recaudado:</span>
+                                <strong>${totalRecaudado.toLocaleString()}</strong>
+                            </div>
+                            <div className="summary-item">
+                                <span>Ganancia Neta Museo:</span>
+                                <strong>${totalGanancia.toLocaleString()}</strong>
+                            </div>
+                        </div>
                     </div>
                 );
             case 'memberships':
