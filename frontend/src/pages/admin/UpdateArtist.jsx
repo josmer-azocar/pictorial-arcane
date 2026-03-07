@@ -73,42 +73,10 @@ function UpdateArtist() {
 useEffect(() => {
     const fetchArtists = async () => {
       try {
-   /*     const res = await axios.get(`${API_BASE_URL}/artist/all`);
-      setArtists(Array.isArray(res.data) ? res.data : res.data?.content || []);*/
+      const res = await axios.get(`${API_BASE_URL}/artist/all`);
+      setArtists(Array.isArray(res.data) ? res.data : res.data?.content || []);
 
-    setArtists([
-  {
-    idArtist: 1,
-    name: 'Leonardo',
-    lastName: 'Da Vinci',
-    nationality: 'Italiana',
-    birthdate: '1452-04-15',
-    biography: 'Pintor del Renacimiento italiano.',
-    commissionRate: 0.08,
-    imageUrl: '/imagen/v.jpg'
-  },
-  {
-    idArtist: 2,
-    name: 'Pablo',
-    lastName: 'Picasso',
-    nationality: 'Española',
-    birthdate: '1881-10-25',
-    biography: 'Cofundador del cubismo.',
-    commissionRate: 0.10,
-    imageUrl: ''
-  },
-  {
-    idArtist: 3,
-    name: 'Frida',
-    lastName: 'Kahlo',
-    nationality: 'Mexicana',
-    birthdate: '1907-07-06',
-    biography: 'Conocida por sus autorretratos.',
-    commissionRate: 0.07,
-    imageUrl: ''
-  },
-]);
-setLoading(false);
+   
 
       } catch (err) {
         if (!err.response) {
@@ -332,7 +300,7 @@ setLoading(false);
                 Editando a: {selectedArtist.name} {selectedArtist.lastName}
               </h2>
               <span className="form-label" style={{ fontSize: '0.85rem', color: '#9ca3af' }}>ID: #{selectedArtist.idArtist}</span>
-              <p style={{ fontSize: '0.78rem', color: '#6b7280', marginTop: '4px' }}>🖱️ Pasa el cursor sobre la foto para cambiarla</p>
+      
             </div>
           </div>
           <div className="admin-line"></div>

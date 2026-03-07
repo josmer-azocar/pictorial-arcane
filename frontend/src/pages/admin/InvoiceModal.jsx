@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { useAuth } from '../../services/AuthContext';           // ✅ token del contexto
-import { confirmPendingSale } from '../../services/fetchSales'; // ✅ servicio centralizado
+import { useAuth } from '/../../services/AuthContext.jsx';           
+import { confirmPendingSale } from '../../services/fetchSales'; 
 import './Admin.css';
 
 function InvoiceModal({ reservation, onClose, onSuccess }) {
-  const { token } = useAuth(); // ✅ en lugar de localStorage.getItem('token')
-
+  const { token } = useAuth(); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [paymentRef, setPaymentRef] = useState('');
