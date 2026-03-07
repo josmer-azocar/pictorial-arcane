@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { createPhotography, uploadArtworkImage } from '../../services/fetchArtwork.js';
+import { createPhotography, updatePhotography, uploadArtworkImage } from '../../services/fetchArtwork.js';
 import { useAuth } from '../../services/AuthContext';
 import './AddArtwork.css';
 
@@ -16,12 +16,28 @@ const initialState = {
     camera: ''
 };
 
-const AddPhotography = () => {
+const AddPhotography = ({ artworkData }) => {
     const { token } = useAuth();
     const [formData, setFormData] = useState(initialState);
     const [isLoading, setIsLoading] = useState(false);
     const [imageFile, setImageFile] = useState(null);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        if (artworkData) {
+            setFormData({
+                name: artworkData.name || '',
+                status: artworkData.status || 'AVAILABLE',
+                price: artworkData.price || artworkData.precio || '',
+                printType: artworkData.printType || '',
+                resolution: artworkData.resolution || '',
+                color: artworkData.color || '',
+                serialNumber: artworkData.serialNumber || '',
+                camera: artworkData.camera || ''
+            });
+        }
+    }, [artworkData]);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -43,7 +59,7 @@ const AddPhotography = () => {
         e.preventDefault();
         setError('');
 
-        if (!imageFile) {
+        if (!artworkData && !imageFile) {
             const msg = "Por favor, selecciona un archivo de imagen.";
             setError(msg);
             toast.error(msg);
@@ -54,23 +70,30 @@ const AddPhotography = () => {
         let newArtworkId = null;
 
         try {
-            // Crear la fotografía
             const photographyData = {
                 ...formData,
                 price: parseFloat(formData.price)
             };
 
-            const createdResponse = await createPhotography(photographyData, token);
-            newArtworkId = createdResponse?.artWork?.id;
+            if (artworkData) {
+                await updatePhotography(artworkData.id, photographyData, token);
+                newArtworkId = artworkData.id;
+                toast.success('¡Fotografía actualizada con éxito!');
+            } else {
+                const createdResponse = await createPhotography(photographyData, token);
+                newArtworkId = createdResponse?.artWork?.id;
 
-            if (!newArtworkId) {
-                throw new Error("La respuesta del servidor no contenía el ID de la obra tras su creación.");
+                if (!newArtworkId) {
+                    throw new Error("La respuesta del servidor no contenía el ID de la obra tras su creación.");
+                }
+                toast.success('¡Fotografía registrada con éxito!');
             }
 
-            // Subir la imagen
-            await uploadArtworkImage(newArtworkId, imageFile, token);
+            if (imageFile) {
+                await uploadArtworkImage(newArtworkId, imageFile, token);
+                if (artworkData) toast.info('Imagen actualizada.');
+            }
 
-            toast.success('¡Fotografía y su imagen han sido registradas con éxito!');
             setFormData(initialState);
             setImageFile(null);
             if (document.getElementById('image-upload')) {
@@ -82,10 +105,10 @@ const AddPhotography = () => {
             const serverMessage = err.response?.data?.message || err.message;
 
             if (newArtworkId) {
-                finalErrorMessage = `La fotografía se creó (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
-                toast.warning('La fotografía se creó pero la imagen no se pudo subir. Por favor, intente subir la imagen desde el panel de edición.');
+                finalErrorMessage = `Operación exitosa (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
+                toast.warning('Datos guardados, pero hubo un error con la imagen.');
             } else {
-                finalErrorMessage = `Error al crear la fotografía: ${serverMessage}`;
+                finalErrorMessage = `Error al procesar la fotografía: ${serverMessage}`;
                 toast.error(finalErrorMessage);
             }
             setError(finalErrorMessage);
@@ -107,20 +130,20 @@ const AddPhotography = () => {
                 pauseOnHover
                 theme="dark"
             />
-            <h2 className="section-title">Nueva Fotografía</h2>
-            <p className="admin-subtitle">Detalles específicos para fotografía (resolución, tipo de impresión, edición).</p>
+            <h2 className="section-title">{artworkData ? 'Editar Fotografía' : 'Nueva Fotografía'}</h2>
+            <p className="admin-subtitle">{artworkData ? 'Modifica los detalles de la fotografía.' : 'Detalles específicos para fotografía (resolución, tipo de impresión, edición).'}</p>
             
             <form className="admin-form" onSubmit={handleSubmit}>
                 {error && <p className="error-message">{error}</p>}
 
                 <div className="form-group">
                     <label className="form-label">Título de la Obra</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Ej: Atardecer Urbano" required />
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Ej: Atardecer Urbano" required={!artworkData} />
                 </div>
 
                 <div className="form-group">
-                    <label className="form-label">Archivo de la Imagen</label>
-                    <input id="image-upload" type="file" name="artworkImage" accept="image/*" onChange={handleImageChange} required />
+                    <label className="form-label">Archivo de la Imagen {artworkData && '(Opcional)'}</label>
+                    <input id="image-upload" type="file" name="artworkImage" accept="image/*" onChange={handleImageChange} required={!artworkData} />
                 </div>
 
                 <div className="form-row">
@@ -149,7 +172,7 @@ const AddPhotography = () => {
 
                 <div className="form-group"><label className="form-label">Número de Serie</label><input type="text" name="serialNumber" value={formData.serialNumber} onChange={handleChange} placeholder="Ej: 1/50" required /></div>
 
-                <button type="submit" className="admin-create-btn" disabled={isLoading}>{isLoading ? 'Registrando...' : 'Registrar Fotografía'}</button>
+                <button type="submit" className="admin-create-btn" disabled={isLoading}>{isLoading ? 'Procesando...' : (artworkData ? 'Actualizar Fotografía' : 'Registrar Fotografía')}</button>
             </form>
         </div>
     );

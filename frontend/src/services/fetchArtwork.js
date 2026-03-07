@@ -33,7 +33,11 @@ export async function showArtist() {
     
 }*/
 
-
+/*PATRICIA SE DEBE BORRAR Y CONSUMIR EL ENDPOINT
+funciones mock para mostrar obras y artistas sin necesidad de backend. Esto nos permite 
+avanzar con el desarrollo del frontend mientras el backend se termina de implementar. 
+Estas funciones simulan llamadas a la API y devuelven datos predefinidos después de 
+un pequeño retraso para imitar la latencia real de una solicitud HTTP.*/
 export async function showArtwork(page = 0, sortBy = '', direction = 'asc', genre = '') {
   return new Promise((resolve) => {
       setTimeout(() => {
@@ -276,6 +280,50 @@ export const uploadArtworkImage = async (artworkId, file, token) => {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
         }
+    });
+};
+
+// --- MOCKS PARA ACTUALIZAR OBRAS (Para pruebas sin backend) BORRAR ---
+
+export const updateSculpture = async (id, data, token) => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            console.log("Mock Update Sculpture:", id, data);
+            resolve({ success: true, message: "Escultura actualizada (Mock)" });
+        }, 1000);
+    });
+};
+
+export const updatePainting = async (id, data, token) => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            console.log("Mock Update Painting:", id, data);
+            resolve({ success: true, message: "Pintura actualizada (Mock)" });
+        }, 1000);
+    });
+};
+
+export const updatePhotography = async (id, data, token) => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve({ success: true, message: "Fotografía actualizada (Mock)" });
+        }, 1000);
+    });
+};
+
+export const updateCeramic = async (id, data, token) => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve({ success: true, message: "Cerámica actualizada (Mock)" });
+        }, 1000);
+    });
+};
+
+export const updateGoldsmith = async (id, data, token) => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve({ success: true, message: "Orfebrería actualizada (Mock)" });
+        }, 1000);
     });
 };
 

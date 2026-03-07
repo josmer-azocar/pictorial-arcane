@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { createSculpture, uploadArtworkImage } from '../../services/fetchArtwork.js';
+import { createSculpture, updateSculpture, uploadArtworkImage } from '../../services/fetchArtwork.js';
 import { useAuth } from '../../services/AuthContext';
 import './AddArtwork.css';
 
@@ -16,12 +16,29 @@ const initialState = {
     depth: ''
 };
 
-const AddSculpture = () => {
+const AddSculpture = ({ artworkData }) => {
     const { token } = useAuth();
     const [formData, setFormData] = useState(initialState);
     const [isLoading, setIsLoading] = useState(false);
     const [imageFile, setImageFile] = useState(null);
     const [error, setError] = useState('');
+
+    // Efecto para cargar datos si estamos en modo edición
+    useEffect(() => {
+        if (artworkData) {
+            setFormData({
+                name: artworkData.name || '',
+                status: artworkData.status || 'AVAILABLE',
+                // El mock usa 'precio', el form usa 'price'. Manejamos ambos.
+                price: artworkData.price || artworkData.precio || '',
+                material: artworkData.material || '',
+                weight: artworkData.weight || '',
+                length: artworkData.length || '',
+                width: artworkData.width || '',
+                depth: artworkData.depth || ''
+            });
+        }
+    }, [artworkData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -43,7 +60,8 @@ const AddSculpture = () => {
         e.preventDefault();
         setError('');
 
-        if (!imageFile) {
+        // En modo edición, la imagen es opcional (si no sube una nueva, se mantiene la anterior)
+        if (!artworkData && !imageFile) {
             const msg = "Por favor, selecciona un archivo de imagen.";
             setError(msg);
             toast.error(msg);
@@ -64,19 +82,29 @@ const AddSculpture = () => {
                 depth: parseFloat(formData.depth),
             };
 
-            const createdSculptureResponse = await createSculpture(sculptureData, token);
-            newArtworkId = createdSculptureResponse?.artWork?.id;
+            if (artworkData) {
+                // --- MODO ACTUALIZACIÓN ---
+                await updateSculpture(artworkData.id, sculptureData, token);
+                newArtworkId = artworkData.id; // Mantenemos el ID existente
+                toast.success('¡Escultura actualizada con éxito!');
+            } else {
+                // --- MODO CREACIÓN ---
+                const createdSculptureResponse = await createSculpture(sculptureData, token);
+                newArtworkId = createdSculptureResponse?.artWork?.id;
 
-            if (!newArtworkId) {
-                // Si el backend no devuelve un ID, es un error crítico.
-                throw new Error("La respuesta del servidor no contenía el ID de la obra tras su creación.");
+                if (!newArtworkId) {
+                    throw new Error("La respuesta del servidor no contenía el ID de la obra tras su creación.");
+                }
+                toast.success('¡Escultura registrada con éxito!');
             }
 
-            // Subir la imagen para la escultura recién creada
-            await uploadArtworkImage(newArtworkId, imageFile, token);
+            // Subir imagen solo si el usuario seleccionó una nueva
+            if (imageFile) {
+                await uploadArtworkImage(newArtworkId, imageFile, token);
+                if (artworkData) toast.info('Imagen actualizada correctamente.');
+            }
 
             // 3. Si todo fue exitoso
-            toast.success('¡Escultura y su imagen han sido registradas con éxito!');
             setFormData(initialState);
             setImageFile(null);
             if (document.getElementById('image-upload')) {
@@ -88,11 +116,11 @@ const AddSculpture = () => {
 
             if (newArtworkId) {
                 // manejo de los códigos de error 400, 404, 500, despues de intentar crear la escultura 
-                finalErrorMessage = `La escultura se creó (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
-                toast.warning('La escultura se creó pero la imagen no se pudo subir. Por favor, intente subir la imagen desde el panel de edición.');
+                finalErrorMessage = `La operación se realizó (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
+                toast.warning('Datos guardados, pero hubo un error con la imagen.');
             } else {
                 // si el error ocurre antes de intentar crear la escultura
-                finalErrorMessage = `Error al crear la escultura: ${serverMessage}`;
+                finalErrorMessage = `Error al procesar la escultura: ${serverMessage}`;
                 toast.error(finalErrorMessage);
             }
             setError(finalErrorMessage);
@@ -114,8 +142,8 @@ const AddSculpture = () => {
                 pauseOnHover
                 theme="dark"
             />
-            <h2 className="section-title">Nueva Escultura</h2>
-            <p className="admin-subtitle">Detalles específicos para esculturas (peso, material, dimensiones).</p>
+            <h2 className="section-title">{artworkData ? 'Editar Escultura' : 'Nueva Escultura'}</h2>
+            <p className="admin-subtitle">{artworkData ? 'Modifica los detalles de la escultura seleccionada.' : 'Detalles específicos para esculturas (peso, material, dimensiones).'}</p>
             
             <form className="admin-form" onSubmit={handleSubmit}>
                 {error && <p className="error-message">{error}</p>}
@@ -135,14 +163,14 @@ const AddSculpture = () => {
 
                 {/* Input para subir archivo de imagen */}
                 <div className="form-group">
-                    <label className="form-label">Archivo de la Imagen</label>
+                    <label className="form-label">Archivo de la Imagen {artworkData && '(Opcional)'}</label>
                     <input 
                         id="image-upload"
                         type="file" 
                         name="artworkImage"
                         accept="image/*"
                         onChange={handleImageChange}
-                        required
+                        required={!artworkData} // Solo requerido si no estamos editando
                     />
                 </div>
 
@@ -198,7 +226,7 @@ const AddSculpture = () => {
                 </div>
 
                 <button type="submit" className="admin-create-btn" disabled={isLoading}>
-                    {isLoading ? 'Registrando...' : 'Registrar Escultura'}
+                    {isLoading ? 'Procesando...' : (artworkData ? 'Actualizar Escultura' : 'Registrar Escultura')}
                 </button>
             </form>
         </div>

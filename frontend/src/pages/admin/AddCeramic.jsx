@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { createCeramic, uploadArtworkImage } from '../../services/fetchArtwork.js';
+import { createCeramic, updateCeramic, uploadArtworkImage } from '../../services/fetchArtwork.js';
 import { useAuth } from '../../services/AuthContext';
 import './AddArtwork.css';
 
@@ -18,12 +18,31 @@ const initialState = {
     height: ''
 };
 
-const AddCeramic = () => {
+const AddCeramic = ({ artworkData }) => {
     const { token } = useAuth();
     const [formData, setFormData] = useState(initialState);
     const [isLoading, setIsLoading] = useState(false);
     const [imageFile, setImageFile] = useState(null);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        if (artworkData) {
+            setFormData({
+                name: artworkData.name || '',
+                status: artworkData.status || 'AVAILABLE',
+                price: artworkData.price || artworkData.precio || '',
+                // El mock usa 'materialType', el form también.
+                materialType: artworkData.materialType || '',
+                technique: artworkData.technique || '',
+                finish: artworkData.finish || '',
+                cookingTemperature: artworkData.cookingTemperature || '',
+                weight: artworkData.weight || '',
+                width: artworkData.width || '',
+                height: artworkData.height || ''
+            });
+        }
+    }, [artworkData]);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -45,7 +64,7 @@ const AddCeramic = () => {
         e.preventDefault();
         setError('');
 
-        if (!imageFile) {
+        if (!artworkData && !imageFile) {
             const msg = "Por favor, selecciona un archivo de imagen.";
             setError(msg);
             toast.error(msg);
@@ -55,21 +74,34 @@ const AddCeramic = () => {
         let newArtworkId = null;
 
         try {
-            //Crear laCERAMICA
             const ceramicData = {
                 ...formData,
-                price: parseFloat(formData.price)
+                price: parseFloat(formData.price),
+                cookingTemperature: parseInt(formData.cookingTemperature),
+                weight: parseFloat(formData.weight),
+                width: parseFloat(formData.width),
+                height: parseFloat(formData.height)
             };
-            const createdResponse = await createCeramic(ceramicData, token);
-            newArtworkId = createdResponse?.artWork?.id;
 
-            if (!newArtworkId) {
-                throw new Error("La respuesta del servidor no contenía el ID de la obra tras su creación.");
+            if (artworkData) {
+                await updateCeramic(artworkData.id, ceramicData, token);
+                newArtworkId = artworkData.id;
+                toast.success('¡Cerámica actualizada con éxito!');
+            } else {
+                const createdResponse = await createCeramic(ceramicData, token);
+                newArtworkId = createdResponse?.artWork?.id;
+
+                if (!newArtworkId) {
+                    throw new Error("La respuesta del servidor no contenía el ID de la obra tras su creación.");
+                }
+                toast.success('¡Cerámica registrada con éxito!');
             }
-            //Subir la imagen
-            await uploadArtworkImage(newArtworkId, imageFile, token);
 
-            toast.success('¡Cerámica y su imagen han sido registradas con éxito!');
+            if (imageFile) {
+                await uploadArtworkImage(newArtworkId, imageFile, token);
+                if (artworkData) toast.info('Imagen actualizada.');
+            }
+
             setFormData(initialState);
             setImageFile(null);
             if (document.getElementById('image-upload')) {
@@ -79,10 +111,10 @@ const AddCeramic = () => {
             let finalErrorMessage;
             const serverMessage = err.response?.data?.message || err.message;
             if (newArtworkId) {
-                finalErrorMessage = `La cerámica se creó (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
-                toast.warning('La cerámica se creó pero la imagen no se pudo subir. Por favor, intente subir la imagen desde el panel de edición.');
+                finalErrorMessage = `Operación exitosa (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
+                toast.warning('Datos guardados, pero hubo un error con la imagen.');
             } else {
-                finalErrorMessage = `Error al crear la cerámica: ${serverMessage}`;
+                finalErrorMessage = `Error al procesar la cerámica: ${serverMessage}`;
                 toast.error(finalErrorMessage);
             }
             setError(finalErrorMessage);
@@ -104,20 +136,20 @@ const AddCeramic = () => {
                 pauseOnHover
                 theme="dark"
             />
-            <h2 className="section-title">Nueva Cerámica</h2>
-            <p className="admin-subtitle">Detalles específicos para cerámica (material, técnica, temperatura de cocción...).</p>
+            <h2 className="section-title">{artworkData ? 'Editar Cerámica' : 'Nueva Cerámica'}</h2>
+            <p className="admin-subtitle">{artworkData ? 'Modifica los detalles de la cerámica.' : 'Detalles específicos para cerámica (material, técnica, temperatura de cocción...).'}</p>
 
             <form className="admin-form" onSubmit={handleSubmit}>
                 {error && <p className="error-message">{error}</p>}
 
                 <div className="form-group">
                     <label className="form-label">Título de la Obra</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Ej: Pirámide Amarilla" required />
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Ej: Jarrón Geométrico" required />
                 </div>
 
                 <div className="form-group">
-                    <label className="form-label">Archivo de la Imagen</label>
-                    <input id="image-upload" type="file" name="artworkImage" accept="image/*" onChange={handleImageChange} required />
+                    <label className="form-label">Archivo de la Imagen {artworkData && '(Opcional)'}</label>
+                    <input id="image-upload" type="file" name="artworkImage" accept="image/*" onChange={handleImageChange} required={!artworkData} />
                 </div>
 
                 <div className="form-row">
@@ -150,7 +182,7 @@ const AddCeramic = () => {
                     <div className="form-group"><label className="form-label">Alto (cm)</label><input type="number" name="height" value={formData.height} onChange={handleChange} placeholder="0.00" min="0" required /></div>
                 </div>
 
-                <button type="submit" className="admin-create-btn" disabled={isLoading}>{isLoading ? 'Registrando...' : 'Registrar Cerámica'}</button>
+                <button type="submit" className="admin-create-btn" disabled={isLoading}>{isLoading ? 'Procesando...' : (artworkData ? 'Actualizar Cerámica' : 'Registrar Cerámica')}</button>
             </form>
         </div>
     );

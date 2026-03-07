@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { createPainting, uploadArtworkImage } from '../../services/fetchArtwork.js';
+import { createPainting, updatePainting, uploadArtworkImage } from '../../services/fetchArtwork.js';
 import { useAuth } from '../../services/AuthContext';
 import './AddArtwork.css';
 
@@ -17,12 +17,29 @@ const initialState = {
     height: ''
 };
 
-const AddPainting = () => {
+const AddPainting = ({ artworkData }) => {
     const { token } = useAuth();
     const [formData, setFormData] = useState(initialState);
     const [isLoading, setIsLoading] = useState(false);
     const [imageFile, setImageFile] = useState(null);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        if (artworkData) {
+            setFormData({
+                name: artworkData.name || '',
+                status: artworkData.status || 'AVAILABLE',
+                price: artworkData.price || artworkData.precio || '',
+                technique: artworkData.technique || '',
+                holder: artworkData.holder || '',
+                style: artworkData.style || '',
+                // Convertir booleano a string para el select
+                framed: artworkData.framed ? 'true' : 'false',
+                width: artworkData.width || '',
+                height: artworkData.height || ''
+            });
+        }
+    }, [artworkData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -44,7 +61,7 @@ const AddPainting = () => {
         e.preventDefault();
         setError('');
 
-        if (!imageFile) {
+        if (!artworkData && !imageFile) {
             const msg = "Por favor, selecciona un archivo de imagen.";
             setError(msg);
             toast.error(msg);
@@ -63,19 +80,27 @@ const AddPainting = () => {
                 framed: formData.framed === 'true' // Convertir string a boolean
             };
 
-            const createdResponse = await createPainting(paintingData, token);
-            
-            // Según tu indicación, la respuesta trae idArtWork directamente
-            newArtworkId = createdResponse.idArtWork;
+            if (artworkData) {
+                // Update
+                await updatePainting(artworkData.id, paintingData, token);
+                newArtworkId = artworkData.id;
+                toast.success('¡Pintura actualizada con éxito!');
+            } else {
+                // Create
+                const createdResponse = await createPainting(paintingData, token);
+                newArtworkId = createdResponse.idArtWork;
 
-            if (!newArtworkId) {
-                throw new Error("La respuesta del servidor no contenía el ID de la obra.");
+                if (!newArtworkId) {
+                    throw new Error("La respuesta del servidor no contenía el ID de la obra.");
+                }
+                toast.success('¡Pintura registrada con éxito!');
             }
 
-            // Subir la imagen
-            await uploadArtworkImage(newArtworkId, imageFile, token);
+            if (imageFile) {
+                await uploadArtworkImage(newArtworkId, imageFile, token);
+                if (artworkData) toast.info('Imagen actualizada.');
+            }
 
-            toast.success('¡Pintura y su imagen han sido registradas con éxito!');
             setFormData(initialState);
             setImageFile(null);
             if (document.getElementById('image-upload')) {
@@ -85,10 +110,10 @@ const AddPainting = () => {
             let finalErrorMessage;
             const serverMessage = err.response?.data?.message || err.message;
             if (newArtworkId) {
-                finalErrorMessage = `La pintura se creó (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
-                toast.warning('La pintura se creó pero la imagen no se pudo subir. Intente editar la obra.');
+                finalErrorMessage = `Operación exitosa (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
+                toast.warning('Datos guardados, error en imagen.');
             } else {
-                finalErrorMessage = `Error al crear la pintura: ${serverMessage}`;
+                finalErrorMessage = `Error al procesar la pintura: ${serverMessage}`;
                 toast.error(finalErrorMessage);
             }
             setError(finalErrorMessage);
@@ -100,14 +125,14 @@ const AddPainting = () => {
     return (
         <div>
             <ToastContainer position="top-center" autoClose={5000} theme="dark" />
-            <h2 className="section-title">Nueva Pintura</h2>
-            <p className="admin-subtitle">Detalles específicos para pinturas (técnica, soporte, estilo...).</p>
+            <h2 className="section-title">{artworkData ? 'Editar Pintura' : 'Nueva Pintura'}</h2>
+            <p className="admin-subtitle">{artworkData ? 'Modifica los detalles de la pintura.' : 'Detalles específicos para pinturas (técnica, soporte, estilo...).'}</p>
 
             <form className="admin-form" onSubmit={handleSubmit}>
                 {error && <p className="error-message">{error}</p>}
 
                 <div className="form-group"><label className="form-label">Título de la Obra</label><input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Ej: La Noche Estrellada" required /></div>
-                <div className="form-group"><label className="form-label">Archivo de la Imagen</label><input id="image-upload" type="file" name="artworkImage" accept="image/*" onChange={handleImageChange} required /></div>
+                <div className="form-group"><label className="form-label">Archivo de la Imagen {artworkData && '(Opcional)'}</label><input id="image-upload" type="file" name="artworkImage" accept="image/*" onChange={handleImageChange} required={!artworkData} /></div>
 
                 <div className="form-row"><div className="form-group"><label className="form-label">Precio ($)</label><input type="number" name="price" value={formData.price} onChange={handleChange} placeholder="0.00" min="0" required /></div><div className="form-group"><label className="form-label">Estado</label><select name="status" value={formData.status} onChange={handleChange}><option value="AVAILABLE">Disponible</option><option value="RESERVED">Reservado</option></select></div></div>
 
@@ -117,7 +142,7 @@ const AddPainting = () => {
 
                 <div className="form-row"><div className="form-group"><label className="form-label">Ancho (cm)</label><input type="number" name="width" value={formData.width} onChange={handleChange} placeholder="0.00" min="0" required /></div><div className="form-group"><label className="form-label">Alto (cm)</label><input type="number" name="height" value={formData.height} onChange={handleChange} placeholder="0.00" min="0" required /></div></div>
 
-                <button type="submit" className="admin-create-btn" disabled={isLoading}>{isLoading ? 'Registrando...' : 'Registrar Pintura'}</button>
+                <button type="submit" className="admin-create-btn" disabled={isLoading}>{isLoading ? 'Procesando...' : (artworkData ? 'Actualizar Pintura' : 'Registrar Pintura')}</button>
             </form>
         </div>
     );

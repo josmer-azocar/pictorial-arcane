@@ -48,7 +48,7 @@ const UpdateArtwork = ({ onEditSelect }) => {
               <tr>
                 <th>ID</th>
                 <th>Obra</th>
-                <th>Estilo</th>
+                <th>Gnénero</th>
                 <th>Precio</th>
                 <th>Acciones</th>
               </tr>
