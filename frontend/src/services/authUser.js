@@ -77,7 +77,7 @@ export async function logUser(credentials) {
       if (credentials.email === "test@test.com" && credentials.password === "1234") {
         resolve({
           status: "success",
-          user: { name: "Tester", email: "test@test.com", role: "CLIENT" },
+          user: { name: "Tester", email: "test@test.com", role: "ADMIN" },
           token: "fake-jwt-token-123"
         });
         console.log("Exito");
