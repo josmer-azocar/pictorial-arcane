@@ -73,10 +73,12 @@ function CreateArtist() {
   return (
     <div className="admin-section">
       <ToastContainer />
-      <h1 className="section-title">Crear Nuevo Artista</h1>
-      <div className="admin-line"></div>
-
+     
+     
       <div className="admin-form-container">
+         <h1 className="section-title">Crear Nuevo Artista</h1>
+          <div className="admin-line"></div>
+
         <div className="form-group">
           <label className="form-label">Nombre</label>
           <input className="form-input" name="name"
