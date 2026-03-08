@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { showArtworkMock, searchArtworksMock, showArtistMock } from '../../services/fetchArtwork';
+import { showArtwork, searchArtworks, showArtist } from '../../services/fetchArtwork';
 import './Admin.css';
 
 const UpdateArtwork = ({ onEditSelect }) => {
@@ -14,12 +14,11 @@ const UpdateArtwork = ({ onEditSelect }) => {
     const fetchArtworks = async () => {
       setLoading(true);
       try {
-        // Usamos la función MOCK para tus pruebas
-        const response = await showArtworkMock(0);
+        const response = await showArtwork(0);
         setArtworks(response.content);
 
-        // Cargar artistas para el filtro desde el MOCK
-        const artistsData = await showArtistMock();
+        // Cargar artistas para el filtro
+        const artistsData = await showArtist();
         setArtists(artistsData);
       } catch (err) {
         toast.error('Error al cargar las obras.');
@@ -38,7 +37,7 @@ const UpdateArtwork = ({ onEditSelect }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await searchArtworksMock(filters);
+      const response = await searchArtworks(filters);
       setArtworks(response.content || []);
       if (response.content.length === 0) {
         toast.info("No se encontraron obras con esos filtros.");
@@ -54,7 +53,7 @@ const UpdateArtwork = ({ onEditSelect }) => {
     setFilters({ id: '', artistId: '', genre: '' });
     setLoading(true);
     try {
-      const response = await showArtworkMock(0);
+      const response = await showArtwork(0);
       setArtworks(response.content);
     } catch (err) {
       toast.error('Error al recargar las obras.');

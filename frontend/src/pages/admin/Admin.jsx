@@ -6,13 +6,16 @@ import "./Admin.css";
 import CreateArtist from "./CreateArtist.jsx";
 import DeleteArtist from './DeleteArtist.jsx';
 import UpdateArtwork from './UpdateArtwork.jsx';
-import { getArtworkByIdMock } from '../../services/fetchArtwork.js';
+import { getArtworkById } from '../../services/fetchArtwork.js';
 import AddSculpture from './AddSculpture.jsx';
 import AddPainting from './AddPainting.jsx';
 import AddPhotography from './AddPhotography.jsx';
 import AddCeramic from './AddCeramic.jsx';
 import AddGoldsmith from './AddGoldsmith.jsx';
 import DeleteArtwork from './DeleteArtwork.jsx';
+import CreateGenre from './CreateGenre.jsx';
+import DeleteGenre from './DeleteGenre.jsx';
+import UpdateGenre from './UpdateGenre.jsx';
 
 import UpdateArtist from './UpdateArtist.jsx';
 function Admin() {
@@ -22,6 +25,7 @@ function Admin() {
   const [loadingEdit, setLoadingEdit] = useState(false); // Cargando la obra a editar
   const [isArtworksMenuOpen, setArtworksMenuOpen] = useState(false);
   const [isArtistsMenuOpen, setArtistsMenuOpen] = useState(false);
+  const [isGenresMenuOpen, setGenresMenuOpen] = useState(false);
 
   // Función para cambiar de sección y limpiar estados secundarios
   const handleSectionChange = (section) => {
@@ -40,7 +44,7 @@ function Admin() {
     const fetchArtworkToEdit = async () => {
       setLoadingEdit(true);
       try {
-        const data = await getArtworkByIdMock(artworkToEditId);
+        const data = await getArtworkById(artworkToEditId);
         setArtworkToEdit(data);
       } catch (error) {
         console.error("Error al cargar la obra para editar:", error);
@@ -99,6 +103,12 @@ function Admin() {
       //   return <p>Aquí irá la vista de todas las obras</p>;
       case 'deleteArtwork':
         return <DeleteArtwork />;
+      case 'createGenre':
+        return <CreateGenre />;
+      case 'deleteGenre':
+        return <DeleteGenre />;
+      case 'updateGenre':
+        return <UpdateGenre />;
       case 'updateArtwork':
         return artworkToEditId ?
           renderUpdateForm() :
@@ -189,6 +199,34 @@ function Admin() {
     </button>
   </div>
 )}
+        <button
+          className="admin-nav-btn"
+          onClick={() => setGenresMenuOpen(!isGenresMenuOpen)}
+        >
+          Gestión de Géneros
+        </button>
+        {isGenresMenuOpen && (
+          <div className="admin-submenu">
+            <button
+              className={`admin-nav-btn ${activeSection === 'createGenre' ? 'active' : ''}`}
+              onClick={() => handleSectionChange('createGenre')}
+            >
+              Crear Género
+            </button>
+            <button
+              className={`admin-nav-btn ${activeSection === 'deleteGenre' ? 'active' : ''}`}
+              onClick={() => handleSectionChange('deleteGenre')}
+            >
+              Borrar Género
+            </button>
+            <button
+              className={`admin-nav-btn ${activeSection === 'updateGenre' ? 'active' : ''}`}
+              onClick={() => handleSectionChange('updateGenre')}
+            >
+              Actualizar Género
+            </button>
+          </div>
+        )}
         <hr className="admin-sidebar-divider" />
         <p className="admin-sidebar-label">Operaciones</p>
         <button

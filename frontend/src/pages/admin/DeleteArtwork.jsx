@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { showArtworkMock, searchArtworksMock, showArtistMock, deleteArtworkMock } from '../../services/fetchArtwork';
+import { showArtwork, searchArtworks, showArtist, deleteArtwork } from '../../services/fetchArtwork';
 import './Admin.css';
 
 const DeleteArtwork = () => {
@@ -14,10 +14,10 @@ const DeleteArtwork = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const response = await showArtworkMock(0);
+      const response = await showArtwork(0);
       setArtworks(response.content);
       
-      const artistsData = await showArtistMock();
+      const artistsData = await showArtist();
       setArtists(artistsData);
     } catch (err) {
       toast.error('Error al cargar las obras.');
@@ -38,7 +38,7 @@ const DeleteArtwork = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await searchArtworksMock(filters);
+      const response = await searchArtworks(filters);
       setArtworks(response.content || []);
       if (response.content.length === 0) {
         toast.info("No se encontraron obras con esos filtros.");
@@ -59,18 +59,18 @@ const DeleteArtwork = () => {
     // Confirmación simple del navegador
     if (window.confirm(`¿Estás seguro de que deseas eliminar la obra "${name}"? Esta acción no se puede deshacer.`)) {
         try {
-            // Usamos el mock para la prueba
-            await deleteArtworkMock(id);
+            // TODO: Pasar el token de autenticación cuando se implemente
+            await deleteArtwork(id, null);
             toast.success(`La obra "${name}" ha sido eliminada.`);
             
             // Recargamos la lista para ver los cambios
             if (filters.id || filters.artistId || filters.genre) {
                 // Si había filtros activos, repetimos la búsqueda
-                const response = await searchArtworksMock(filters);
+                const response = await searchArtworks(filters);
                 setArtworks(response.content || []);
             } else {
                 // Si no, recargamos todo
-                const response = await showArtworkMock(0);
+                const response = await showArtwork(0);
                 setArtworks(response.content);
             }
         } catch (error) {

@@ -57,9 +57,9 @@ export async function getArtworksByArtist(artistId) {
   }
 }
 
-// Trae una obra por su id - GET /artwork/{id}
+// Trae una obra por su id 
 export async function getArtworkById(id) {
-  const url = `http://localhost:8080/artworks/${id}`;
+  const url = `http://localhost:8080/artwork/${id}`;
   try {
     const response = await axios.get(url);
     return response.data;
@@ -69,9 +69,9 @@ export async function getArtworkById(id) {
   }
 }
 
-// Reserva una obra - POST /artworks/{id}/reserve
+// Reserva una obra 
 export async function reserveArtwork(artworkId, securityCode) {
-  const url = `http://localhost:8080/artworks/${artworkId}/reserve`;
+  const url = `http://localhost:8080/artwork/${artworkId}/reserve`;
   try {
     const response = await axios.post(url, {
       security_code: securityCode
@@ -173,55 +173,11 @@ export const uploadArtworkImage = async (artworkId, file, token) => {
     const formData = new FormData();
     formData.append('file', file);
 
-    return await axios.post(`${url}/admin/${artworkId}/artorkImage`, formData, {
+    return await axios.post(`${url}/admin/${artworkId}/artworkImage`, formData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
         }
-    });
-};
-
-// --- MOCKS PARA ACTUALIZAR OBRAS (Para pruebas sin backend) ---
-
-export const updateSculpture = async (id, data, token) => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            console.log("Mock Update Sculpture:", id, data);
-            resolve({ success: true, message: "Escultura actualizada (Mock)" });
-        }, 1000);
-    });
-};
-
-export const updatePainting = async (id, data, token) => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            console.log("Mock Update Painting:", id, data);
-            resolve({ success: true, message: "Pintura actualizada (Mock)" });
-        }, 1000);
-    });
-};
-
-export const updatePhotography = async (id, data, token) => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({ success: true, message: "Fotografía actualizada (Mock)" });
-        }, 1000);
-    });
-};
-
-export const updateCeramic = async (id, data, token) => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({ success: true, message: "Cerámica actualizada (Mock)" });
-        }, 1000);
-    });
-};
-
-export const updateGoldsmith = async (id, data, token) => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({ success: true, message: "Orfebrería actualizada (Mock)" });
-        }, 1000);
     });
 };
 
@@ -236,9 +192,43 @@ export const uploadArtistImage = async (artistId, file, token) => {
     });
 };
 
-// Eliminar obra - DELETE /artwork/delete/{id}
-export async function deleteArtwork(id, token) {
-    const response = await axios.delete(`${url}/artwork/delete/${id}`, {
+// *Generos
+// GET /gender/all
+export async function getGenres() {
+    try {
+         const response = await axios.get(`${url}/gender/all`);
+         return response.data;
+    } catch (error) {
+        console.error("Error al obtener géneros:", error);
+        throw error;
+    }
+}
+
+// POST /gender/add
+export async function createGenre(genreData, token) {
+    const response = await axios.post(`${url}/gender/add`, genreData, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+    return response.data;
+}
+
+// PUT /gender/update/{id}
+export async function updateGenre(id, genreData, token) {
+    const response = await axios.put(`${url}/gender/update/${id}`, genreData, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+    return response.data;
+}
+
+// DELETE /gender/delete/{id}
+export async function deleteGenre(id, token) {
+    const response = await axios.delete(`${url}/gender/delete/${id}`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -246,14 +236,77 @@ export async function deleteArtwork(id, token) {
     return response;
 }
 
-// Eliminar imagen de obra - DELETE /admin/{id}/artworkImage
-export async function deleteArtworkImage(id, token) {
-    const response = await axios.delete(`${url}/admin/${id}/artworkImage`, {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
+// --- Funciones de Obras (CRUD) ---
+
+// DELETE /artwork/delete/{id}
+export async function deleteArtwork(id, token) {
+    const response = await axios.delete(`${url}/artwork/delete/${id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
     });
     return response;
+}
+
+// DELETE /admin/{id}/artworkImage
+export async function deleteArtworkImage(id, token) {
+    const response = await axios.delete(`${url}/admin/${id}/artworkImage`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response;
+}
+
+export const updateSculpture = async (id, data, token) => {
+    return await axios.put(`${url}/artwork/sculpture/update/${id}`, data, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+    });
+};
+
+export const updatePainting = async (id, data, token) => {
+    return await axios.put(`${url}/artwork/painting/update/${id}`, data, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+    });
+};
+
+export const updatePhotography = async (id, data, token) => {
+    return await axios.put(`${url}/artwork/photography/update/${id}`, data, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+    });
+};
+
+export const updateCeramic = async (id, data, token) => {
+    return await axios.put(`${url}/artwork/ceramic/update/${id}`, data, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+    });
+};
+
+export const updateGoldsmith = async (id, data, token) => {
+    return await axios.put(`${url}/artwork/goldsmith/update/${id}`, data, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+    });
+};
+
+/**
+ * Busca obras de arte con filtros.
+ * @param {object} filters - Filtros: { id, artistId, genre }
+ */
+export async function searchArtworks(filters) {
+    const params = new URLSearchParams();
+    if (filters.id) params.append('id', filters.id);
+    if (filters.artistId) params.append('idArtist', filters.artistId);
+    if (filters.genre) params.append('genre', filters.genre);
+    
+    const response = await axios.get(`${url}/artwork/search?${params.toString()}`);
+    return response.data;
+}
+
+// PUT /gender/update/{id}
+export async function updateGenre(id, genreData, token) {
+    const response = await axios.put(`${url}/gender/update/${id}`, genreData, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+    return response.data;
 }
 
 // --- MOCKS PARA PRUEBAS DE FRONTEND (Manejo personal) ---
@@ -292,33 +345,6 @@ export async function showArtworkMock(page = 0, sortBy = '', direction = 'asc', 
     });
 }
 
-export async function deleteArtworkMock(id) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            const index = allArtworksMock.findIndex(art => art.id === id);
-            if (index !== -1) {
-                allArtworksMock.splice(index, 1); // Eliminamos del array mock
-                resolve({ success: true });
-            } else {
-                reject(new Error("Artwork not found in mock data"));
-            }
-        }, 500);
-    });
-}
-
-export async function getArtworkByIdMock(id) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            const artwork = allArtworksMock.find(art => art.id === id);
-            if (artwork) {
-                resolve(artwork);
-            } else {
-                reject(new Error("Artwork not found in mock data"));
-            }
-        }, 300);
-    });
-}
-
 export async function showArtistMock() {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -338,15 +364,14 @@ export async function showArtistMock() {
     });
 }
 
-export async function searchArtworksMock(filters) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            let results = [...allArtworksMock];
-            if (filters.id) results = results.filter(a => a.id === parseInt(filters.id));
-            if (filters.artistId) results = results.filter(a => a.id_artist === parseInt(filters.artistId));
-            if (filters.genre) results = results.filter(a => a.genre.toLowerCase().includes(filters.genre.toLowerCase()));
-            
-            resolve({ content: results });
-        }, 500);
-    });
-}
+
+// --- MOCKS PARA GÉNEROS ---
+const allGenresMock = [
+    { id: 1, description: 'Escultura' },
+    { id: 2, description: 'Pintura' },
+    { id: 3, description: 'Fotografía' },
+    { id: 4, description: 'Cerámica' },
+    { id: 5, description: 'Orfebrería' },
+    { id: 6, description: 'Impresionismo' },
+    { id: 7, description: 'Surrealismo' },
+];
