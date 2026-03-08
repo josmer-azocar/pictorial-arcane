@@ -1,19 +1,35 @@
 import axios from "axios";
 //const url = "http://localhost:8080";
 const API_BASE_URL = import.meta.env.VITE_API_URL;
+const url = "https://pictorialarcane-h5g8cdgug9d5awd3.canadacentral-01.azurewebsites.net";
 
-/*export async function showArtwork(page = 0, sortBy = '', direction = 'asc', art_genre = ''){
+export async function showArtwork(idGenre = null, 
+    idArtist = null, 
+    title= '',
+    minPrice=0,
+    maxPrice=999999, 
+    page = 0,
+    size = 10, 
+    sortBy = 'price', 
+    direction = 'ASC', ){
     try {
-        const fetchedArtwork = await axios.get(`${url}/artwork/all?page=${page}`, {
-            params: {
-                page: page,
-                sort: sortBy,
-                dir: direction,
-                genre: art_genre
-            });
-        console.log(fetchedArtwork);
-        return fetchedArtwork.data;
-        
+        const searchParams = {
+            idGenre: idGenre, 
+            idArtist: idArtist,
+            title: title || '',
+            min: minPrice,
+            max: maxPrice,
+            page: page,
+            size: size,
+            sortBy: sortBy,
+            direction: direction,
+        };
+        const response = await axios.get(`${url}/artwork/search`, {
+            params: searchParams
+        });
+        console.log("Datos recibidos:", response.data);
+        console.log("Full response data:", response.data);
+        return response.data;
     } catch (error) {
         console.log(error);
         throw error;
@@ -31,10 +47,10 @@ export async function showArtist() {
         return [];
     }
     
-}*/
+}
 
 
-export async function showArtwork(page = 0, sortBy = '', direction = 'asc', genre = '') {
+/*export async function showArtwork(page = 0, sortBy = '', direction = 'asc', genre = '') {
   return new Promise((resolve) => {
       setTimeout(() => {
 
@@ -99,7 +115,7 @@ export async function showArtist() {
             ]);
         }, 100);
     });
-}
+}*/
 
 // *Artistas
 // Trae un artista por su id - GET /artists/{id}
@@ -126,7 +142,7 @@ export async function getArtworksByArtist(artistId) {
     throw error;
   }
 }
-/*
+
 // Trae una obra por su id - GET /artworks/{id}
 export async function getArtworkById(id) {
   //const url = `http://localhost:8080/artworks/${id}`;
@@ -138,10 +154,10 @@ export async function getArtworkById(id) {
     throw error;
   }
 }
-*/
+
 
 // Mock para obtener una obra por ID
-export async function getArtworkById(id) {
+/*export async function getArtworkById(id) {
   const allArtworks = [
       { id: 1, name: "Noche Estrellada", image: "https://picsum.photos/id/10/400/500", id_artist: 101, genre: "Impresionismo", type: "PAINTING", precio: 100.00, status: 'AVAILABLE', technique: 'Óleo sobre lienzo', holder: 'Lienzo', style: 'Postimpresionismo', framed: 'true', width: 92, height: 73 },
       { id: 2, name: "La Persistencia de la Memoria", image: "https://picsum.photos/id/20/400/500", id_artist: 102, genre: "Surrealismo", type: "PAINTING", precio: 110.00, status: 'AVAILABLE', technique: 'Óleo sobre lienzo', holder: 'Lienzo', style: 'Surrealismo', framed: 'false', width: 33, height: 24 },
@@ -166,7 +182,7 @@ export async function getArtworkById(id) {
       }
     }, 300);
   });
-}
+}*/
 // Reserva una obra - POST /artworks/{id}/reserve
 export async function reserveArtwork(artworkId, securityCode) {
   //const url = `http://localhost:8080/artworks/${artworkId}/reserve`;

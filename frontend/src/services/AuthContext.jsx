@@ -9,36 +9,7 @@ export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const login = (userData, token) => {
-    setIsLoggedIn(true);
-    setUser(userData); // Now user state has email, surname, etc.
-    localStorage.setItem("token", token);
-    // Save the object as a string so it survives a page refresh
-    localStorage.setItem("user_info", JSON.stringify(userData));
-};
-
-// 2. Update the initializeUser (useEffect)
     useEffect(() => {
-        const initializeUser = () => {
-            const savedToken = localStorage.getItem("token");
-            const savedUserInfo = localStorage.getItem("user_info");
-
-            if (savedToken && savedUserInfo) {
-                try {
-                    const parsedUser = JSON.parse(savedUserInfo);
-                    setIsLoggedIn(true);
-                    setUser(parsedUser); 
-                } catch (error) {
-                    console.error("Error parsing user data");
-                    logout();
-                }
-            }
-            setLoading(false);
-        };
-        initializeUser();
-    }, []);
-
-    /*useEffect(() => {
 
         const initializeUser = async () => {
             const savedToken = localStorage.getItem("token");
@@ -72,19 +43,19 @@ export const AuthProvider = ({children}) => {
         }
         initializeUser();
 
-    }, []); */
+    }, []); 
 
-    /*const login = (userData, token) => {
+    const login = (userData, token) => {
         setIsLoggedIn(true);
         localStorage.setItem("token", token);
         console.log(userData);
             setUser({
             name: userData.name,
-            surname: userData.surname,
+            last_name: userData.surname,
             email: userData.email,
             pfp: "https://picsum.photos/200"
         });
-    }*/
+    }
 
     const logout = () => {
         setIsLoggedIn(false);
