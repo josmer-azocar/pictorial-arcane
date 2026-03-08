@@ -38,6 +38,64 @@
     
 }
 
+#user-info button{
+    background-color: transparent;
+    color: white;
+    border: none;
+    font-size: 1.2rem;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+#user-info button:hover {
+    background-color: rgba(0, 0, 0, 0.322);
+    cursor: pointer;
+}
+
+
 #message-user p {
     font-size: 2rem;
+}
+
+.edit-form{
+    padding: 10px;
+}
+
+.form-cont {
+    display: flex;
+    gap: 20px;
+}
+
+.form-buttons button{
+    padding: 5px;
+    margin: 5px;
+    background-color: transparent;
+    color: antiquewhite;
+    border: none;
+    border-radius: 5px;
+}
+
+.form-buttons button:hover {
+    background-color: rgba(137, 43, 226, 0.377);
+    color: white;
+    cursor: pointer;
+}
+
+.form-cont select {
+    background-color: transparent;
+    color: antiquewhite;
+    border-radius: 5px;
+    padding: 5px;
+    border-width: 1px;
+}
+
+.form-cont select:hover {
+    cursor: pointer;
+}
+
+.form-cont input {
+    border-radius: 5px;
+    background-color: transparent;
+    color: antiquewhite;
+    padding: 5px;
 }
