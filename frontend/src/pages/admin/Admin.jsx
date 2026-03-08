@@ -18,6 +18,9 @@ import DeleteGenre from './DeleteGenre.jsx';
 import UpdateGenre from './UpdateGenre.jsx';
 
 import UpdateArtist from './UpdateArtist.jsx';
+import Reports from './Reports.jsx';
+
+
 function Admin() {
   const [activeSection, setActiveSection] = useState(null); // Vista actual
   const [artworkToEditId, setArtworkToEditId] = useState(null); // ID de la obra a editar
@@ -99,6 +102,8 @@ function Admin() {
         return <DeleteArtist />;
       case 'updateArtist':
         return <UpdateArtist />;
+      case 'reports':
+        return <Reports/>;
       // case 'viewArtwork':
       //   return <p>Aquí irá la vista de todas las obras</p>;
       case 'deleteArtwork':
@@ -236,7 +241,11 @@ function Admin() {
           Reservas
         </button>
         <button className="admin-nav-btn">Facturación</button>
-        <button className="admin-nav-btn">Reportes</button>
+        <button className={`admin-nav-btn ${activeSection === 'reports' ? 'active' : ''}`}
+          onClick={() => handleSectionChange('reports')}
+        >
+          Reportes
+        </button>
         <hr className="admin-sidebar-divider" />
         <button
           className={`admin-create-btn ${activeSection === 'createAdmin' ? 'active' : ''}`}

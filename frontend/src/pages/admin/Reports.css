@@ -1,0 +1,19 @@
+#report-lists ul {
+    display: flex;
+    list-style-type: none;
+    gap: 15px;
+}
+
+#report-lists button {
+    background-color: transparent;
+    color: antiquewhite;
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+#report-lists button:hover {
+    background-color: rgba(137, 43, 226, 0.349);
+    color: white;
+    cursor: pointer;
+}

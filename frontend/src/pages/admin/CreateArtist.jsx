@@ -15,7 +15,7 @@ function CreateArtist() {
     name: '',
     lastName: '',
     nationality: '',
-    birthDate: '',
+    birthdate: '',
     biography: '',
     commissionRate: 0.05,
   });
@@ -54,7 +54,7 @@ function CreateArtist() {
         name: '',
         lastName: '',
         nationality: '',
-        birthDate: '',
+        birthdate: '',
         biography: '',
         commissionRate: 0.05,
       });
@@ -71,54 +71,38 @@ function CreateArtist() {
   };
 
   return (
-    <div className="admin-section">
+    <div className="admin-form-container">
       <ToastContainer />
-     
-     
-      <div className="admin-form-container">
-         <h1 className="section-title">Crear Nuevo Artista</h1>
-          <div className="admin-line"></div>
-
+      <h1 className="admin-title">Crear Nuevo Artista</h1>
+      <div className="admin-line"></div>
+      <p className="admin-subtitle">
+        Complete los datos para registrar un nuevo artista.
+      </p>
+      <form className="admin-form">
+        <input type="text" name="name"
+          placeholder="Nombre"
+          value={formData.name} onChange={handleChange} required />
+        <input type="text" name="lastName"
+          placeholder="Apellido"
+          value={formData.lastName} onChange={handleChange} required />
+        <input type="text" name="nationality"
+          placeholder="Nacionalidad"
+          value={formData.nationality} onChange={handleChange} />
+        <input type="date" name="birthdate"
+          className="form-input"
+          placeholder="Fecha de Nacimiento"
+          value={formData.birthdate} onChange={handleChange} />
+        <textarea name="biography" rows="4"
+          className="form-input"
+          placeholder="Biografía"
+          value={formData.biography} onChange={handleChange} />
+        <input type="number" name="commissionRate"
+          className="form-input"
+          placeholder="Comisión (5 a 10%)"
+          value={(formData.commissionRate * 100).toFixed(2)}
+          onChange={(e) => setFormData({ ...formData, commissionRate: parseFloat(e.target.value) / 100 })}
+          step="0.01" min="5" max="10" />
         <div className="form-group">
-          <label className="form-label">Nombre</label>
-          <input className="form-input" name="name"
-            placeholder="Ej. Leonardo" value={formData.name} onChange={handleChange} />
-        </div>
-        <div className="form-group">
-          <label className="form-label">Apellido</label>
-          <input className="form-input" name="lastName"
-            placeholder="Ej. Da Vinci" value={formData.lastName} onChange={handleChange} />
-        </div>
-        <div className="form-group">
-          <label className="form-label">Nacionalidad</label>
-          <input className="form-input" name="nationality"
-            placeholder="Ej. Italiana" value={formData.nationality} onChange={handleChange} />
-        </div>
-        <div className="form-group">
-          <label className="form-label">Fecha de Nacimiento</label>
-          <input className="form-input" type="date" name="birthDate"
-            value={formData.birthDate} onChange={handleChange} />
-        </div>
-        <div className="form-group">
-          <label className="form-label">Biografía</label>
-          <textarea className="form-input" name="biography" rows="5"
-            placeholder="Escribe la biografía del artista..."
-            value={formData.biography} onChange={handleChange} />
-        </div>
-        <div className="form-group">
-          <label className="form-label">Comisión (%)</label>
-          <input
-            type="number"
-            name="commissionRate"
-            className="form-input"
-            value={(formData.commissionRate * 100).toFixed(2)}
-            onChange={(e) => setFormData({ ...formData, commissionRate: parseFloat(e.target.value) / 100 })}
-            step="0.01"
-            min="5"
-          />
-        </div>
-        <div className="form-group">
-          <label className="form-label">Foto del Artista</label>
           <label
             htmlFor="artist-image-upload"
             className={`image-upload-area ${imageFile ? 'has-file' : ''}`}
@@ -135,14 +119,10 @@ function CreateArtist() {
               </>
             ) : (
               <>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
+                <svg xmlns="http://www.w3.org/2000/svg"
                   className="image-upload-icon"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="#7c3aed"
-                  strokeWidth="1.5"
-                >
+                  fill="none" viewBox="0 0 24 24"
+                  stroke="#7c3aed" strokeWidth="1.5">
                   <path strokeLinecap="round" strokeLinejoin="round"
                     d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 
                     2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 
@@ -161,13 +141,15 @@ function CreateArtist() {
             onChange={handleImageChange}
           />
         </div>
-
-        <div className="modal-actions">
-          <button className="btn-primary" onClick={handleSubmit} disabled={isLoading}>
-            {isLoading ? 'Registrando...' : 'Crear Artista'}
-          </button>
-        </div>
-      </div>
+        <button
+          type="button"
+          className="admin-create-btn"
+          onClick={handleSubmit}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Registrando...' : 'Crear Artista'}
+        </button>
+      </form>
     </div>
   );
 }

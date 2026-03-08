@@ -1,25 +1,25 @@
 import axios from 'axios';
-
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 // we keep two base URLs: one for auth endpoints and one general server url
-const authUrl = "http://localhost:8080/auth";
-const baseUrl = "http://localhost:8080";
+//const authUrl = "http://localhost:8080/auth";
+//const baseUrl = "http://localhost:8080";
 
 /*export async function logUser(credentials) {
-    const response = await axios.post(`${authUrl}/login`, credentials);
+    const response = await axios.post(`${API_BASE_URL}/auth/login`, credentials);
     return response.data;
 }*/
 
 // register a new user - used during handleNext2 in Sign.jsx
 export async function registerUser(registerData) {
     // registerData should match the DTO expected by the backend
-    const response = await axios.post(`${authUrl}/register`, registerData);
+    const response = await axios.post(`${API_BASE_URL}/auth/register`, registerData);
     return response.data; // caller will handle token, etc.
 }
 
 // update a single security question answer for the authenticated client
 export async function updateSecurityAnswer(questionId, answer, token) {
     const response = await axios.put(
-        `${baseUrl}/questions/updateQuestion?questionId=${questionId}`,
+        `${API_BASE_URL}/questions/updateQuestion?questionId=${questionId}`,
         answer,
         {
             headers: {
@@ -34,7 +34,7 @@ export async function updateSecurityAnswer(questionId, answer, token) {
 // update client payment/membership information
 export async function updateClientInfo(creditCardNumber, postalCode, token) {
     const response = await axios.put(
-        `${baseUrl}/client/update`,
+        `${API_BASE_URL}/client/update`,
         { creditCardNumber, postalCode },
         {
             headers: {
@@ -49,7 +49,7 @@ export async function updateClientInfo(creditCardNumber, postalCode, token) {
 // create a security code for the client after registration
 export async function createSecurityCode(token) {
     const response = await axios.post(
-        `${baseUrl}/client/createSecurityCode`,
+        `${API_BASE_URL}/client/createSecurityCode`,
         null,
         {
             headers: {
@@ -62,7 +62,7 @@ export async function createSecurityCode(token) {
 
 // fetch authenticated user's profile (existing getUserPfp uses /dashboard but we keep same)
 export async function fetchUserProfile(token) {
-    const response = await axios.get(`${baseUrl}/dashboard`, {
+    const response = await axios.get(`${API_BASE_URL}/dashboard`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -103,7 +103,7 @@ export async function logUser(credentials) {
 // Obtener las preguntas de seguridad asignadas al usuario autenticado
 export const getAssignedSecurityQuestions = async (token) => {
   try {
-    const response = await axios.get(`${baseUrl}/questions/getAssignedQuestions`, {
+    const response = await axios.get(`${API_BASE_URL}/questions/getAssignedQuestions`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -119,7 +119,7 @@ export const getAssignedSecurityQuestions = async (token) => {
 export const recoverSecurityCode = async (answersArray) => {
   try {
     const response = await axios.put(
-      `${baseUrl}/questions/RecoverClientCode`,
+      `${API_BASE_URL}/questions/RecoverClientCode`,
       answersArray,
       {
         headers: {

@@ -15,12 +15,14 @@ function UpdateArtist() {
     lastName: '',
     nationality: '',
     biography: '',
-    commissionRate: 0.08
+    commissionRate: 0.08,
+    birthdate: '',
+    imageUrl: ''
   });
   const [loading, setLoading] = useState(true);
 
   // PASO 1: Cargar todos los artistas al montar
-  useEffect(() => {
+useEffect(() => {
     const fetchArtists = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/artist/all`);
@@ -49,7 +51,64 @@ function UpdateArtist() {
     };
     fetchArtists();
   }, []);
+  // PASO 1: Cargar todos los artistas al montar
+  /* useEffect(() => {
+    const fetchArtists = async () => {
+      try {
+        // DATOS FALSOS TEMPORALES — borrar cuando el backend esté listo
+        const mockArtists = [
+          {
+            idArtist: 1,
+            name: 'Leonardo',
+            lastName: 'Da Vinci',
+            nationality: 'Italiana',
+            birthdate: '1452-04-15',
+            biography: 'Pintor, escultor e inventor del Renacimiento italiano.',
+            commissionRate: 0.08,
+            imageUrl: ''
+          },
+          {
+            idArtist: 2,
+            name: 'Pablo',
+            lastName: 'Picasso',
+            nationality: 'Española',
+            birthdate: '1881-10-25',
+            biography: 'Cofundador del cubismo y figura clave del arte moderno.',
+            commissionRate: 0.10,
+            imageUrl: ''
+          },
+          {
+            idArtist: 3,
+            name: 'Frida',
+            lastName: 'Kahlo',
+            nationality: 'Mexicana',
+            birthdate: '1907-07-06',
+            biography: 'Conocida por sus autorretratos inspirados en la naturaleza de México.',
+            commissionRate: 0.07,
+            imageUrl: ''
+          },
+        ];
+        setArtists(mockArtists);
+        /* — descomentar para usar backend real:
+        const res = await axios.get(`${BASE_URL}/artist/all`);
+        setArtists(res.data);
+        */
+  /*    } catch (err) {
+        if (!err.response) {
+          console.error('[UpdateArtist] Sin conexión con el backend:', err.message);
+          toast.error('No se pudo conectar con el servidor.');
+        } else {
+          const msg = err.response?.data?.message || 'Error al cargar artistas.';
+          toast.error(msg);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchArtists();
+  }, []);*/
 
+       
   // PASO 2: Seleccionar artista para editar
   const handleSelectArtist = (artist) => {
     setSelectedArtist(artist);
@@ -58,7 +117,9 @@ function UpdateArtist() {
       lastName: artist.lastName,
       nationality: artist.nationality,
       biography: artist.biography,
-      commissionRate: artist.commissionRate
+      commissionRate: artist.commissionRate,
+      birthdate: artist.birthdate,
+      imageUrl: artist.imageUrl || ''
     });
   };
 
@@ -79,13 +140,14 @@ function UpdateArtist() {
       lastName: '',
       nationality: '',
       biography: '',
-      commissionRate: 0.08
+      commissionRate: 0.08,
+      birthdate: '',
+      imageUrl: ''
     });
   };
 
   // PASO 4: Enviar actualización
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!formData.name || !formData.lastName || !formData.nationality || !formData.biography) {
       toast.error('Completa los campos obligatorios.');
       return;
@@ -154,12 +216,54 @@ function UpdateArtist() {
         </div>
       )}
 
-      {/* Formulario de edición */}
+      {/* Formulario de edición — modal flotante */}
       {selectedArtist && (
-        <div className="admin-form-container" style={{ marginTop: '2rem' }}>
-          <h2 className="section-title" style={{ fontSize: '1.2rem' }}>
-            Editando a: {selectedArtist.name} {selectedArtist.lastName}
-          </h2>
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0,
+          width: '100vw', height: '100vh',
+          background: 'rgba(0,0,0,0.7)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}
+          onClick={handleCancel}
+        >
+          <div className="admin-form-container"
+            style={{ maxWidth: '500px', width: '90%', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+            <div style={{
+              width: '70px', height: '70px',
+              borderRadius: '50%',
+              border: '3px solid #7c3aed',
+              overflow: 'hidden',
+              flexShrink: 0,
+              background: '#1a0a2e',
+              display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+              {selectedArtist.imageUrl ? (
+                <img src={selectedArtist.imageUrl} alt={selectedArtist.name}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+                  fill="none" viewBox="0 0 24 24" stroke="#7c3aed" strokeWidth="1">
+                  <path strokeLinecap="round" strokeLinejoin="round"
+                    d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 
+                    0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 
+                    0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+              )}
+            </div>
+            <div>
+              <h2 className="section-title" style={{ fontSize: '1.1rem', marginBottom: '4px' }}>
+                Editando a: {selectedArtist.name} {selectedArtist.lastName}
+              </h2>
+              <span className="form-label">ID: #{selectedArtist.idArtist}</span>
+            </div>
+          </div>
           <div className="admin-line"></div>
           <div>
             <div className="form-group">
@@ -196,6 +300,16 @@ function UpdateArtist() {
               />
             </div>
             <div className="form-group">
+              <label className="form-label">Fecha de Nacimiento</label>
+              <input
+                type="date"
+                name="birthdate"
+                className="form-input"
+                value={formData.birthdate || ''}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
               <label className="form-label">Biografía</label>
               <textarea
                 name="biography"
@@ -223,6 +337,7 @@ function UpdateArtist() {
               <button type="button" className="btn-primary" onClick={handleSubmit}>Guardar Cambios</button>
               <button type="button" className="btn-cancel" onClick={handleCancel}>Cancelar</button>
             </div>
+          </div>
           </div>
         </div>
       )}
