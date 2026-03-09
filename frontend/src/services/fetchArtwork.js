@@ -1,9 +1,11 @@
 import axios from "axios";
 
 //const url = "http://localhost:8080";
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+//const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = 'https://pictorialarcane-h5g8cdgug9d5awd3.canadacentral-01.azurewebsites.net';
 
-/*export async function showArtwork(page = 0, sortBy = '', direction = 'asc', art_genre = ''){
+//esto estaba comentado debo devlverlo a su estado original, desde aqui
+export async function showArtwork(page = 0, sortBy = '', direction = 'asc', art_genre = ''){
 
     try {
         const fetchedArtwork = await axios.get(`${url}/artwork/all?page=${page}`, {
@@ -45,6 +47,20 @@ export async function getArtistById(id) {
     console.error("Error al obtener artista:", error);
     throw error;
   }
+}
+
+export async function getArtists() {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/artist/all`,{
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error al obtener artistas:", error);
+        throw error;
+    }
 }
 
 // *Obras 
@@ -89,88 +105,114 @@ export async function reserveArtwork(artworkId, securityCode) {
     throw error;
   }
 }
-
+//hasta aqui estaba comentado***************************************
 /**
  * Crea una nueva escultura en el backend.
- * @param {object} sculptureData - Los datos de la escultura.
- * @param {string} token - El token de autenticación del administrador.
+ * parametro sculptureData - Los datos de la escultura.
+ * parametro token - El token de autenticación del administrador.
  */
 export const createSculpture = async (sculptureData, token) => {
-    const response = await axios.post(`${API_BASE_URL}/artwork/sculpture/add`, sculptureData, {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/artwork/sculpture/add`, sculptureData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
         }
     });
     return response.data;
+    } catch (error) {
+        console.error("Error al crear escultura:", error);
+        throw error;
+    }   
 };
 
 /**
  * Crea una nueva fotografía en el backend.
- * @param {object} photographyData - Los datos de la fotografía.
- * @param {string} token - El token de autenticación del administrador.
+ * parametro photographyData - Los datos de la fotografía.
+ * parametro token - El token de autenticación del administrador.
  */
 export const createPhotography = async (photographyData, token) => {
-    const response = await axios.post(`${API_BASE_URL}/artwork/photography/add`, photographyData, {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/artwork/photography/add`, photographyData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
         }
     });
     return response.data;
+    } catch (error) {
+        console.error("Error al crear fotografía:", error);
+        throw error;
+    }
+    
 };
 
 /**
  * Crea una nueva ceramica en el backend.
- * @param {object} ceramicData - Los datos de la cerámica.
- * @param {string} token - El token de autenticación del administrador.
+ * parametro ceramicData - Los datos de la cerámica.
+ * parametro token - El token de autenticación del administrador.
  */
 export const createCeramic = async (ceramicData, token) => {
-    const response = await axios.post(`${API_BASE_URL}/artwork/ceramic/add`, ceramicData, {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/artwork/ceramic/add`, ceramicData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
         }
     });
     return response.data;
+    } catch (error) {
+        console.error("Error al crear cerámica:", error);
+        throw error;
+    }
 };
 
 /**
  * Crea una nueva pintura en el backend.
- * @param {object} paintingData - Los datos de la pintura.
- * @param {string} token - El token de autenticación del administrador.
+ * parametro paintingData - Los datos de la pintura.
+ * parametro token - El token de autenticación del administrador.
  */
 export const createPainting = async (paintingData, token) => {
-    const response = await axios.post(`${API_BASE_URL}/artwork/painting/add`, paintingData, {
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        }
-    });
-    return response.data;
+    try {
+        const response = await axios.post(`${API_BASE_URL}/artwork/painting/add`, paintingData, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error al crear pintura:", error);
+        throw error;
+    }
 };
 
 /**
  * Crea una nueva pieza de orfebrería en el backend.
- * @param {object} goldsmithData - Los datos de la orfebrería.
- * @param {string} token - El token de autenticación del administrador.
+ * parametro goldsmithData - Los datos de la orfebrería.
+ * parametro token - El token de autenticación del administrador.
  */
 export const createGoldsmith = async (goldsmithData, token) => {
-    const response = await axios.post(`${API_BASE_URL}/artwork/goldsmith/add`, goldsmithData, {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/artwork/goldsmith/add`, goldsmithData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
         }
     });
     return response.data;
+    } catch (error) {
+        console.error("Error al crear orfebrería:", error);
+        throw error;
+    }
 };
 
 /**
  * Sube una imagen para una obra de arte.
- * @param {number} artworkId - El ID de la obra para la que se sube la imagen.
- * @param {File} file - El archivo de imagen a subir.
- * @param {string} token - El token de autenticación del administrador.
- * @returns {Promise<any>} La respuesta del servidor.
+ * artworkId - El ID de la obra para la que se sube la imagen.
+ * file - El archivo de imagen a subir.
+ * token - El token de autenticación del administrador.
+ * retorna {Promise<any>} La respuesta del servidor.
  */
 export const uploadArtworkImage = async (artworkId, file, token) => {
     const formData = new FormData();
@@ -196,10 +238,14 @@ export const uploadArtistImage = async (artistId, file, token) => {
 };
 
 // *Generos
-// GET /gender/all
+// GET /genre/all
 export async function getGenres() {
     try {
-         const response = await axios.get(`${url}/gender/all`);
+         const response = await axios.get(`${API_BASE_URL}/genre/all`, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        } );
          return response.data;
     } catch (error) {
         console.error("Error al obtener géneros:", error);
@@ -207,43 +253,58 @@ export async function getGenres() {
     }
 }
 
-// POST /gender/add
+// POST /genre/add
 export async function createGenre(genreData, token) {
-    const response = await axios.post(`${url}/gender/add`, genreData, {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/genre/add`, genreData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
         }
     });
     return response.data;
+    } catch (error) {
+        console.error("Error al crear género:", error);
+        throw error;
+    }
 }
 
-// PUT /gender/update/{id}
+// PUT /genre/update/{id}
 export async function updateGenre(id, genreData, token) {
-    const response = await axios.put(`${url}/gender/update/${id}`, genreData, {
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        }
-    });
-    return response.data;
+    try {
+        const response = await axios.put(`${API_BASE_URL}/genre/update/${id}`, genreData, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error al actualizar género:", error);
+        throw error;
+    }
 }
 
-// DELETE /gender/delete/{id}
+// DELETE /genre/delete/{id}
 export async function deleteGenre(id, token) {
-    const response = await axios.delete(`${url}/gender/delete/${id}`, {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    });
-    return response;
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/genre/delete/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response;
+    } catch (error) {
+        console.error("Error al eliminar género:", error);
+        throw error;
+    }
 }
 
 // --- Funciones de Obras (CRUD) ---
 
 // DELETE /artwork/delete/{id}
 export async function deleteArtwork(id, token) {
-    const response = await axios.delete(`${url}/artwork/delete/${id}`, {
+    const response = await axios.delete(`${API_BASE_URL}/artwork/delete/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
     });
     return response;
@@ -251,38 +312,38 @@ export async function deleteArtwork(id, token) {
 
 // DELETE /admin/{id}/artworkImage
 export async function deleteArtworkImage(id, token) {
-    const response = await axios.delete(`${url}/admin/${id}/artworkImage`, {
+    const response = await axios.delete(`${API_BASE_URL}/admin/${id}/artworkImage`, {
         headers: { 'Authorization': `Bearer ${token}` }
     });
     return response;
 }
 
 export const updateSculpture = async (id, data, token) => {
-    return await axios.put(`${url}/artwork/sculpture/update/${id}`, data, {
+    return await axios.put(`${API_BASE_URL}/artwork/sculpture/update/${id}`, data, {
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
     });
 };
 
 export const updatePainting = async (id, data, token) => {
-    return await axios.put(`${url}/artwork/painting/update/${id}`, data, {
+    return await axios.put(`${API_BASE_URL}/artwork/painting/update/${id}`, data, {
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
     });
 };
 
 export const updatePhotography = async (id, data, token) => {
-    return await axios.put(`${url}/artwork/photography/update/${id}`, data, {
+    return await axios.put(`${API_BASE_URL}/artwork/photography/update/${id}`, data, {
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
     });
 };
 
 export const updateCeramic = async (id, data, token) => {
-    return await axios.put(`${url}/artwork/ceramic/update/${id}`, data, {
+    return await axios.put(`${API_BASE_URL}/artwork/ceramic/update/${id}`, data, {
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
     });
 };
 
 export const updateGoldsmith = async (id, data, token) => {
-    return await axios.put(`${url}/artwork/goldsmith/update/${id}`, data, {
+    return await axios.put(`${API_BASE_URL}/artwork/goldsmith/update/${id}`, data, {
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
     });
 };
@@ -297,18 +358,7 @@ export async function searchArtworks(filters) {
     if (filters.artistId) params.append('idArtist', filters.artistId);
     if (filters.genre) params.append('genre', filters.genre);
     
-    const response = await axios.get(`${url}/artwork/search?${params.toString()}`);
-    return response.data;
-}
-
-// PUT /gender/update/{id}
-export async function updateGenre(id, genreData, token) {
-    const response = await axios.put(`${url}/gender/update/${id}`, genreData, {
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        }
-    });
+    const response = await axios.get(`${API_BASE_URL}/artwork/search?${params.toString()}`);
     return response.data;
 }
 

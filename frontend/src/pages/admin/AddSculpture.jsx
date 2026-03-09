@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { createSculpture, updateSculpture, uploadArtworkImage } from '../../services/fetchArtwork.js';
+import { createSculpture, updateSculpture, uploadArtworkImage, getArtists, getGenres} from '../../services/fetchArtwork.js';
 import { useAuth } from '../../services/AuthContext';
 import './AddArtwork.css';
 
+//const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = 'https://pictorialarcane-h5g8cdgug9d5awd3.canadacentral-01.azurewebsites.net';
 const initialState = {
     name: '',
-    status: 'AVAILABLE', 
+    status: 'AVAILABLE',
     price: '',
+    idArtist: '',
+    idGenre: '',
     material: '',
     weight: '',
     length: '',
@@ -17,11 +21,14 @@ const initialState = {
 };
 
 const AddSculpture = ({ artworkData }) => {
-    const { token } = useAuth();
+    //const { token } = useAuth();
+    const { token } = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRyb3NlcnJhODNAZ21haWwuY29tIiwiaWF0IjoxNzczMDE2Nzk4LCJleHAiOjE3NzMwMTgyMzh9.EKGCR6dqm4wU0HIJVBT4FURIpY9vjA8x9ZkLWSMq2w0";
     const [formData, setFormData] = useState(initialState);
     const [isLoading, setIsLoading] = useState(false);
     const [imageFile, setImageFile] = useState(null);
     const [error, setError] = useState('');
+    const [artists, setArtists] = useState([]);
+    const [genres, setGenres] = useState([]);
 
     // Efecto para cargar datos si estamos en modo edición
     useEffect(() => {
@@ -29,8 +36,9 @@ const AddSculpture = ({ artworkData }) => {
             setFormData({
                 name: artworkData.name || '',
                 status: artworkData.status || 'AVAILABLE',
-                // El mock usa 'precio', el form usa 'price'. Manejamos ambos.
                 price: artworkData.price || artworkData.precio || '',
+                idArtist: artworkData.idArtist || '',
+                idGenre: artworkData.idGenre || '',
                 material: artworkData.material || '',
                 weight: artworkData.weight || '',
                 length: artworkData.length || '',
@@ -39,6 +47,23 @@ const AddSculpture = ({ artworkData }) => {
             });
         }
     }, [artworkData]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const artistsData = await getArtists();
+                const genresData = await getGenres();
+                setArtists(artistsData);
+                setGenres(genresData);
+                console.log('Artistas cargados:', artists);
+                console.log('Géneros cargados:', genres);
+            } catch (error) {
+                console.error("Error al cargar artistas o géneros:", error);
+                setError("No se pudieron cargar los artistas o géneros");
+            }
+        };
+        loadData();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -68,18 +93,42 @@ const AddSculpture = ({ artworkData }) => {
             return;
         }
 
+        //validacion de id
+        if(!formData.idArtist || !formData.idGenre) {
+            const msg = "Por favor, selecciona un artista y un género.";
+            setError(msg);
+            toast.error(msg);
+            return;
+        }
+
         setIsLoading(true);
         let newArtworkId = null; // Variable para rastrear si la escultura fue creada
 
         try {
             // Prepara y crea la escultura
             const sculptureData = {
-                ...formData,
+                /*...formData,
                 price: parseFloat(formData.price),
                 weight: parseFloat(formData.weight),
                 length: parseFloat(formData.length),
                 width: parseFloat(formData.width),
-                depth: parseFloat(formData.depth),
+                depth: parseFloat(formData.depth),*/
+                
+                //creo un obajeto aninado en vez de uno plano
+                artWorkRequest: {
+                    name: formData.name,
+                    status: formData.status,
+                    price: parseFloat(formData.price),
+                    idArtist: parseInt(formData.idArtist),
+                    idGenre: parseInt(formData.idGenre)
+            },
+                sculptureRequest: {
+                    material: formData.material,
+                    weight: parseFloat(formData.weight),
+                    length: parseFloat(formData.length),
+                    width: parseFloat(formData.width),
+                    depth: parseFloat(formData.depth)
+                }
             };
 
             if (artworkData) {
@@ -89,8 +138,11 @@ const AddSculpture = ({ artworkData }) => {
                 toast.success('¡Escultura actualizada con éxito!');
             } else {
                 // --- MODO CREACIÓN ---
+                console.log('Datos enviados a createSculpture:', sculptureData);
+                console.log('Token:', token);
                 const createdSculptureResponse = await createSculpture(sculptureData, token);
-                newArtworkId = createdSculptureResponse?.artWork?.id;
+                //newArtworkId = createdSculptureResponse?.artWork?.id;
+                createdSculptureResponse?.artworkResponse?.idArtWork;
 
                 if (!newArtworkId) {
                     throw new Error("La respuesta del servidor no contenía el ID de la obra tras su creación.");
@@ -104,7 +156,7 @@ const AddSculpture = ({ artworkData }) => {
                 if (artworkData) toast.info('Imagen actualizada correctamente.');
             }
 
-            // 3. Si todo fue exitoso
+            // Si todo fue exitoso se limpia el formulario
             setFormData(initialState);
             setImageFile(null);
             if (document.getElementById('image-upload')) {
@@ -144,29 +196,29 @@ const AddSculpture = ({ artworkData }) => {
             />
             <h2 className="section-title">{artworkData ? 'Editar Escultura' : 'Nueva Escultura'}</h2>
             <p className="admin-subtitle">{artworkData ? 'Modifica los detalles de la escultura seleccionada.' : 'Detalles específicos para esculturas (peso, material, dimensiones).'}</p>
-            
+
             <form className="admin-form" onSubmit={handleSubmit}>
                 {error && <p className="error-message">{error}</p>}
 
                 {/* Nombre de la obra */}
                 <div className="form-group">
                     <label className="form-label">Título de la Obra</label>
-                    <input 
-                        type="text" 
-                        name="name" 
-                        value={formData.name} 
-                        onChange={handleChange} 
-                        placeholder="Ej: El Pensador Eterno" 
-                        required 
+                    <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        placeholder="Ej: El Pensador Eterno"
+                        required
                     />
                 </div>
 
                 {/* Input para subir archivo de imagen */}
                 <div className="form-group">
                     <label className="form-label">Archivo de la Imagen {artworkData && '(Opcional)'}</label>
-                    <input 
+                    <input
                         id="image-upload"
-                        type="file" 
+                        type="file"
                         name="artworkImage"
                         accept="image/*"
                         onChange={handleImageChange}
@@ -178,14 +230,14 @@ const AddSculpture = ({ artworkData }) => {
                     {/* Precio */}
                     <div className="form-group">
                         <label className="form-label">Precio ($)</label>
-                        <input 
-                            type="number" 
-                            name="price" 
-                            value={formData.price} 
-                            onChange={handleChange} 
-                            placeholder="0.00" 
+                        <input
+                            type="number"
+                            name="price"
+                            value={formData.price}
+                            onChange={handleChange}
+                            placeholder="0.00"
                             min="0"
-                            required 
+                            required
                         />
                     </div>
 
@@ -197,6 +249,28 @@ const AddSculpture = ({ artworkData }) => {
                             <option value="RESERVED">Reservado</option>
                         </select>
                     </div>
+                </div>
+
+                {/* Artista */}
+                <div className="form-group">
+                    <label className="form-label">Artista</label>
+                    <select name="idArtist" value={formData.idArtist} onChange={handleChange} required>
+                        <option value="">Selecciona un artista</option>
+                        {artists.map(artist => (
+                            <option key={artist.id} value={artist.id}>{artist.name}</option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Género */}
+                <div className="form-group">
+                    <label className="form-label">Género</label>
+                    <select name="idGenre" value={formData.idGenre} onChange={handleChange} required>
+                        <option value="">Selecciona un género</option>
+                        {genres.map(genre => (
+                            <option key={genre.id} value={genre.id}>{genre.description}</option>
+                        ))}
+                    </select>
                 </div>
 
                 {/* Material y Peso */}
@@ -212,7 +286,7 @@ const AddSculpture = ({ artworkData }) => {
                 </div>
 
                 {/* Dimensiones */}
-                <label className="form-label" style={{marginTop: '10px'}}>Dimensiones (cm)</label>
+                <label className="form-label" style={{ marginTop: '10px' }}>Dimensiones (cm)</label>
                 <div className="form-row">
                     <div className="form-group">
                         <input type="number" name="length" value={formData.length} onChange={handleChange} placeholder="Largo" min="0" required />

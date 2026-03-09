@@ -73,7 +73,6 @@ return (
           <Route path="/login" element={<MainAuth />} />
           <Route path='/auth/*' element={<MainAuth/>} />
           <Route path='/artwork/*' element={<Artwork/>}/>
-          <Route path='/admin/*' element={<Admin/>}/>
           
           <Route 
             path="/artists/:id" 
