@@ -29,7 +29,8 @@ function Login() {
         try {
             await new Promise(resolve => setTimeout(resolve, 1000));
             const data = await logUser({email, password});
-            console.log(data.user?.name);
+            console.log("Full response data:", data);
+            console.log(data.user?.first_name);
             console.log(data.token);
             login(data.user, data.token);
             console.log('Fetch Exitoso ', data);

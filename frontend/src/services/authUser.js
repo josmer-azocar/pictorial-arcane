@@ -1,5 +1,7 @@
 import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
+const url = "https://pictorialarcane-h5g8cdgug9d5awd3.canadacentral-01.azurewebsites.net";
+
 // we keep two base URLs: one for auth endpoints and one general server url
 //const authUrl = "http://localhost:8080/auth";
 //const baseUrl = "http://localhost:8080";
@@ -72,20 +74,21 @@ export async function fetchUserProfile(token) {
 
 
 export async function logUser(credentials) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (credentials.email === "test@test.com" && credentials.password === "1234") {
-        resolve({
-          status: "success",
-          user: { name: "Tester", email: "test@test.com", role: "CLIENT" },
-          token: "fake-jwt-token-123"
+    try {
+        const response = await axios.post(`${url}/auth/login`, {
+            email: credentials.email,
+            password: credentials.password
         });
-        console.log("Exito");
-      } else {
-        reject(new Error("Email o contraseña equivocados"));
-      }
-    }, 1500);
-  });
+
+        console.log("Login exitoso:", response.data);
+        return response.data;
+
+    } catch (error) {
+        console.error("Error de login:", error.response?.data || error.message);
+        
+        const message = error.response?.data?.message || "Email o contraseña equivocados";
+        throw error;
+    }
 }
 
 //funcion para hacer pruebas

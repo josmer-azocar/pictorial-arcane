@@ -9,36 +9,7 @@ export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const login = (userData, token) => {
-    setIsLoggedIn(true);
-    setUser(userData); // Now user state has email, surname, etc.
-    localStorage.setItem("token", token);
-    // Save the object as a string so it survives a page refresh
-    localStorage.setItem("user_info", JSON.stringify(userData));
-};
-
-// 2. Update the initializeUser (useEffect)
     useEffect(() => {
-        const initializeUser = () => {
-            const savedToken = localStorage.getItem("token");
-            const savedUserInfo = localStorage.getItem("user_info");
-
-            if (savedToken && savedUserInfo) {
-                try {
-                    const parsedUser = JSON.parse(savedUserInfo);
-                    setIsLoggedIn(true);
-                    setUser(parsedUser); 
-                } catch (error) {
-                    console.error("Error parsing user data");
-                    logout();
-                }
-            }
-            setLoading(false);
-        };
-        initializeUser();
-    }, []);
-
-    /*useEffect(() => {
 
         const initializeUser = async () => {
             const savedToken = localStorage.getItem("token");
@@ -51,11 +22,12 @@ export const AuthProvider = ({children}) => {
                     : savedToken;
                     console.log("Attempting to decode:", tokenToDecode);
                     const decoded = jwtDecode(tokenToDecode);
+                    console.log("Decoded token:", decoded);
                     setIsLoggedIn(true);
                     setUser({ name: decoded.name || "Usuario", 
                         pfp: "https://fastly.picsum.photos/id/55/4608/3072.jpg?hmac=ahGhylwdN52ULB37deeMZX6T_G7NiERtoPhwydMvUKQ",
                         role: decoded.role,
-                        surname: decoded.surname,
+                        last_name: decoded.last_name,
                         email: decoded.email,
 
                     });
@@ -72,19 +44,20 @@ export const AuthProvider = ({children}) => {
         }
         initializeUser();
 
-    }, []); */
+    }, []); 
 
-    /*const login = (userData, token) => {
+    const login = (userData, token) => {
         setIsLoggedIn(true);
         localStorage.setItem("token", token);
         console.log(userData);
             setUser({
             name: userData.name,
-            surname: userData.surname,
+            last_name: userData.last_name,
+            role: userData.role,
             email: userData.email,
             pfp: "https://picsum.photos/200"
         });
-    }*/
+    }
 
     const logout = () => {
         setIsLoggedIn(false);
