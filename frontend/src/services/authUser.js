@@ -1,5 +1,7 @@
 import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
+const url = "https://pictorialarcane-h5g8cdgug9d5awd3.canadacentral-01.azurewebsites.net";
+
 // we keep two base URLs: one for auth endpoints and one general server url
 //const authUrl = "http://localhost:8080/auth";
 //const baseUrl = "http://localhost:8080";
@@ -73,7 +75,7 @@ export async function fetchUserProfile(token) {
 
 export async function logUser(credentials) {
     try {
-        const response = await axios.post(`${API_BASE_URL}/auth/login`, {
+        const response = await axios.post(`${url}/auth/login`, {
             email: credentials.email,
             password: credentials.password
         });
@@ -85,7 +87,7 @@ export async function logUser(credentials) {
         console.error("Error de login:", error.response?.data || error.message);
         
         const message = error.response?.data?.message || "Email o contraseña equivocados";
-        throw new Error(message);
+        throw error;
     }
 }
 

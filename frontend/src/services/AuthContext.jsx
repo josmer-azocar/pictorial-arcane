@@ -22,11 +22,12 @@ export const AuthProvider = ({children}) => {
                     : savedToken;
                     console.log("Attempting to decode:", tokenToDecode);
                     const decoded = jwtDecode(tokenToDecode);
+                    console.log("Decoded token:", decoded);
                     setIsLoggedIn(true);
                     setUser({ name: decoded.name || "Usuario", 
                         pfp: "https://fastly.picsum.photos/id/55/4608/3072.jpg?hmac=ahGhylwdN52ULB37deeMZX6T_G7NiERtoPhwydMvUKQ",
                         role: decoded.role,
-                        surname: decoded.surname,
+                        last_name: decoded.last_name,
                         email: decoded.email,
 
                     });
@@ -51,7 +52,8 @@ export const AuthProvider = ({children}) => {
         console.log(userData);
             setUser({
             name: userData.name,
-            last_name: userData.surname,
+            last_name: userData.last_name,
+            role: userData.role,
             email: userData.email,
             pfp: "https://picsum.photos/200"
         });
