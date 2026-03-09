@@ -51,8 +51,15 @@ const Home = () => {
             Buscar obras
           </Link>
         </div>
+<div className="capibara-container">
+  <div className="speech-bubble">
+    ¡Bienvenido! Yo seré tu guía turístico 
+  </div>
+  <img src="/imagen/capibara.png" alt="capibara guia" className="capibara-img" />
+</div>
 
       </section>
+    
     </div>
   );
 };
