@@ -1,5 +1,5 @@
 import './Dashboard.css'
-import { useAuth } from '../../services/AuthContext';
+import { useAuth } from '../../services/AuthContext.jsx';
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import HistorialCompras from './HistorialCompras';
@@ -20,7 +20,14 @@ function Dashboard() {
                     </div>
                 );
             default:
-                return <p>Bienvenid@ {user?.name}</p>;
+                if (user.gender === 'OTHER'|| user.gender === null || user.gender === '') {
+                    return <p>Bienvenid@ {user?.firstName}</p>;
+                } else if (user.gender === 'FEMALE') {
+                    return <p>Bienvenida {user?.firstName}</p>;
+                } else {
+                    return <p>Bienvenido {user?.firstName}</p>;
+                }
+                
         }
     };
 

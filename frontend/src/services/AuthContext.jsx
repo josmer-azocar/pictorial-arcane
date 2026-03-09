@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { jwtDecode } from "jwt-decode";
+import { getUserData } from './userServices';
 //import getProfile from "./getUserPfp.js"
 
 const AuthContext = createContext(null); //crea un objeto contexto
@@ -7,93 +8,62 @@ const AuthContext = createContext(null); //crea un objeto contexto
 export const AuthProvider = ({children}) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [user, setUser] = useState(null);
+    const [client, setClient] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const login = (userData, token) => {
-    setIsLoggedIn(true);
-    setUser(userData); // Now user state has email, surname, etc.
-    localStorage.setItem("token", token);
-    // Save the object as a string so it survives a page refresh
-    localStorage.setItem("user_info", JSON.stringify(userData));
-};
+    const fetchAndSetUser = async (token) => {
+        try {
+            const profile = await getUserData(token);
+            setIsLoggedIn(true);
+            setUser({
+                firstName: profile.user.firstName || "Usuario",
+                lastName: profile.user.lastName || "",
+                role: profile.user.role,
+                email: profile.user.email,
+                gender: profile.user.gender,
+                pfp: "https://picsum.photos/200"
+            });
+            setClient({
+                postalCode: profile.client?.postalCode,
+            });
+            console.log("Profile from API:", profile);
+            return profile;
+        } catch (error) {
+            console.error("Error retribuyendo datos del perfil", error);
+            logout();
+            return null;
+        }
+    };
 
-// 2. Update the initializeUser (useEffect)
     useEffect(() => {
-        const initializeUser = () => {
+        const initializeUser = async () => {
             const savedToken = localStorage.getItem("token");
-            const savedUserInfo = localStorage.getItem("user_info");
-
-            if (savedToken && savedUserInfo) {
-                try {
-                    const parsedUser = JSON.parse(savedUserInfo);
-                    setIsLoggedIn(true);
-                    setUser(parsedUser); 
-                } catch (error) {
-                    console.error("Error parsing user data");
-                    logout();
-                }
+            if (savedToken) {
+                await fetchAndSetUser(savedToken);
             }
             setLoading(false);
         };
         initializeUser();
-    }, []);
+        }, []);
 
-    /*useEffect(() => {
-
-        const initializeUser = async () => {
-            const savedToken = localStorage.getItem("token");
-        
-            if (savedToken) {
-
-                try {
-                    const tokenToDecode = savedToken.startsWith("Bearer ") 
-                    ? savedToken.split(" ")[1] 
-                    : savedToken;
-                    console.log("Attempting to decode:", tokenToDecode);
-                    const decoded = jwtDecode(tokenToDecode);
-                    setIsLoggedIn(true);
-                    setUser({ name: decoded.name || "Usuario", 
-                        pfp: "https://fastly.picsum.photos/id/55/4608/3072.jpg?hmac=ahGhylwdN52ULB37deeMZX6T_G7NiERtoPhwydMvUKQ",
-                        role: decoded.role,
-                        surname: decoded.surname,
-                        email: decoded.email,
-
-                    });
-                    //CAMBIAR A decoded.name cuando se conecte el backend
-
-                } catch (error) {
-                    console.error("Token inválido");
-                    logout();
-                }
-                
-            }
-
-            setLoading(false);
+    const login = async (savedToken) => {
+        const success = await fetchAndSetUser(savedToken);
+        if (success) {
+            localStorage.setItem("token", savedToken);
+            return success;
         }
-        initializeUser();
-
-    }, []); */
-
-    /*const login = (userData, token) => {
-        setIsLoggedIn(true);
-        localStorage.setItem("token", token);
-        console.log(userData);
-            setUser({
-            name: userData.name,
-            surname: userData.surname,
-            email: userData.email,
-            pfp: "https://picsum.photos/200"
-        });
-    }*/
+        return null;
+    };
 
     const logout = () => {
         setIsLoggedIn(false);
         setUser(null);
+        setClient(null);
         localStorage.removeItem("token");
     }
 
     return(
-        <AuthContext.Provider value={{isLoggedIn, user, login, logout, loading }}>
+        <AuthContext.Provider value={{isLoggedIn, user, client, login, logout, loading }}>
             {!loading && children}
         </AuthContext.Provider>
     );

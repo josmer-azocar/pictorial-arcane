@@ -9,39 +9,45 @@ function Artwork() {
     const [works, setWork] = useState({ content: [], totalPages: 0, number: 0});
     const [load, isLoad] = useState(false);
     const [error, setError] = useState("");
-    const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc', genre: ' ' });
+    const [sortConfig, setSortConfig] = useState({ idGenre: '', idArtist: '', title: '', sortBy: 'price', direction: 'ASC' });
     const [availableArtists, setAvailableArtists] = useState([]);
     const [availableGenres, setAvailableGenres] = useState([]);
 
-    const getArt = async (page = 0, sortBy = sortConfig.key, dir = sortConfig.direction, genre_ = sortConfig.genre) => {
+    const getArt = async (
+        page = 0,
+        idGenre= sortConfig.idGenre,
+        idArtist = sortConfig.idArtist,
+        sortBy = sortConfig.sortBy,
+        direction = sortConfig.direction) => {
         isLoad(true);
         try {
-
-
             setError("");
-            const response = await showArtwork(page, sortBy, dir, genre_);
+            const response = await showArtwork(idGenre, idArtist, '', 0, 99999, page, 10, sortBy, direction);
             const artistData = await showArtist();
 
-            const artAndArtist = response.content.map(art => {
-                const artist = artistData.find(a => a.id === art.id_artist);
-                return {
-                    ...art,
-                    artistName: artist ? artist.name : "Desconocido",
-                    artistId: artist ? artist.id : 0,
-                    genre: art.genre || "General"
-                };
-            });
+            console.log("primer objeto artwork", response.content);
+
+            const formattedArt = (response.content || []).map(art => {
+            return {
+                ...art,
+                artistName: art.artist || "Desconocido", 
+                precio: art.price,
+                image: art.imageUrl,
+                genre: art.genre || "General"
+            };
+        });
             setWork({
                 ...response,
-                content: artAndArtist
+                content: formattedArt
             });
-            setSortConfig({ key: sortBy, direction: dir, genre: genre_ });
+            setSortConfig({ idGenre, idArtist, title: '', sortBy, direction });
             setAvailableArtists(artistData);
 
-            const uniqueGenres = [...new Set(artAndArtist.map(item => item.genre))]; //el Set elimina datos duplicados
+            const uniqueGenres = [...new Set(formattedArt.map(item => item.genre))]; //el Set elimina datos duplicados
             setAvailableGenres(uniqueGenres);
 
             console.log("fetch exitoso", response);
+            console.log("Objeto artwork", response.content, formattedArt);
 
         } catch (error) {
             console.error("Connection failed:", error);
@@ -67,6 +73,8 @@ function Artwork() {
         );
     }
 
+    
+
     return (
         <section id="art-display">
             <div id="titulo-galeria">
@@ -75,23 +83,23 @@ function Artwork() {
             <div id="sort-galery">
                 <p>Filtrar por: </p>
                 <div id="botton-filtrado">
-                    <button onClick={() => getArt(0, 'precio', sortConfig.direction === 'asc' ? 'desc' : 'asc')}>
-                        Precio {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                    <button onClick={() => getArt(0, sortConfig.idGenre, sortConfig.idArtist, 'price', sortConfig.direction === 'ASC' ? 'DESC' : 'ASC')}>
+                        Precio {sortConfig.direction === 'ASC' ? '↑' : '↓'}
                     </button>{/*menor a mayor*/}
                     <select 
-                        value={sortConfig.key === 'id_artist' ? sortConfig.genre : ''} 
-                        onChange={(e) => getArt(0, 'id_artist', 'asc', e.target.value)}>
+                        value={sortConfig.idArtist || ""} 
+                        onChange={(e) => getArt(0, sortConfig.idGenre, e.target.value)}>
                         <option value="">Todos los Artistas</option>
                         {availableArtists.map(artist => (
-                            <option key={artist.id} value={artist.id}>
+                            <option key={artist.idArtist} value={artist.idArtist}>
                                 {artist.name}
                             </option>
                         ))}
                     </select>
 
                     <select 
-                        value={sortConfig.genre} 
-                        onChange={(e) => getArt(0, sortConfig.key, sortConfig.direction, e.target.value)}>
+                        value={sortConfig.idGenre} 
+                        onChange={(e) => getArt(0, e.target.value, sortConfig.idArtist)}>
                         <option value="">Todos los Géneros</option>
                         {availableGenres.map((genre, index) => (
                             <option key={index} value={genre}>
@@ -100,13 +108,13 @@ function Artwork() {
                         ))}
                     </select>
 
-                    <button onClick={() => getArt(0, '', 'asc', '')}>Limpiar</button>
+                    <button onClick={() => getArt(0, null, null, 'price', 'ASC')}>Limpiar</button>
                 </div>
             </div>
             <section id="art-grid">
                 {(works.content || []).map((artPiece) => (
-                    <div className="art-piece" key={artPiece.id}>
-                        <img src={artPiece.image} alt={artPiece.description} />
+                    <div className="art-piece" key={artPiece.idArtWork}>
+                        <img src={artPiece.image} alt={artPiece.name} />
                         <div className="text-art-piece">
                             <p className="precio-display">${artPiece.precio}</p>
                             <p>{artPiece.name}</p>
