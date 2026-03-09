@@ -54,7 +54,7 @@
 
 
 #message-user p {
-    font-size: 2rem;
+    font-size: 1.2rem;
 }
 
 .edit-form{
@@ -98,4 +98,24 @@
     background-color: transparent;
     color: antiquewhite;
     padding: 5px;
+}
+
+.info-display {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem 2rem; 
+    align-items: center;
+}
+
+.info-display p {
+    margin: 0; 
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.info-display button {
+    grid-column: span 2; 
+    justify-self: center; 
+    margin-top: 1rem;
+    padding: 0.5rem 2rem;
 }

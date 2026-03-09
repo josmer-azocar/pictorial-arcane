@@ -1,9 +1,10 @@
 import './Dashboard.css'
-import { useAuth } from '../../services/AuthContext';
+import { useAuth } from '../../services/AuthContext.jsx';
 import { useState } from 'react';
+import { updateUserData } from '../../services/userServices.js';
 
 function InfoUsuario(){
-    const { user } = useAuth();
+    const { user, login, client } = useAuth();
     const [ isEditing, setIsEditing] = useState(false);
 
     const RenderEditing = () => {
@@ -18,7 +19,7 @@ function InfoUsuario(){
                     </select>
 
                     <label htmlFor='postal'>Código Postal:</label>
-                    <input type="number" id='postal' defaultValue={user?.postal_code} min="1" max="9999999"/>
+                    <input type="number" id='postal' defaultValue={client?.postalCode} min="1" max="9999999"/>
                 </div>
                 <div className="form-buttons">
                     <button type='submit'>Actualizar datos</button>
@@ -34,10 +35,11 @@ function InfoUsuario(){
                 <RenderEditing />
             ) : (
                 <div className="info-display">
-                    <p><strong>Nombre:</strong> {user?.name}</p>
+                    <p><strong>Nombre:</strong> {user?.firstName}</p>
+                    <p><strong>Apellido:</strong> {user?.lastName}</p>
                     <p><strong>Email:</strong> {user?.email}</p>
                     <p><strong>Género:</strong> {user?.gender || "No especificado"}</p>
-                    <p><strong>Código Postal:</strong> {user?.postal_code || "N/A"}</p>
+                    <p><strong>Código Postal:</strong> {client?.postalCode || "N/A"}</p>
 
                     <button onClick={() => setIsEditing(true)}>
                         Editar

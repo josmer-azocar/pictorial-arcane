@@ -3,15 +3,16 @@ import { useAuth } from './AuthContext';
 import Loading from '../components/Loading';
 
 const PrivateRoutes = () => {
-    const { isLoggedIn, loading } = useAuth();
+    const { isLoggedIn, user, loading } = useAuth();
 
-    console.log("Checking Protection -> LoggedIn:", isLoggedIn, "Loading:", loading);
+    console.log("Checking Protection -> LoggedIn:", isLoggedIn, "Loading:", loading, "Role:", user?.role);
 
-    if (loading) return <Loading />; // Important! Don't return null.
+    if (loading) return <Loading />; 
 
-    return (
-        isLoggedIn ? <Outlet /> : <Navigate to="/login" /> //si esta loggeado se envia a rutas hijas, sino a login
-    )
+        if (!isLoggedIn) return <Navigate to="/login" />;
+    if (user?.role !== 'CLIENT') return <Navigate to="/" />; // or to /unauthorized
+    
+    return <Outlet />;
 }
 
 export default PrivateRoutes;

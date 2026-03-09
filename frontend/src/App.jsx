@@ -12,9 +12,10 @@ import Shipment from './pages/shipment/shipment.jsx';
 import WhoWeAre from './pages/whoweare/WhoWeAre.jsx';
 import Footer from './components/Footer.jsx';
 
-import AuthProvider from './services/authContext.jsx'; 
+import AuthProvider from './services/AuthContext.jsx'; 
 import Dashboard from './pages/dashboard/Dashboard.jsx';
-import PrivateRoutes from './services/PrivateRoutes.jsx'
+import PrivateRoutes from './services/PrivateRoutes.jsx';
+import PrivateRoutesAdmin from './services/PrivateRoutesAdmin.jsx';
 import Admin from './pages/admin/Admin.jsx';
 
 
@@ -86,6 +87,8 @@ return (
           />
           <Route element={<PrivateRoutes/>}>
             <Route path='/dashboard/*' element={<Dashboard/>}/>
+          </Route>
+          <Route element={<PrivateRoutesAdmin/>}>
             <Route path='/admin/*' element={<Admin/>}/>
           </Route>
           {/*LAS RUTAS DEL FOOTER*/}

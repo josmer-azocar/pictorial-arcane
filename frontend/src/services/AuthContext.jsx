@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { jwtDecode } from "jwt-decode";
+import { getUserData } from './userServices';
 //import getProfile from "./getUserPfp.js"
 
 const AuthContext = createContext(null); //crea un objeto contexto
@@ -7,66 +8,62 @@ const AuthContext = createContext(null); //crea un objeto contexto
 export const AuthProvider = ({children}) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [user, setUser] = useState(null);
+    const [client, setClient] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    const fetchAndSetUser = async (token) => {
+        try {
+            const profile = await getUserData(token);
+            setIsLoggedIn(true);
+            setUser({
+                firstName: profile.user.firstName || "Usuario",
+                lastName: profile.user.lastName || "",
+                role: profile.user.role,
+                email: profile.user.email,
+                gender: profile.user.gender,
+                pfp: "https://picsum.photos/200"
+            });
+            setClient({
+                postalCode: profile.client?.postalCode,
+            });
+            console.log("Profile from API:", profile);
+            return profile;
+        } catch (error) {
+            console.error("Error retribuyendo datos del perfil", error);
+            logout();
+            return null;
+        }
+    };
 
+    useEffect(() => {
         const initializeUser = async () => {
             const savedToken = localStorage.getItem("token");
-        
             if (savedToken) {
-
-                try {
-                    const tokenToDecode = savedToken.startsWith("Bearer ") 
-                    ? savedToken.split(" ")[1] 
-                    : savedToken;
-                    console.log("Attempting to decode:", tokenToDecode);
-                    const decoded = jwtDecode(tokenToDecode);
-                    console.log("Decoded token:", decoded);
-                    setIsLoggedIn(true);
-                    setUser({ name: decoded.name || "Usuario", 
-                        pfp: "https://fastly.picsum.photos/id/55/4608/3072.jpg?hmac=ahGhylwdN52ULB37deeMZX6T_G7NiERtoPhwydMvUKQ",
-                        role: decoded.role,
-                        last_name: decoded.last_name,
-                        email: decoded.email,
-
-                    });
-                    //CAMBIAR A decoded.name cuando se conecte el backend
-
-                } catch (error) {
-                    console.error("Token inválido");
-                    logout();
-                }
-                
+                await fetchAndSetUser(savedToken);
             }
-
             setLoading(false);
-        }
+        };
         initializeUser();
+        }, []);
 
-    }, []); 
-
-    const login = (userData, token) => {
-        setIsLoggedIn(true);
-        localStorage.setItem("token", token);
-        console.log(userData);
-            setUser({
-            name: userData.name,
-            last_name: userData.last_name,
-            role: userData.role,
-            email: userData.email,
-            pfp: "https://picsum.photos/200"
-        });
-    }
+    const login = async (savedToken) => {
+        const success = await fetchAndSetUser(savedToken);
+        if (success) {
+            localStorage.setItem("token", savedToken);
+            return success;
+        }
+        return null;
+    };
 
     const logout = () => {
         setIsLoggedIn(false);
         setUser(null);
+        setClient(null);
         localStorage.removeItem("token");
     }
 
     return(
-        <AuthContext.Provider value={{isLoggedIn, user, login, logout, loading }}>
+        <AuthContext.Provider value={{isLoggedIn, user, client, login, logout, loading }}>
             {!loading && children}
         </AuthContext.Provider>
     );
