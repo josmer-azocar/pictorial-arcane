@@ -1,7 +1,11 @@
 import axios from "axios";
 //const url = "http://localhost:8080";
-const API_BASE_URL = import.meta.env.VITE_API_URL;
-const url = "https://pictorialarcane-h5g8cdgug9d5awd3.canadacentral-01.azurewebsites.net";
+//const API_BASE_URL = import.meta.env.VITE_API_URL;
+//const url = "https://pictorialarcane-h5g8cdgug9d5awd3.canadacentral-01.azurewebsites.net";
+
+//para probra patricia
+const API_BASE_URL = "https://pictorialarcane-h5g8cdgug9d5awd3.canadacentral-01.azurewebsites.net";
+const url = API_BASE_URL;
 
 export async function showArtwork(idGenre = null, 
     idArtist = null, 
@@ -137,10 +141,10 @@ export async function getArtists() {
                 'Content-Type': 'application/json'
             }
         });
-        return response.data;
+        return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
         console.error("Error al obtener artistas:", error);
-        throw error;
+        return [];
     }
 }
 
@@ -355,10 +359,10 @@ export async function getGenres() {
                 'Content-Type': 'application/json'
             }
         } );
-         return response.data;
+         return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
         console.error("Error al obtener géneros:", error);
-        throw error;
+        return [];
     }
 }
 

@@ -74,6 +74,8 @@ return (
           <Route path='/auth/*' element={<MainAuth/>} />
           <Route path='/artwork/*' element={<Artwork/>}/>
           
+          <Route path='/admin/*' element={<Admin/>}/> {/* Ruta para el panel de administración  BORRAR*/}
+          
           <Route 
             path="/artists/:id" 
             element={

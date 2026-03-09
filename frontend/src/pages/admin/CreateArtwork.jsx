@@ -6,7 +6,7 @@ import AddPhotography from './AddPhotography.jsx';
 import AddCeramic from './AddCeramic.jsx';
 import AddGoldsmith from './AddGoldsmith.jsx';
 
-const CreateArtwork = () => {
+const CreateArtwork = ({ onCreationSuccess }) => {
     const [selectedType, setSelectedType] = useState(null);
 
     const artworkTypes = [
@@ -26,15 +26,15 @@ const CreateArtwork = () => {
     const renderForm = () => {
         switch (selectedType) {
             case 'SCULPTURE':
-                return <AddSculpture />;
+                return <AddSculpture onCreationSuccess={onCreationSuccess} />;
             case 'PAINTING':
-                return <AddPainting />;
+                return <AddPainting onCreationSuccess={onCreationSuccess} />;
             case 'PHOTOGRAPHY':
-                return <AddPhotography />;
+                return <AddPhotography onCreationSuccess={onCreationSuccess} />;
             case 'CERAMIC':
-                return <AddCeramic />;
+                return <AddCeramic onCreationSuccess={onCreationSuccess} />;
             case 'GOLDSMITH':
-                return <AddGoldsmith />;
+                return <AddGoldsmith onCreationSuccess={onCreationSuccess} />;
             default:
                 return <p>Formulario no encontrado.</p>;
         }

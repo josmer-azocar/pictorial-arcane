@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { createPhotography, updatePhotography, uploadArtworkImage } from '../../services/fetchArtwork.js';
+import { createPhotography, updatePhotography, uploadArtworkImage, getArtists, getGenres } from '../../services/fetchArtwork.js';
 import { useAuth } from '../../services/AuthContext';
 import './AddArtwork.css';
 
@@ -9,6 +9,8 @@ const initialState = {
     name: '',
     status: 'AVAILABLE',
     price: '',
+    idArtist: '',
+    idGenre: '',
     printType: '',
     resolution: '',
     color: '',
@@ -16,12 +18,15 @@ const initialState = {
     camera: ''
 };
 
-const AddPhotography = ({ artworkData }) => {
-    const { token } = useAuth();
+const AddPhotography = ({ artworkData, onCreationSuccess }) => {
+    //const { token } = useAuth();
+    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRyb3NlcnJhODNAZ21haWwuY29tIiwiaWF0IjoxNzczMDI4ODA3LCJleHAiOjE3NzMwMzAyNDd9.ctMz9Sl2_wd8YE_PqfPn5TwowhHv059jOjBypyZHGNU";
     const [formData, setFormData] = useState(initialState);
     const [isLoading, setIsLoading] = useState(false);
     const [imageFile, setImageFile] = useState(null);
     const [error, setError] = useState('');
+    const [artists, setArtists] = useState([]);
+    const [genres, setGenres] = useState([]);
 
     useEffect(() => {
         if (artworkData) {
@@ -29,6 +34,8 @@ const AddPhotography = ({ artworkData }) => {
                 name: artworkData.name || '',
                 status: artworkData.status || 'AVAILABLE',
                 price: artworkData.price || artworkData.precio || '',
+                idArtist: artworkData.idArtist || '',
+                idGenre: artworkData.idGenre || '',
                 printType: artworkData.printType || '',
                 resolution: artworkData.resolution || '',
                 color: artworkData.color || '',
@@ -37,6 +44,21 @@ const AddPhotography = ({ artworkData }) => {
             });
         }
     }, [artworkData]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const artistsData = await getArtists();
+                const genresData = await getGenres();
+                setArtists(artistsData);
+                setGenres(genresData);
+            } catch (error) {
+                console.error("Error al cargar artistas o géneros:", error);
+                setError("No se pudieron cargar los artistas o géneros");
+            }
+        };
+        loadData();
+    }, []);
 
 
     const handleChange = (e) => {
@@ -66,38 +88,65 @@ const AddPhotography = ({ artworkData }) => {
             return;
         }
 
+        if(!formData.idArtist || !formData.idGenre) {
+            const msg = "Por favor, selecciona un artista y un género.";
+            setError(msg);
+            toast.error(msg);
+            return;
+        }
+
         setIsLoading(true);
         let newArtworkId = null;
 
         try {
             const photographyData = {
-                ...formData,
-                price: parseFloat(formData.price)
+                artWorkRequest: {
+                    name: formData.name,
+                    status: formData.status,
+                    price: parseFloat(formData.price),
+                    idArtist: parseInt(formData.idArtist),
+                    idGenre: parseInt(formData.idGenre)
+                },
+                photographyRequest: {
+                    printType: formData.printType,
+                    resolution: formData.resolution,
+                    color: formData.color,
+                    serialNumber: formData.serialNumber,
+                    camera: formData.camera
+                }
             };
 
             if (artworkData) {
                 await updatePhotography(artworkData.id, photographyData, token);
                 newArtworkId = artworkData.id;
-                toast.success('¡Fotografía actualizada con éxito!');
             } else {
                 const createdResponse = await createPhotography(photographyData, token);
-                newArtworkId = createdResponse?.artWork?.id;
+                newArtworkId = createdResponse?.artworkResponse?.idArtWork;
 
-                if (!newArtworkId) {
+                if (newArtworkId === null || newArtworkId === undefined) {
                     throw new Error("La respuesta del servidor no contenía el ID de la obra tras su creación.");
                 }
-                toast.success('¡Fotografía registrada con éxito!');
             }
 
             if (imageFile) {
                 await uploadArtworkImage(newArtworkId, imageFile, token);
-                if (artworkData) toast.info('Imagen actualizada.');
             }
 
-            setFormData(initialState);
-            setImageFile(null);
-            if (document.getElementById('image-upload')) {
-                document.getElementById('image-upload').value = '';
+            const successMessage = artworkData ? '¡Fotografía actualizada con éxito!' : '¡Fotografía registrada con éxito!';
+            toast.success(successMessage, {
+                onClose: () => {
+                    if (onCreationSuccess) {
+                        onCreationSuccess();
+                    }
+                }
+            });
+
+            if (!onCreationSuccess) {
+                setFormData(initialState);
+                setImageFile(null);
+                if (document.getElementById('image-upload')) {
+                    document.getElementById('image-upload').value = '';
+                }
             }
 
         } catch (err) {
@@ -105,7 +154,7 @@ const AddPhotography = ({ artworkData }) => {
             const serverMessage = err.response?.data?.message || err.message;
 
             if (newArtworkId) {
-                finalErrorMessage = `Operación exitosa (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
+                finalErrorMessage = `La operación se realizó (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
                 toast.warning('Datos guardados, pero hubo un error con la imagen.');
             } else {
                 finalErrorMessage = `Error al procesar la fotografía: ${serverMessage}`;
@@ -138,7 +187,7 @@ const AddPhotography = ({ artworkData }) => {
 
                 <div className="form-group">
                     <label className="form-label">Título de la Obra</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Ej: Atardecer Urbano" required={!artworkData} />
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Ej: Atardecer Urbano" required />
                 </div>
 
                 <div className="form-group">
@@ -156,8 +205,29 @@ const AddPhotography = ({ artworkData }) => {
                         <select name="status" value={formData.status} onChange={handleChange}>
                             <option value="AVAILABLE">Disponible</option>
                             <option value="RESERVED">Reservado</option>
+                            <option value="SOLD">Vendido</option>
                         </select>
                     </div>
+                </div>
+
+                <div className="form-group">
+                    <label className="form-label">Artista</label>
+                    <select name="idArtist" value={formData.idArtist} onChange={handleChange} required>
+                        <option value="">Selecciona un artista</option>
+                        {artists.map(artist => (
+                            <option key={artist.idArtist} value={artist.idArtist}>{artist.name} {artist.lastName}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="form-group">
+                    <label className="form-label">Género</label>
+                    <select name="idGenre" value={formData.idGenre} onChange={handleChange} required>
+                        <option value="">Selecciona un género</option>
+                        {genres.map(genre => (
+                            <option key={genre.idGenre} value={genre.idGenre}>{genre.description}</option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="form-row">

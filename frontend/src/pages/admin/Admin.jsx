@@ -37,6 +37,11 @@ function Admin() {
     setArtworkToEdit(null);
   };
 
+  // Función para volver al dashboard principal después de una acción exitosa
+  const handleActionSuccess = () => {
+    handleSectionChange(null);
+  };
+
   // Cargar los datos de la obra cuando se selecciona un ID para editar
   useEffect(() => {
     if (!artworkToEditId) {
@@ -95,7 +100,7 @@ function Admin() {
       case 'reservations':
         return <PendingReservations />;
       case 'createArtwork':
-        return <CreateArtwork />;
+        return <CreateArtwork onCreationSuccess={handleActionSuccess} />;
         case 'createArtist':
             return <CreateArtist />;
       case 'deleteArtist':
@@ -153,12 +158,6 @@ function Admin() {
             <button
               className={`admin-nav-btn ${activeSection === 'viewArtwork' ? 'active' : ''}`}
               onClick={() => handleSectionChange('viewArtwork')}
-            >
-              Ver Obra
-            </button>
-            <button
-              className={`admin-nav-btn ${activeSection === 'updateArtwork' ? 'active' : ''}`}
-              onClick={() => handleSectionChange('updateArtwork')}
             >
               Actualizar Obra
             </button>

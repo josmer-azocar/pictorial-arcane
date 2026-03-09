@@ -14,7 +14,7 @@ export default defineConfig({
       }
     }
   }*/
- /*server: {
+ server: {
   proxy: {
     '/api': {
       target: 'VITE_API_URL=https://pictorialarcane-h5g8cdgug9d5awd3.canadacentral-01.azurewebsites.net',
@@ -23,5 +23,5 @@ export default defineConfig({
       rewrite: (path) => path.replace(/^\/api/, '')
     }
   }
-}*/
+}
 })
