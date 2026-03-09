@@ -20,9 +20,18 @@ export async function registerUser(registerData) {
 
 // update a single security question answer for the authenticated client
 export async function updateSecurityAnswer(questionId, answer, token) {
+   console.log("📤 Enviando al backend:");
+    console.log("   questionId:", questionId);
+    console.log("   answer:", answer);
+    console.log("   body que se envía:", JSON.stringify(answer));
+    // Validación temporal mientras el backend corrige el límite de la BD
+    if (answer.length > 20) {
+        throw new Error("La respuesta no puede exceder 20 caracteres");
+    }
+
     const response = await axios.put(
-        `${API_BASE_URL}/questions/updateQuestion?questionId=${questionId}`,
-        answer,
+        `${API_BASE_URL}/questions/updateQuestion?questionId=${parseInt(questionId)}`,
+        JSON.stringify(answer), // ✅ String directo serializado correctamente
         {
             headers: {
                 'Content-Type': 'application/json',
@@ -32,7 +41,6 @@ export async function updateSecurityAnswer(questionId, answer, token) {
     );
     return response.data;
 }
-
 // update client payment/membership information
 export async function updateClientInfo(creditCardNumber, postalCode, token) {
     const response = await axios.put(
@@ -139,3 +147,17 @@ export const recoverSecurityCode = async (answersArray) => {
     );
   }
 };
+
+// Crear/renovar membresía del cliente
+export async function createMembership(token) {
+    const response = await axios.post(
+        `${API_BASE_URL}/membership/renew`,
+        null,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+    return response.data;
+}

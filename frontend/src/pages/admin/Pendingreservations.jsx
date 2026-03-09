@@ -6,7 +6,8 @@ import InvoiceModal from './InvoiceModal.jsx';
 import './Admin.css';
 import { getPendingSales } from '../../services/fetchSales';
 
-const BASE_URL = 'http://localhost:8080';
+//const BASE_URL = 'http://localhost:8080';
+const API_BASE_URL  = import.meta.env.VITE_API_URL;
 
 const mockReservations = [
   {
@@ -62,7 +63,7 @@ function PendingReservations() {
   const [loading, setLoading] = useState(true);
   const [selectedReservation, setSelectedReservation] = useState(null);
 
-  const [reservations, setReservations] = useState(mockReservations);
+  const [reservations, setReservations] = useState([]);
   const prevCountRef = useRef(0);
 
   // Obtener token del localStorage 
@@ -70,10 +71,18 @@ function PendingReservations() {
 
   // ── GET /admin/getAllPendingSales ──────────────────────────
   const fetchPendingSales = async () => {
+
+ /*  if (!token || token === 'test-token-fake') {
+    setReservations(mockReservations);
+    setLoading(false);
+    return;
+  }*/
     setLoading(true);
     try {
       const data = await getPendingSales(token);
-      setReservations(data || []);
+      setReservations(Array.isArray(data) ? data : data?.content || []);
+      // AQUÍ lo pones
+ 
     } catch (err) {
       toast.error('Error al cargar las reservas pendientes.');
     } finally {
@@ -104,7 +113,7 @@ function PendingReservations() {
     if (!window.confirm('¿Cancelar esta reserva?')) return;
     try {
       await axios.put(
-        `${BASE_URL}/admin/rejectPendingSale/${saleId}`,
+        `${ API_BASE_URL}/admin/rejectPendingSale/${saleId}`,
         null,
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -4,6 +4,7 @@ import {logUser} from '../../services/authUser.js';
 import { useNavigate } from 'react-router-dom';
 import Loading from '../../components/Loading.jsx'
 import { useAuth } from '../../services/AuthContext.jsx';
+import { jwtDecode } from "jwt-decode"; 
 
 function Login() {
 
@@ -27,16 +28,25 @@ function Login() {
             return; 
         }
         try {
-            await new Promise(resolve => setTimeout(resolve, 1000));
             const data = await logUser({email, password});
-            console.log("Full response data:", data);
-            console.log(data.user?.first_name);
             console.log(data.token);
-            login(data.user, data.token);
+            const token = data.token;
+            
+            if (!token) {
+                throw new Error("No token received");
+            }
             console.log('Fetch Exitoso ', data);
-            if (data.user?.role === "client" || data.user?.role === "CLIENT") {
+
+            const profile = await login(token);
+            if (!profile) {
+                setErrMsg("Error al obtener datos del usuario. Intente de nuevo.");
+                setLoadPage(false);
+                return;
+            }
+
+            if (profile.user?.role === "client" || profile.user?.role === "CLIENT") {
                 navigate("/dashboard");
-            } else if (data.user?.role === "admin" || data.user?.role === "ADMIN" ) {
+            } else if (profile.user?.role === "admin" || profile.user?.role === "ADMIN" ) {
                 navigate("/admin");
             }
             

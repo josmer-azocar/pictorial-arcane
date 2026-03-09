@@ -46,7 +46,7 @@ useEffect(() => {
         acc[genre].push(obra);
         return acc;
       }, {});
-      setArtworksByGenre(grouped);
+      setArtworksByGenre(artworksData);
 
     } catch (err) {
       setError(err.message);
@@ -106,32 +106,18 @@ useEffect(() => {
     </div>
   </aside>
 
-  <section className="artp-gallery-right">
-  <h2 className="artp-section-title">Obras por Género</h2>
-  
-  <div className="artp-genres-row">
-    {Object.entries(artworksByGenre).map(([genre, artworks]) => (
-      <div key={genre} className="artp-genre-card">
-        <h3 className="artp-genre-title">{genre}</h3>
-        
-        {/*obras del género */}
-        <div className="artp-works-container">
-          {artworks.map((work) => (
-            <div key={work.id} className="artp-work-mini-card">
-              <img 
-                src={work.image_url || work.photo_url} 
-                alt={work.title} 
-                className="artp-genre-cover" 
-              />
-              <p className="artp-work-name">{work.title}</p>
-              <span className="artp-work-price">${work.price}</span>
-            </div>
-          ))}
+   <section className="artp-gallery-right">
+    <h2 className="artp-section-title">Obras del Artista</h2>
+    <div className="artp-genres-row">
+      {artworksByGenre.map((work) => (
+        <div key={work.idArtWork} className="artp-work-mini-card">
+          <img src={work.imageUrl} alt={work.name} className="artp-genre-cover" />
+          <p className="artp-work-name">{work.name}</p>
+          <span className="artp-work-price">${work.price}</span>
         </div>
-      </div>
-    ))}
-  </div>
-</section>
+      ))}
+    </div>
+  </section>
 
 </div>
     </div>

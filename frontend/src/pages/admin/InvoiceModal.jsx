@@ -1,39 +1,52 @@
 import { useState } from 'react';
-import { useAuth } from '../../services/AuthContext';           // ✅ token del contexto
-import { confirmPendingSale } from '../../services/fetchSales'; // ✅ servicio centralizado
+import axios from 'axios';
+import { toast } from 'react-toastify';
 import './Admin.css';
 
-function InvoiceModal({ reservation, onClose, onSuccess }) {
-  const { token } = useAuth(); // ✅ en lugar de localStorage.getItem('token')
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
+function InvoiceModal({ reservation, onClose, onSuccess }) {
+  const token = localStorage.getItem('token');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [paymentRef, setPaymentRef] = useState('');
-  const [paymentDate, setPaymentDate] = useState('');
-  const [bank, setBank] = useState('');
+
+  const [formData, setFormData] = useState({
+    amount: reservation.totalPaid || 0,
+    paymentDate: new Date().toISOString().split('T')[0],
+    bankName: '',
+    reference: '',
+    description: '',
+    direction: ''
+  });
 
   const subtotal = reservation.price;
   const iva = reservation.taxAmount;
   const total = reservation.totalPaid;
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setError('');
+  };
+
   const handleConfirm = async () => {
-    if (!paymentRef.trim() || !paymentDate || !bank.trim()) {
-      setError('Todos los campos de pago son obligatorios.');
+    if (!formData.bankName || !formData.reference || !formData.amount || !formData.paymentDate || !formData.description || !formData.direction) {
+      setError('Todos los campos son obligatorios.');
       return;
     }
     setLoading(true);
     setError('');
     try {
-      // ✅ cuando el backend implemente el endpoint, solo cambias fetchSales.js
-      await confirmPendingSale(
-        reservation.idSale,
-        { referenciaPago: paymentRef, fechaPago: paymentDate, banco: bank },
-        token
-      );
+      await axios.post(`${API_BASE_URL}/admin/confirmSale/${reservation.idSale}`, {
+        ...formData,
+        amount: parseFloat(formData.amount)
+      }, { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } });
+
       onSuccess(reservation.idSale);
     } catch (err) {
-      const msg = err.response?.data?.message;
-      setError(msg || 'Error al procesar la factura. Intenta de nuevo.');
+      const msg = err.response?.data?.message || 'Error al procesar la factura. Intenta de nuevo.';
+      toast.error(msg);
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -81,28 +94,58 @@ function InvoiceModal({ reservation, onClose, onSuccess }) {
         <p className="modal-section-label">Datos del Pago</p>
 
         <div className="form-group">
-          <label className="form-label">Referencia de Pago *</label>
+          <label className="form-label">Banco *</label>
+          <input className="form-input" type="text"
+            placeholder="Ej: Banco Nacional"
+            name="bankName"
+            value={formData.bankName}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Referencia *</label>
           <input className="form-input" type="text"
             placeholder="Ej: REF-2026-00123"
-            value={paymentRef}
-            onChange={e => { setPaymentRef(e.target.value); setError(''); }}
+            name="reference"
+            value={formData.reference}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Monto *</label>
+          <input className="form-input" type="number"
+            name="amount"
+            value={formData.amount}
+            onChange={handleChange}
           />
         </div>
 
         <div className="form-group">
           <label className="form-label">Fecha de Pago *</label>
           <input className="form-input" type="date"
-            value={paymentDate}
-            onChange={e => { setPaymentDate(e.target.value); setError(''); }}
+            name="paymentDate"
+            value={formData.paymentDate}
+            onChange={handleChange}
           />
         </div>
 
         <div className="form-group">
-          <label className="form-label">Banco *</label>
+          <label className="form-label">Descripción *</label>
+          <textarea className="form-input" rows="2"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Dirección de envío *</label>
           <input className="form-input" type="text"
-            placeholder="Ej: Banco Nacional"
-            value={bank}
-            onChange={e => { setBank(e.target.value); setError(''); }}
+            name="direction"
+            value={formData.direction}
+            onChange={handleChange}
           />
         </div>
 

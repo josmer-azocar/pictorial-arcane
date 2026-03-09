@@ -4,7 +4,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Admin.css';
 
-const BASE_URL = 'http://localhost:8080';
+//const BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 function DeleteArtist() {
   const token = localStorage.getItem('token');
@@ -16,8 +17,9 @@ function DeleteArtist() {
  useEffect(() => {
     const fetchArtists = async () => {
       try {
-       const res = await axios.get(`${BASE_URL}/artist/all`);
-        setArtists(res.data);
+     const res = await axios.get(`${API_BASE_URL}/artist/all`);
+       // setArtists(res.data);
+       setArtists(Array.isArray(res.data) ? res.data : res.data?.content || []);
       } catch (err) {
         toast.error('Error al cargar artistas.');
       } finally {
@@ -87,17 +89,24 @@ function DeleteArtist() {
 
   // DELETE /artists/{id}
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`¿Eliminar a ${name}? Esta acción no se puede deshacer.`)) return;
-    try {
-      await axios.delete(`${BASE_URL}/artists/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      toast.success(`Artista "${name}" eliminado correctamente.`);
-      setArtists(prev => prev.filter(a => a.id !== id));
-    } catch (err) {
-      toast.error('No se pudo eliminar el artista.');
-    }
-  };
+  if (!window.confirm(`¿Eliminar a ${name}? Esta acción no se puede deshacer.`)) return;
+  try {
+    // PASO 1: borrar imagen del artista primero
+    await axios.delete(`${API_BASE_URL}/admin/${id}/artistImage`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).catch(() => {}); // si no tiene imagen no importa
+
+    // PASO 2: borrar el artista
+    await axios.delete(`${API_BASE_URL}/artist/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    toast.success(`Artista "${name}" eliminado correctamente.`);
+    setArtists(prev => prev.filter(a => a.idArtist !== id));
+  } catch (err) {
+    toast.error('No se pudo eliminar el artista.');
+  }
+};
 
   return (
     <div className="admin-section">
