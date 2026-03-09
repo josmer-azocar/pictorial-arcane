@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { createGoldsmith, updateGoldsmith, uploadArtworkImage } from '../../services/fetchArtwork.js';
+import { createGoldsmith, updateGoldsmith, uploadArtworkImage, getArtists, getGenres } from '../../services/fetchArtwork.js';
 import { useAuth } from '../../services/AuthContext';
 import './AddArtwork.css';
 
@@ -9,13 +9,16 @@ const initialState = {
     name: '',
     status: 'AVAILABLE',
     price: '',
+    idArtist: '',
+    idGenre: '',
     material: '',
     preciousStones: '',
     weight: ''
 };
 
-const AddGoldsmith = ({ artworkData }) => {
-    const { token } = useAuth();
+const AddGoldsmith = ({ artworkData, onCreationSuccess }) => {
+    //const { token } = useAuth();
+    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRyb3NlcnJhODNAZ21haWwuY29tIiwiaWF0IjoxNzczMDI4ODA3LCJleHAiOjE3NzMwMzAyNDd9.ctMz9Sl2_wd8YE_PqfPn5TwowhHv059jOjBypyZHGNU";
     const [formData, setFormData] = useState(initialState);
     const [isLoading, setIsLoading] = useState(false);
     const [imageFile, setImageFile] = useState(null);
@@ -27,12 +30,29 @@ const AddGoldsmith = ({ artworkData }) => {
                 name: artworkData.name || '',
                 status: artworkData.status || 'AVAILABLE',
                 price: artworkData.price || artworkData.precio || '',
+                idArtist: artworkData.idArtist || '',
+                idGenre: artworkData.idGenre || '',
                 material: artworkData.material || '',
                 preciousStones: artworkData.preciousStones || '',
                 weight: artworkData.weight || ''
             });
         }
     }, [artworkData]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const artistsData = await getArtists();
+                const genresData = await getGenres();
+                setArtists(artistsData || []);
+                setGenres(genresData || []);
+            } catch (error) {
+                console.error("Error al cargar artistas o géneros:", error);
+                setError("No se pudieron cargar los artistas o géneros");
+            }
+        };
+        loadData();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -61,39 +81,63 @@ const AddGoldsmith = ({ artworkData }) => {
             return;
         }
 
+        if(!formData.idArtist || !formData.idGenre) {
+            const msg = "Por favor, selecciona un artista y un género.";
+            setError(msg);
+            toast.error(msg);
+            return;
+        }
+
         setIsLoading(true);
         let newArtworkId = null;
 
         try {
             const goldsmithData = {
-                ...formData,
-                price: parseFloat(formData.price),
-                weight: parseFloat(formData.weight)
+                artWorkRequest: {
+                    name: formData.name,
+                    status: formData.status,
+                    price: parseFloat(formData.price),
+                    idArtist: parseInt(formData.idArtist),
+                    idGenre: parseInt(formData.idGenre)
+                },
+                goldsmithRequest: {
+                    material: formData.material,
+                    preciousStones: formData.preciousStones,
+                    weight: parseFloat(formData.weight)
+                }
             };
 
             if (artworkData) {
                 await updateGoldsmith(artworkData.id, goldsmithData, token);
                 newArtworkId = artworkData.id;
-                toast.success('¡Orfebrería actualizada con éxito!');
             } else {
                 const createdResponse = await createGoldsmith(goldsmithData, token);
-                newArtworkId = createdResponse.idArtWork;
+                newArtworkId = createdResponse?.artworkResponse?.idArtWork;
 
-                if (!newArtworkId) {
-                    throw new Error("La respuesta del servidor no contenía el ID de la obra.");
+                if (newArtworkId === null || newArtworkId === undefined) {
+                    throw new Error("La respuesta del servidor no contenía el ID de la obra tras su creación.");
                 }
-                toast.success('¡Orfebrería registrada con éxito!');
             }
 
             if (imageFile) {
                 await uploadArtworkImage(newArtworkId, imageFile, token);
-                if (artworkData) toast.info('Imagen actualizada.');
             }
 
-            setFormData(initialState);
-            setImageFile(null);
-            if (document.getElementById('image-upload')) {
-                document.getElementById('image-upload').value = '';
+            const successMessage = artworkData ? '¡Orfebrería actualizada con éxito!' : '¡Orfebrería registrada con éxito!';
+            toast.success(successMessage, {
+                onClose: () => {
+                    if (onCreationSuccess) {
+                        onCreationSuccess();
+                    }
+                }
+            });
+
+            if (!onCreationSuccess) {
+                setFormData(initialState);
+                setImageFile(null);
+                if (document.getElementById('image-upload')) {
+                    document.getElementById('image-upload').value = '';
+                }
             }
 
         } catch (err) {
@@ -101,7 +145,7 @@ const AddGoldsmith = ({ artworkData }) => {
             const serverMessage = err.response?.data?.message || err.message;
 
             if (newArtworkId) {
-                finalErrorMessage = `Operación exitosa (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
+                finalErrorMessage = `La operación se realizó (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
                 toast.warning('Datos guardados, pero hubo un error con la imagen.');
             } else {
                 finalErrorMessage = `Error al procesar la orfebrería: ${serverMessage}`;
@@ -126,6 +170,26 @@ const AddGoldsmith = ({ artworkData }) => {
                 <div className="form-group"><label className="form-label">Archivo de la Imagen {artworkData && '(Opcional)'}</label><input id="image-upload" type="file" name="artworkImage" accept="image/*" onChange={handleImageChange} required={!artworkData} /></div>
 
                 <div className="form-row"><div className="form-group"><label className="form-label">Precio ($)</label><input type="number" name="price" value={formData.price} onChange={handleChange} placeholder="0.00" min="0" required /></div><div className="form-group"><label className="form-label">Estado</label><select name="status" value={formData.status} onChange={handleChange}><option value="AVAILABLE">Disponible</option><option value="RESERVED">Reservado</option></select></div></div>
+
+                <div className="form-group">
+                    <label className="form-label">Artista</label>
+                    <select name="idArtist" value={formData.idArtist} onChange={handleChange} required>
+                        <option value="">Selecciona un artista</option>
+                        {artists.map(artist => (
+                            <option key={artist.idArtist} value={artist.idArtist}>{artist.name} {artist.lastName}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="form-group">
+                    <label className="form-label">Género</label>
+                    <select name="idGenre" value={formData.idGenre} onChange={handleChange} required>
+                        <option value="">Selecciona un género</option>
+                        {genres.map(genre => (
+                            <option key={genre.idGenre} value={genre.idGenre}>{genre.description}</option>
+                        ))}
+                    </select>
+                </div>
 
                 <div className="form-row"><div className="form-group"><label className="form-label">Material</label><input type="text" name="material" value={formData.material} onChange={handleChange} placeholder="Ej: Oro 18k, Plata 925" required /></div><div className="form-group"><label className="form-label">Peso (g)</label><input type="number" name="weight" value={formData.weight} onChange={handleChange} placeholder="0.00" min="0" required /></div></div>
 

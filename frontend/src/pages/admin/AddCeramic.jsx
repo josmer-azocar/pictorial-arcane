@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { createCeramic, updateCeramic, uploadArtworkImage } from '../../services/fetchArtwork.js';
+import { createCeramic, updateCeramic, uploadArtworkImage, getArtists, getGenres } from '../../services/fetchArtwork.js';
 import { useAuth } from '../../services/AuthContext';
 import './AddArtwork.css';
 
@@ -9,6 +9,8 @@ const initialState = {
     name: '',
     status: 'AVAILABLE',
     price: '',
+    idArtist: '',
+    idGenre: '',
     materialType: '',
     technique: '',
     finish: '',
@@ -18,8 +20,9 @@ const initialState = {
     height: ''
 };
 
-const AddCeramic = ({ artworkData }) => {
-    const { token } = useAuth();
+const AddCeramic = ({ artworkData, onCreationSuccess }) => {
+    //const { token } = useAuth();
+    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRyb3NlcnJhODNAZ21haWwuY29tIiwiaWF0IjoxNzczMDI4ODA3LCJleHAiOjE3NzMwMzAyNDd9.ctMz9Sl2_wd8YE_PqfPn5TwowhHv059jOjBypyZHGNU";
     const [formData, setFormData] = useState(initialState);
     const [isLoading, setIsLoading] = useState(false);
     const [imageFile, setImageFile] = useState(null);
@@ -31,6 +34,8 @@ const AddCeramic = ({ artworkData }) => {
                 name: artworkData.name || '',
                 status: artworkData.status || 'AVAILABLE',
                 price: artworkData.price || artworkData.precio || '',
+                idArtist: artworkData.idArtist || '',
+                idGenre: artworkData.idGenre || '',
                 // El mock usa 'materialType', el form también.
                 materialType: artworkData.materialType || '',
                 technique: artworkData.technique || '',
@@ -42,6 +47,21 @@ const AddCeramic = ({ artworkData }) => {
             });
         }
     }, [artworkData]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const artistsData = await getArtists();
+                const genresData = await getGenres();
+                setArtists(artistsData || []);
+                setGenres(genresData || []);
+            } catch (error) {
+                console.error("Error al cargar artistas o géneros:", error);
+                setError("No se pudieron cargar los artistas o géneros");
+            }
+        };
+        loadData();
+    }, []);
 
 
     const handleChange = (e) => {
@@ -70,48 +90,74 @@ const AddCeramic = ({ artworkData }) => {
             toast.error(msg);
             return;
         }
+
+        if(!formData.idArtist || !formData.idGenre) {
+            const msg = "Por favor, selecciona un artista y un género.";
+            setError(msg);
+            toast.error(msg);
+            return;
+        }
+
         setIsLoading(true);
         let newArtworkId = null;
 
         try {
             const ceramicData = {
-                ...formData,
-                price: parseFloat(formData.price),
-                cookingTemperature: parseInt(formData.cookingTemperature),
-                weight: parseFloat(formData.weight),
-                width: parseFloat(formData.width),
-                height: parseFloat(formData.height)
+                artWorkRequest: {
+                    name: formData.name,
+                    status: formData.status,
+                    price: parseFloat(formData.price),
+                    idArtist: parseInt(formData.idArtist),
+                    idGenre: parseInt(formData.idGenre)
+                },
+                ceramicRequest: {
+                    materialType: formData.materialType,
+                    technique: formData.technique,
+                    finish: formData.finish,
+                    cookingTemperature: parseInt(formData.cookingTemperature),
+                    weight: parseFloat(formData.weight),
+                    width: parseFloat(formData.width),
+                    height: parseFloat(formData.height)
+                }
             };
 
             if (artworkData) {
                 await updateCeramic(artworkData.id, ceramicData, token);
                 newArtworkId = artworkData.id;
-                toast.success('¡Cerámica actualizada con éxito!');
             } else {
                 const createdResponse = await createCeramic(ceramicData, token);
-                newArtworkId = createdResponse?.artWork?.id;
+                newArtworkId = createdResponse?.artworkResponse?.idArtWork;
 
-                if (!newArtworkId) {
+                if (newArtworkId === null || newArtworkId === undefined) {
                     throw new Error("La respuesta del servidor no contenía el ID de la obra tras su creación.");
                 }
-                toast.success('¡Cerámica registrada con éxito!');
             }
 
             if (imageFile) {
                 await uploadArtworkImage(newArtworkId, imageFile, token);
-                if (artworkData) toast.info('Imagen actualizada.');
             }
 
-            setFormData(initialState);
-            setImageFile(null);
-            if (document.getElementById('image-upload')) {
-                document.getElementById('image-upload').value = '';
+            const successMessage = artworkData ? '¡Cerámica actualizada con éxito!' : '¡Cerámica registrada con éxito!';
+            toast.success(successMessage, {
+                onClose: () => {
+                    if (onCreationSuccess) {
+                        onCreationSuccess();
+                    }
+                }
+            });
+
+            if (!onCreationSuccess) {
+                setFormData(initialState);
+                setImageFile(null);
+                if (document.getElementById('image-upload')) {
+                    document.getElementById('image-upload').value = '';
+                }
             }
         } catch (err) {
             let finalErrorMessage;
             const serverMessage = err.response?.data?.message || err.message;
             if (newArtworkId) {
-                finalErrorMessage = `Operación exitosa (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
+                finalErrorMessage = `La operación se realizó (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
                 toast.warning('Datos guardados, pero hubo un error con la imagen.');
             } else {
                 finalErrorMessage = `Error al procesar la cerámica: ${serverMessage}`;
@@ -164,6 +210,26 @@ const AddCeramic = ({ artworkData }) => {
                             <option value="RESERVED">Reservado</option>
                         </select>
                     </div>
+                </div>
+
+                <div className="form-group">
+                    <label className="form-label">Artista</label>
+                    <select name="idArtist" value={formData.idArtist} onChange={handleChange} required>
+                        <option value="">Selecciona un artista</option>
+                        {artists.map(artist => (
+                            <option key={artist.idArtist} value={artist.idArtist}>{artist.name} {artist.lastName}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="form-group">
+                    <label className="form-label">Género</label>
+                    <select name="idGenre" value={formData.idGenre} onChange={handleChange} required>
+                        <option value="">Selecciona un género</option>
+                        {genres.map(genre => (
+                            <option key={genre.idGenre} value={genre.idGenre}>{genre.description}</option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="form-row">
