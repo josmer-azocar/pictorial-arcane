@@ -1,5 +1,5 @@
 import './Reports.css'
-import { searchMemberships } from '../../services/membershipServices'
+import { searchMemberships, cancelMembership } from '../../services/membershipServices'
 import { useState } from 'react';
 import Loading from '../../components/Loading';
 
@@ -23,7 +23,7 @@ function ReportsSearch() {
             const searchData = await searchMemberships(
                 effectiveStart,
                 effectiveEnd,
-                "ACTIVE",
+                searchParams.status,
                 page,
                 10);
             setResults(searchData.content);
@@ -35,6 +35,17 @@ function ReportsSearch() {
             setLoading(false);
         }
     }
+
+    const handleCancel = async (membershipId) => {
+        if (!confirm('¿Cancelar esta membresía?')) return;
+        try {
+            await cancelMembership(membershipId);
+            handleSearch();
+        } catch (error) {
+            alert('Error al cancelar');
+            console.error("Error cancelando membresía:", error);
+        }
+    };
 
     return (
         <div className="reports-search">
@@ -85,8 +96,8 @@ function ReportsSearch() {
                                     <td>{m.expiryDate}</td>
                                     <td>{m.status}</td>
                                     <td>
-                                        <button>Renovar</button>
-                                        <button>Cancelar</button>
+                                        {m.status === "ACTIVE" && <button
+                                        onClick={() => handleCancel(m.idMembership)}>Cancelar</button>}
                                     </td>
                                 </tr>
                             ))}
