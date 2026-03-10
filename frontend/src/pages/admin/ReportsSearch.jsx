@@ -27,7 +27,7 @@ function ReportsSearch() {
                 searchParams.status,
                 pageToUse,
                 10);
-            setResults(searchData.content);
+            setResults(searchData);
             setPage(searchData.number); 
             console.log("Resultados de búsqueda membresia:", searchData);
             
@@ -96,7 +96,7 @@ function ReportsSearch() {
                             </tr>
                         </thead>
                         <tbody>
-                            {results.map(m => (
+                            {results.content?.map(m => (
                                 <tr key={m.idMembership}>
                                     <td>{m.idMembership}</td>
                                     <td>{m.clientId}</td>
