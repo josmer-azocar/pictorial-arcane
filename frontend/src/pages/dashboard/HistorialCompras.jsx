@@ -30,7 +30,7 @@ function HistorialCompras() {
         return <Loading />;
     }
     return(
-        <section>
+        <section className='purchases-section'>
             <h3>Compras:</h3>
             <table className="purchases-table">
                 <thead>

@@ -13,20 +13,22 @@ function ReportsSearch() {
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(0);
 
-    const handleSearch = async (e) => {
+    const handleSearch = async (e, targetPage) => {
         e?.preventDefault();
         setLoading(true);
         try {
 
             const effectiveStart = searchParams.startDate || '1900-01-01';
             const effectiveEnd = searchParams.endDate || '2100-01-01';
+            const pageToUse = targetPage !== undefined ? targetPage : page;
             const searchData = await searchMemberships(
                 effectiveStart,
                 effectiveEnd,
                 searchParams.status,
-                page,
+                pageToUse,
                 10);
             setResults(searchData.content);
+            setPage(searchData.number); 
             console.log("Resultados de búsqueda membresia:", searchData);
             
         } catch (error) {
@@ -47,10 +49,16 @@ function ReportsSearch() {
         }
     };
 
+    const goToPage = (newPage) => {
+        if (newPage >= 0 && newPage < (results?.totalPages || 1)) {
+            handleSearch(undefined, newPage);
+        }
+    };
+
     return (
         <div className="reports-search">
             <h3>Gestión de Membresías</h3>
-            <form onSubmit={handleSearch} className="search-form">
+            <form onSubmit={handleSearch} className="date-picker-container">
                 <input
                     type="date"
                     value={searchParams.startDate}
@@ -70,7 +78,7 @@ function ReportsSearch() {
                     <option value="EXPIRED">Expirada</option>
                     <option value="CANCELED">Cancelada</option>
                 </select>
-                <button type="submit" disabled={loading}>Buscar</button>
+                <button type="submit" disabled={loading} className='generate-btn'>Buscar</button>
             </form>
 
             {loading && <Loading />}
@@ -96,13 +104,34 @@ function ReportsSearch() {
                                     <td>{m.expiryDate}</td>
                                     <td>{m.status}</td>
                                     <td>
-                                        {m.status === "ACTIVE" && <button
+                                        {m.status === "ACTIVE" && <button className="generate-btn" 
                                         onClick={() => handleCancel(m.idMembership)}>Cancelar</button>}
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+
+                                        {/* Pagination controls */}
+                    {results.totalPages > 1 && (
+                        <div className="pagination-controls">
+                            <button 
+                                onClick={() => goToPage(page - 1)} 
+                                disabled={page === 0}
+                                className="pagination-btn"
+                            >
+                                Anterior
+                            </button>
+                            <span>Página {page + 1} de {results.totalPages}</span>
+                            <button 
+                                onClick={() => goToPage(page + 1)} 
+                                disabled={page === results.totalPages - 1}
+                                className="pagination-btn"
+                            >
+                                Siguiente
+                            </button>
+                        </div>
+                    )}
                 </>
             )}
         </div>

@@ -23,17 +23,15 @@ function Reports() {
     const [loading, setLoading] = useState(false);
 
     const handleGenerate = async () => {
-        if (!startDate || !endDate) {
-            alert("Por favor, seleccione ambas fechas.");
-            return;
-        }
+        const effectiveStart = startDate || '1900-01-01';
+        const effectiveEnd = endDate || new Date().toISOString().split('T')[0];
 
         setLoading(true);
         try {
             // añadir switch
-            const paidArtList = await fetchPaidArtwork(startDate, endDate);
+            const paidArtList = await fetchPaidArtwork(effectiveStart, effectiveEnd);
             setData(paidArtList.content);
-            const billing = await fetchSoldArtwork(startDate, endDate);
+            const billing = await fetchSoldArtwork(effectiveStart, effectiveEnd);
             console.log("Datos de ventas:", billing);
             console.log("Datos de obras pagadas:", paidArtList);
             setBillingData(billing);
@@ -164,7 +162,7 @@ function Reports() {
                     
                 </ul>
             </div>
-            {activeReport && (
+            {activeReport && (activeReport === 'sold' || activeReport === 'billing') && (
                 <div className="date-picker-container">
                     <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}/>
                     <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}/>
