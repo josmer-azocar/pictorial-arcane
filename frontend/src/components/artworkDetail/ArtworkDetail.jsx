@@ -7,9 +7,10 @@ import { useParams } from 'react-router-dom';
 import { useAuth } from '../../services/AuthContext.jsx';
 import { getArtworkById, getArtistById } from '../../services/fetchArtwork.js';
 import { reserveArtwork } from '../../services/fetchSales.js';
-import { getAssignedSecurityQuestions, recoverSecurityCode,updateSecurityAnswer } from '../../services/authUser.js';
+import { getAssignedSecurityQuestions, recoverSecurityCode, updateSecurityAnswer } from '../../services/authUser.js';
 
 // ── ÍCONOS SVG ──────────────────────────────────────────────
+
 const CertificateIcon = ({ size = 28 }) => (
   <svg width={size} height={size} viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g id="SVGRepo_iconCarrier">
@@ -43,27 +44,32 @@ const GlobalShippingIcon = ({ size = 28 }) => (
 // ── COMPONENTE PRINCIPAL ─────────────────────────────────────
 const ArtworkDetail = ({ artwork: artworkProp }) => {
 
+  // ── HOOKS: RUTA Y AUTENTICACIÓN ──────────────────────────
   const { id } = useParams();
   const { token } = useAuth();
 
+  // ── ESTADOS: OBRA Y ZOOM DE IMAGEN ──────────────────────
   const [artwork, setArtwork] = useState(artworkProp || null);
   const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
   const [showZoom, setShowZoom] = useState(false);
 
+  // ── ESTADOS: MODAL COMPRA ────────────────────────────────
   const [showModal, setShowModal] = useState(false);
   const [securityCode, setSecurityCode] = useState("");
 
+  // ── ESTADOS: MODAL RECUPERAR CÓDIGO ─────────────────────
   const [showRecoveryModal, setShowRecoveryModal] = useState(false);
   const [assignedQuestions, setAssignedQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [artistName, setArtistName] = useState("");
 
+  // ── ESTADOS: MODAL ACTUALIZAR RESPUESTAS ────────────────
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-const [newAnswers, setNewAnswers] = useState({});
-const [allQuestions, setAllQuestions] = useState([]);
+  const [newAnswers, setNewAnswers] = useState({});
+  const [allQuestions, setAllQuestions] = useState([]);
 
-  // GET /artwork/{id}
-
+  // ── EFECTO: GET /artwork/{id} ────────────────────────────
+  // Carga la obra por ID cuando el componente monta
   useEffect(() => {
     if (id) {
       getArtworkById(id).then(data => {
@@ -71,33 +77,20 @@ const [allQuestions, setAllQuestions] = useState([]);
         console.log("👤 Artist:", data?.artist);
       });
     }
-}, [id]);
+  }, [id]);
 
-const handleReservar = async () => {
-    console.log("🔍 Datos enviados:");
-    console.log("   idArtWork:", artwork.idArtWork);
-    console.log("   securityCode:", securityCode);
-    console.log("   token:", token);
-    try {
-      await reserveArtwork(artwork.idArtWork, securityCode, token);
-      toast.success("¡Obra reservada exitosamente!");
-      setShowModal(false);
-    } catch (err) {
-      console.log("❌ Error completo:", err.response?.data);
-      if (err.response?.status === 400) toast.error("Código de seguridad incorrecto.");
-      else if (err.response?.status === 409) toast.error("La obra ya no está disponible.");
-      else toast.error("Error al procesar la reserva.");
-    }
-  };
-
-useEffect(() => {
+  // ── EFECTO: GET artista por idArtist ────────────────────
+  // Se ejecuta cuando ya tenemos la obra y necesitamos el nombre del artista
+  useEffect(() => {
     if (artwork?.idArtist) {
-        getArtistById(artwork.idArtist).then(data => {
-            setArtistName(`${data.name} ${data.lastName}`);
-        });
+      getArtistById(artwork.idArtist).then(data => {
+        setArtistName(`${data.name} ${data.lastName}`);
+      });
     }
-}, [artwork]);
-  // GET /questions/getAssignedQuestions
+  }, [artwork]);
+
+  // ── EFECTO: GET /questions/getAssignedQuestions ──────────
+  // Carga las preguntas de seguridad cuando se abre el modal de recuperación
   useEffect(() => {
     if (showRecoveryModal && token) {
       const loadQuestions = async () => {
@@ -116,35 +109,37 @@ useEffect(() => {
     }
   }, [showRecoveryModal, token]);
 
+  // ── GUARD: espera a que la obra esté cargada ─────────────
   if (!artwork) return <div>Loading artwork details...</div>;
 
   const { name, imageUrl, price, creation_date, status, genre } = artwork;
 
-  
-  // POST /sale/reserve
-  /*const handleReservar = async () => {
+  // ── HANDLER: POST /sale/reserve ──────────────────────────
+  // Reserva la obra usando el código de seguridad del usuario
+  const handleReservar = async () => {
+    console.log("Datos enviados:");
+    console.log("   idArtWork:", artwork.idArtWork);
+    console.log("   securityCode:", securityCode);
+    console.log("   token:", token);
     try {
       await reserveArtwork(artwork.idArtWork, securityCode, token);
       toast.success("¡Obra reservada exitosamente!");
       setShowModal(false);
     } catch (err) {
+      console.log("Error completo:", err.response?.data);
       if (err.response?.status === 400) toast.error("Código de seguridad incorrecto.");
       else if (err.response?.status === 409) toast.error("La obra ya no está disponible.");
       else toast.error("Error al procesar la reserva.");
     }
-  };*/
+  };
 
-
-
-
-
-  
-  // PUT /questions/RecoverClientCode
+  // ── HANDLER: PUT /questions/RecoverClientCode ────────────
+  // Envía las respuestas de seguridad para recuperar el código por correo
   const handleRecoverCode = async () => {
     try {
       const answersArray = assignedQuestions.map(q => ({
         idQuestion: q.idQuestion,
-        Answer: answers[q.idQuestion] || ""
+        Answer: (answers[q.idQuestion] || "").trim().toLowerCase()
       }));
       await recoverSecurityCode(answersArray, token);
       toast.success("✓ Código enviado a tu correo registrado.");
@@ -155,20 +150,25 @@ useEffect(() => {
     }
   };
 
+  // ── HANDLER: PUT /questions/updateQuestion ───────────────
+  // Actualiza las respuestas de seguridad del usuario
   const handleUpdateAnswers = async () => {
     try {
-        for (const q of assignedQuestions) {  // ← usa assignedQuestions, no allQuestions
-            if (newAnswers[q.idQuestion]?.trim()) {
-                await updateSecurityAnswer(q.idQuestion, newAnswers[q.idQuestion], token);
-            }
+      for (const q of assignedQuestions) {
+        if (newAnswers[q.idQuestion]?.trim()) {
+          await updateSecurityAnswer(q.idQuestion, newAnswers[q.idQuestion], token);
         }
-        toast.success("✓ Respuestas actualizadas correctamente.");
-        setShowUpdateModal(false);
+      }
+      toast.success("✓ Respuestas actualizadas correctamente.");
+      setShowUpdateModal(false);
     } catch (err) {
-        console.error("Error actualizando:", err);
-        toast.error("Error al actualizar las respuestas.");
+      console.error("Error actualizando:", err);
+      toast.error("Error al actualizar las respuestas.");
     }
-};
+  };
+
+  // ── RENDER: detalles específicos según género ────────────
+  // Muestra campos distintos dependiendo del tipo de obra (pintura, escultura, etc.)
   const renderSpecificDetails = () => {
     switch (genre) {
       case 'ESCULTURA':
@@ -228,11 +228,12 @@ useEffect(() => {
     }
   };
 
+  // ── RENDER PRINCIPAL ─────────────────────────────────────
   return (
     <div className="artwork-detail-page">
       <main className="product-layout">
 
-        {/* COLUMNA 1: IMAGEN */}
+        {/* ── COLUMNA 1: IMAGEN CON ZOOM ── */}
         <section className="artwork-gallery">
           <div className="image-frame" style={{ position: 'relative' }}
             onMouseMove={(e) => {
@@ -247,6 +248,8 @@ useEffect(() => {
           >
             <img src={imageUrl} alt={name} className="main-artwork-img" />
             <div className={`status-badge ${status.toLowerCase()}`}>{status}</div>
+
+            {/* Lupa de zoom que aparece al lado de la imagen */}
             {showZoom && (
               <div style={{
                 position: 'absolute', top: 0, right: '-310px',
@@ -262,7 +265,7 @@ useEffect(() => {
           </div>
         </section>
 
-        {/* COLUMNA 2: FICHA TÉCNICA */}
+        {/* ── COLUMNA 2: FICHA TÉCNICA ── */}
         <section className="detailed-info-grid">
           <div className="info-card">
             <h1 className="artwork-title">{name}</h1>
@@ -272,22 +275,26 @@ useEffect(() => {
               {creation_date
                 ? new Date(creation_date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
                 : 'No especificada'}
+
+              {/* Link al perfil del artista */}
               <div className="artist-attribution">
-  Artista:
-  <Link
-    to={`/artist/${artwork?.idArtist}`}
-    className="artist-link-bold"
-  >
-    {artistName || "Ver artista"}
-  </Link>
-  <span className="verified-check">✓</span>
-</div>
+                Artista:
+                <Link
+                  to={`/artist/${artwork?.idArtist}`}
+                  className="artist-link-bold"
+                >
+                  {artistName || "Ver artista"}
+                </Link>
+                <span className="verified-check">✓</span>
+              </div>
+
+              {/* Detalles específicos según el género de la obra */}
               {renderSpecificDetails()}
             </div>
           </div>
         </section>
 
-        {/* COLUMNA 3: COMPRA */}
+        {/* ── COLUMNA 3: PANEL DE COMPRA ── */}
         <section className="artwork-purchase-panel">
           <div className="price-container">
             <span className="currency">$</span>
@@ -295,6 +302,7 @@ useEffect(() => {
             <small className="tax-note">+ IVA</small>
           </div>
           <div className="actions-area">
+            {/* Solo muestra el botón si la obra está disponible */}
             {status === 'Disponible' || status === 'AVAILABLE' ? (
               <>
                 <button className="buy-now-btn" onClick={() => setShowModal(true)}>
@@ -306,6 +314,8 @@ useEffect(() => {
               <button className="disabled-btn" disabled>Obra {status}</button>
             )}
           </div>
+
+          {/* Señales de confianza */}
           <div className="trust-signals">
             <div className="signal"><SecureIcon size={28} /><span>Pago Seguro Encriptado</span></div>
             <div className="trust-item"><GlobalShippingIcon size={28} /><span>Envío Seguro</span></div>
@@ -313,11 +323,16 @@ useEffect(() => {
           </div>
         </section>
 
-        {/* MODAL: CÓDIGO DE SEGURIDAD */}
+        {/* ── MODAL 1: INGRESAR CÓDIGO DE SEGURIDAD PARA COMPRAR ── */}
         {showModal && (
           <div className="modal-overlay">
             <div className="modal-content">
-              <h3 className="modal-title">Ingresa tu Código de Seguridad</h3>
+              <img 
+                src="/t.png"  
+                alt="Código de seguridad"
+                style={{ width: '100%', maxHeight: '180px', objectFit: 'contain', marginBottom: '12px' }}
+              />
+              <h3 className="moda-title">Ingresa tu Código de Seguridad</h3>
               <p className="modal-subtitle">Este código fue enviado a tu correo al registrarte.</p>
               <input
                 type="text"
@@ -334,6 +349,7 @@ useEffect(() => {
                   Confirmar Compra
                 </button>
               </div>
+              {/* Enlace para abrir el modal de recuperación */}
               <div className="forgot-link-container">
                 <button className="forgot-link" onClick={() => { setShowModal(false); setShowRecoveryModal(true); }}>
                   ¿Has olvidado tu código de seguridad?
@@ -343,12 +359,19 @@ useEffect(() => {
           </div>
         )}
 
-        {/* MODAL: RECUPERAR CÓDIGO */}
+        {/* ── MODAL 2: RECUPERAR CÓDIGO CON PREGUNTAS DE SEGURIDAD ── */}
         {showRecoveryModal && (
           <div className="modal-overlay">
             <div className="modal-content">
-              <h3 className="modal-title">Recuperar Código de Seguridad</h3>
+              <img 
+                src="/t.png"  
+                alt="Recuperar código"
+                style={{ width: '120px', objectFit: 'contain', marginBottom: '12px' }}
+              />
+              <h6 className="moda-title">Recuperar Código de Seguridad</h6>
               <p className="modal-subtitle">Responde tus preguntas de seguridad</p>
+
+              {/* Muestra spinner de carga o las preguntas */}
               {assignedQuestions.length === 0 ? (
                 <p style={{ textAlign: 'center', color: '#888' }}>Cargando preguntas...</p>
               ) : (
@@ -367,25 +390,29 @@ useEffect(() => {
                   </div>
                 ))
               )}
+
+              {/* Enlace para abrir el modal de actualización de respuestas */}
               <div style={{ textAlign: 'center', marginBottom: '12px' }}>
-    <button className="forgot-link" onClick={async () => {
-        const { getAllQuestions } = await import('../../services/authUser.js');
-        // carga todas las preguntas para que el usuario elija nuevas
-        const questions = await getAssignedSecurityQuestions(token);
-        setAllQuestions(questions);
-        const init = {};
-        questions.forEach(q => init[q.idQuestion] = "");
-        setNewAnswers(init);
-        setShowUpdateModal(true);
-        setShowRecoveryModal(false);
-    }}>
-        ¿Olvidaste tus respuestas? Actualízalas aquí
-    </button>
-</div>
+                <button className="forgot-link" onClick={async () => {
+                  const { getAllQuestions } = await import('../../services/authUser.js');
+                  // Carga las preguntas asignadas para que el usuario actualice sus respuestas
+                  const questions = await getAssignedSecurityQuestions(token);
+                  setAllQuestions(questions);
+                  const init = {};
+                  questions.forEach(q => init[q.idQuestion] = "");
+                  setNewAnswers(init);
+                  setShowUpdateModal(true);
+                  setShowRecoveryModal(false);
+                }}>
+                  ¿Olvidaste tus respuestas? Actualízalas aquí
+                </button>
+              </div>
+
               <div className="modal-buttons">
                 <button className="modal-btn modal-btn-cancel" onClick={() => { setShowRecoveryModal(false); setAssignedQuestions([]); }}>
                   Cancelar
                 </button>
+                {/* Dispara handleRecoverCode → PUT /questions/RecoverClientCode */}
                 <button className="modal-btn modal-btn-confirm" onClick={handleRecoverCode}>
                   Recuperar Código
                 </button>
@@ -394,42 +421,51 @@ useEffect(() => {
           </div>
         )}
 
+        {/* ── MODAL 3: ACTUALIZAR RESPUESTAS DE SEGURIDAD ── */}
         {showUpdateModal && (
-    <div className="modal-overlay">
-        <div className="modal-content">
-            <h3 className="modal-title">Actualizar Respuestas de Seguridad</h3>
-            <p className="modal-subtitle">Escribe nuevas respuestas para tus preguntas</p>
-            {allQuestions.map((q) => (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <img 
+                src="/t.png"  
+                alt="Actualizar respuestas"
+                style={{ width: '120px', objectFit: 'contain', marginBottom: '12px' }}
+              />
+              <h3 className="moda-title">Actualizar Respuestas de Seguridad</h3>
+              <p className="modal-subtitle">Escribe nuevas respuestas para tus preguntas</p>
+
+              {/* Muestra cada pregunta asignada con su input de nueva respuesta */}
+              {allQuestions.map((q) => (
                 <div key={q.idQuestion} style={{ marginBottom: '16px' }}>
-                    <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
-                        {q.wording}
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Nueva respuesta"
-                        value={newAnswers[q.idQuestion] || ""}
-                        onChange={(e) => setNewAnswers(prev => ({ ...prev, [q.idQuestion]: e.target.value }))}
-                        className="modal-input"
-                    />
+                  <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
+                    {q.wording}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Nueva respuesta"
+                    value={newAnswers[q.idQuestion] || ""}
+                    onChange={(e) => setNewAnswers(prev => ({ ...prev, [q.idQuestion]: e.target.value }))}
+                    className="modal-input"
+                  />
                 </div>
-            ))}
-            <div className="modal-buttons">
+              ))}
+
+              <div className="modal-buttons">
                 <button className="modal-btn modal-btn-cancel" onClick={() => setShowUpdateModal(false)}>
-                    Cancelar
+                  Cancelar
                 </button>
+                {/* Dispara handleUpdateAnswers → PUT /questions/updateQuestion por cada respuesta */}
                 <button className="modal-btn modal-btn-confirm" onClick={handleUpdateAnswers}>
-                    Guardar Respuestas
+                  Guardar Respuestas
                 </button>
+              </div>
             </div>
-        </div>
-    </div>
-)}
+          </div>
+        )}
 
         <ToastContainer />
       </main>
     </div>
   );
 };
-
 
 export default ArtworkDetail;
