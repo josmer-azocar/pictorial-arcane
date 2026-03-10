@@ -114,13 +114,15 @@ function Artwork() {
             <section id="art-grid">
                 {(works.content || []).map((artPiece) => (
                     <div className="art-piece" key={artPiece.idArtWork}>
-                        <img src={artPiece.image} alt={artPiece.name} />
-                        <div className="text-art-piece">
-                            <p className="precio-display">${artPiece.precio}</p>
-                            <p>{artPiece.name}</p>
-                            <p><Link to={`/artist/${artPiece.artistId}`}>{artPiece.artistName}</Link></p>
-                        </div>
-                    </div>
+  <Link to={`/artwork/${artPiece.idArtWork}`}>
+    <img src={artPiece.image} alt={artPiece.name} />
+  </Link>
+  <div className="text-art-piece">
+    <p className="precio-display">${artPiece.precio}</p>
+    <p>{artPiece.name}</p>
+    <p><Link to={`/artist/${artPiece.idArtist}`}>{artPiece.artistName}</Link></p>
+  </div>
+</div>
                 ))}
             </section>
             <section className="pagination">

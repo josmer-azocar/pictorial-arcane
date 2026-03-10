@@ -127,7 +127,7 @@ export const getAssignedSecurityQuestions = async (token) => {
 };
 
 // Enviar las respuestas para intentar recuperar el código de seguridad
-export const recoverSecurityCode = async (answersArray) => {
+export const recoverSecurityCode = async (answersArray, token) => {
   try {
     const response = await axios.put(
       `${API_BASE_URL}/questions/RecoverClientCode`,
@@ -135,16 +135,14 @@ export const recoverSecurityCode = async (answersArray) => {
       {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
         },
       }
     );
     return response.data;
   } catch (error) {
-    console.error("Error al recuperar código con respuestas:", error);
-    throw (
-      error.response?.data?.message ||
-      "Las respuestas no son correctas o hubo un error en el servidor"
-    );
+    console.error("Error al recuperar código:", error);
+    throw error.response?.data?.message || "Las respuestas no son correctas";
   }
 };
 

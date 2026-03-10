@@ -36,23 +36,61 @@ export async function rejectPendingSale(saleId, token) {
 
 
 // Reserva una obra - POST /artworks/{id}/reserve
-export async function reserveArtwork(artworkId, securityCode, token) {
+/*export async function reserveArtwork(artworkId, securityCode, token) {
   try {
-    const response = await axios.post(`${API_BASE_URL}/sale/reserve`, null, {
-      params: {
-        id_obra: artworkId,
-        security_code: securityCode
-      },
-      headers: {
-        Authorization: `Bearer ${token}`
+    const response = await axios.post(
+      `${API_BASE_URL}/sale/reserve`,
+      null,
+      {
+        params: {
+          id_obra: artworkId,
+          security_code: securityCode
+        },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       }
-    });
+    );
     return response.data;
   } catch (error) {
-    if (error.response) {
-      throw error; // lo maneja ArtworkDetail
-    } else {
-      throw new Error("No se pudo conectar con el servidor");
-    }
+    console.error("Error al reservar obra:", error);
+    throw error;
+  }
+}*/
+export async function reserveArtwork(artworkId, securityCode, token) {
+  console.log("🚀 Enviando reserva:");
+  console.log("   artworkId:", artworkId);
+  console.log("   securityCode:", securityCode);
+  console.log("   token:", token ? "✅ Token presente" : "❌ Token AUSENTE");
+  console.log("   Authorization header:", `Bearer ${token}`);
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/sale/reserve`,
+      null,
+      {
+        params: {
+          id_obra: artworkId,
+          security_code: securityCode
+        },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.log("❌ Error del backend:", error.response?.data);
+    console.log("❌ Status:", error.response?.status);
+    throw error;
+  }
+}
+
+export async function getArtworkById(id) {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/artwork/search/specificArtWork/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener obra:", error);
+    throw error;
   }
 }
