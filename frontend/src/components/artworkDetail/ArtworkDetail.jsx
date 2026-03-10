@@ -5,9 +5,9 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../../services/AuthContext.jsx';
-import { getArtworkById } from '../../services/fetchArtwork.js';
+import { getArtworkById, getArtistById } from '../../services/fetchArtwork.js';
 import { reserveArtwork } from '../../services/fetchSales.js';
-import { getAssignedSecurityQuestions, recoverSecurityCode } from '../../services/authUser.js';
+import { getAssignedSecurityQuestions, recoverSecurityCode,updateSecurityAnswer } from '../../services/authUser.js';
 
 // ── ÍCONOS SVG ──────────────────────────────────────────────
 const CertificateIcon = ({ size = 28 }) => (
@@ -56,14 +56,47 @@ const ArtworkDetail = ({ artwork: artworkProp }) => {
   const [showRecoveryModal, setShowRecoveryModal] = useState(false);
   const [assignedQuestions, setAssignedQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
+  const [artistName, setArtistName] = useState("");
+
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+const [newAnswers, setNewAnswers] = useState({});
+const [allQuestions, setAllQuestions] = useState([]);
 
   // GET /artwork/{id}
+
   useEffect(() => {
     if (id) {
-      getArtworkById(id).then(data => setArtwork(data));
+      getArtworkById(id).then(data => {
+        setArtwork(data);
+        console.log("👤 Artist:", data?.artist);
+      });
     }
-  }, [id]);
+}, [id]);
 
+const handleReservar = async () => {
+    console.log("🔍 Datos enviados:");
+    console.log("   idArtWork:", artwork.idArtWork);
+    console.log("   securityCode:", securityCode);
+    console.log("   token:", token);
+    try {
+      await reserveArtwork(artwork.idArtWork, securityCode, token);
+      toast.success("¡Obra reservada exitosamente!");
+      setShowModal(false);
+    } catch (err) {
+      console.log("❌ Error completo:", err.response?.data);
+      if (err.response?.status === 400) toast.error("Código de seguridad incorrecto.");
+      else if (err.response?.status === 409) toast.error("La obra ya no está disponible.");
+      else toast.error("Error al procesar la reserva.");
+    }
+  };
+
+useEffect(() => {
+    if (artwork?.idArtist) {
+        getArtistById(artwork.idArtist).then(data => {
+            setArtistName(`${data.name} ${data.lastName}`);
+        });
+    }
+}, [artwork]);
   // GET /questions/getAssignedQuestions
   useEffect(() => {
     if (showRecoveryModal && token) {
@@ -85,10 +118,11 @@ const ArtworkDetail = ({ artwork: artworkProp }) => {
 
   if (!artwork) return <div>Loading artwork details...</div>;
 
-  const { name, photo_url, price, creation_date, status, artist, genre } = artwork;
+  const { name, imageUrl, price, creation_date, status, genre } = artwork;
 
+  
   // POST /sale/reserve
-  const handleReservar = async () => {
+  /*const handleReservar = async () => {
     try {
       await reserveArtwork(artwork.idArtWork, securityCode, token);
       toast.success("¡Obra reservada exitosamente!");
@@ -98,8 +132,13 @@ const ArtworkDetail = ({ artwork: artworkProp }) => {
       else if (err.response?.status === 409) toast.error("La obra ya no está disponible.");
       else toast.error("Error al procesar la reserva.");
     }
-  };
+  };*/
 
+
+
+
+
+  
   // PUT /questions/RecoverClientCode
   const handleRecoverCode = async () => {
     try {
@@ -116,6 +155,20 @@ const ArtworkDetail = ({ artwork: artworkProp }) => {
     }
   };
 
+  const handleUpdateAnswers = async () => {
+    try {
+        for (const q of assignedQuestions) {  // ← usa assignedQuestions, no allQuestions
+            if (newAnswers[q.idQuestion]?.trim()) {
+                await updateSecurityAnswer(q.idQuestion, newAnswers[q.idQuestion], token);
+            }
+        }
+        toast.success("✓ Respuestas actualizadas correctamente.");
+        setShowUpdateModal(false);
+    } catch (err) {
+        console.error("Error actualizando:", err);
+        toast.error("Error al actualizar las respuestas.");
+    }
+};
   const renderSpecificDetails = () => {
     switch (genre) {
       case 'ESCULTURA':
@@ -192,14 +245,14 @@ const ArtworkDetail = ({ artwork: artworkProp }) => {
             onMouseEnter={() => setShowZoom(true)}
             onMouseLeave={() => setShowZoom(false)}
           >
-            <img src={photo_url} alt={name} className="main-artwork-img" />
+            <img src={imageUrl} alt={name} className="main-artwork-img" />
             <div className={`status-badge ${status.toLowerCase()}`}>{status}</div>
             {showZoom && (
               <div style={{
                 position: 'absolute', top: 0, right: '-310px',
                 width: '300px', height: '300px',
                 border: '2px solid #d5d9d9', borderRadius: '8px',
-                backgroundImage: `url(${photo_url})`,
+                backgroundImage: `url(${imageUrl})`,
                 backgroundSize: '400%',
                 backgroundPosition: `${zoomPos.x}% ${zoomPos.y}%`,
                 zIndex: 100, pointerEvents: 'none',
@@ -220,16 +273,15 @@ const ArtworkDetail = ({ artwork: artworkProp }) => {
                 ? new Date(creation_date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
                 : 'No especificada'}
               <div className="artist-attribution">
-                Artista:
-                <Link
-                  to={artist?.id ? `/artists/${artist.id}` : '#'}
-                  className="artist-link-bold"
-                  onClick={(e) => { if (!artist?.id) { e.preventDefault(); alert('ID del artista no disponible'); } }}
-                >
-                  {artist?.first_name} {artist?.last_name}
-                </Link>
-                <span className="verified-check">✓</span>
-              </div>
+  Artista:
+  <Link
+    to={`/artist/${artwork?.idArtist}`}
+    className="artist-link-bold"
+  >
+    {artistName || "Ver artista"}
+  </Link>
+  <span className="verified-check">✓</span>
+</div>
               {renderSpecificDetails()}
             </div>
           </div>
@@ -315,6 +367,21 @@ const ArtworkDetail = ({ artwork: artworkProp }) => {
                   </div>
                 ))
               )}
+              <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+    <button className="forgot-link" onClick={async () => {
+        const { getAllQuestions } = await import('../../services/authUser.js');
+        // carga todas las preguntas para que el usuario elija nuevas
+        const questions = await getAssignedSecurityQuestions(token);
+        setAllQuestions(questions);
+        const init = {};
+        questions.forEach(q => init[q.idQuestion] = "");
+        setNewAnswers(init);
+        setShowUpdateModal(true);
+        setShowRecoveryModal(false);
+    }}>
+        ¿Olvidaste tus respuestas? Actualízalas aquí
+    </button>
+</div>
               <div className="modal-buttons">
                 <button className="modal-btn modal-btn-cancel" onClick={() => { setShowRecoveryModal(false); setAssignedQuestions([]); }}>
                   Cancelar
@@ -327,10 +394,42 @@ const ArtworkDetail = ({ artwork: artworkProp }) => {
           </div>
         )}
 
+        {showUpdateModal && (
+    <div className="modal-overlay">
+        <div className="modal-content">
+            <h3 className="modal-title">Actualizar Respuestas de Seguridad</h3>
+            <p className="modal-subtitle">Escribe nuevas respuestas para tus preguntas</p>
+            {allQuestions.map((q) => (
+                <div key={q.idQuestion} style={{ marginBottom: '16px' }}>
+                    <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
+                        {q.wording}
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Nueva respuesta"
+                        value={newAnswers[q.idQuestion] || ""}
+                        onChange={(e) => setNewAnswers(prev => ({ ...prev, [q.idQuestion]: e.target.value }))}
+                        className="modal-input"
+                    />
+                </div>
+            ))}
+            <div className="modal-buttons">
+                <button className="modal-btn modal-btn-cancel" onClick={() => setShowUpdateModal(false)}>
+                    Cancelar
+                </button>
+                <button className="modal-btn modal-btn-confirm" onClick={handleUpdateAnswers}>
+                    Guardar Respuestas
+                </button>
+            </div>
+        </div>
+    </div>
+)}
+
         <ToastContainer />
       </main>
     </div>
   );
 };
+
 
 export default ArtworkDetail;
