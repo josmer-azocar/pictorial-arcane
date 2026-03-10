@@ -10,6 +10,7 @@ export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [client, setClient] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [authToken, setAuthToken] = useState(localStorage.getItem("token") || null);
 
     const fetchAndSetUser = async (token) => {
         try {
@@ -50,6 +51,7 @@ export const AuthProvider = ({children}) => {
         const success = await fetchAndSetUser(savedToken);
         if (success) {
             localStorage.setItem("token", savedToken);
+            setAuthToken(savedToken); 
             return success;
         }
         return null;
@@ -59,11 +61,12 @@ export const AuthProvider = ({children}) => {
         setIsLoggedIn(false);
         setUser(null);
         setClient(null);
+        setAuthToken(null);
         localStorage.removeItem("token");
     }
 
     return(
-        <AuthContext.Provider value={{isLoggedIn, user, client, login, logout, loading }}>
+         <AuthContext.Provider value={{isLoggedIn, user, client, login, logout, loading, token: authToken }}>
             {!loading && children}
         </AuthContext.Provider>
     );

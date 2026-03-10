@@ -147,13 +147,15 @@ export async function getArtworksByArtist(artistId) {
 export async function getArtworkById(id) {
   //const url = `http://localhost:8080/artworks/${id}`;
   try {
-    const response = await axios.get(`${API_BASE_URL}/artworks/${id}`);
+    const response = await axios.get(`${API_BASE_URL}/artwork/${id}`); 
     return response.data;
   } catch (error) {
     console.error("Error al obtener obra:", error);
     throw error;
   }
 }
+
+
 
 
 // Mock para obtener una obra por ID
@@ -184,22 +186,27 @@ export async function getArtworkById(id) {
   });
 }*/
 // Reserva una obra - POST /artworks/{id}/reserve
-export async function reserveArtwork(artworkId, securityCode) {
-  //const url = `http://localhost:8080/artworks/${artworkId}/reserve`;
+/*export async function reserveArtwork(artworkId, securityCode, token) {
   try {
-    const response = await axios.post(`${API_BASE_URL}/artworks/${artworkId}/reserve`, {
-      security_code: securityCode
-    }, {
-      headers: {
-        'Content-Type': 'application/json'
+    const response = await axios.post(
+      `${API_BASE_URL}/sale/reserve`,  
+      null,                           
+      {
+        params: {                     
+          id_obra: artworkId,
+          security_code: securityCode
+        },
+        headers: {
+          Authorization: `Bearer ${token}`  
+        }
       }
-    });
+    );
     return response.data;
   } catch (error) {
     console.error("Error al reservar obra:", error);
     throw error;
   }
-}
+}*/
 
 /**
  * Crea una nueva escultura en el backend.
@@ -305,3 +312,17 @@ export const uploadArtistImage = async (artistId, file, token) => {
         }
     });
 };
+/*export async function getArtworkById(id) {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/artwork/search/specificArtWork/${id}`);
+    const data = response.data;
+    // Aplanar el objeto combinando artWorkResponse con el subtipo específico
+    const subtype = data.paintingResponse || data.sculptureResponse || 
+                    data.photographyResponse || data.ceramicResponse || 
+                    data.goldsmithResponse || {};
+    return { ...data.artWorkResponse, ...subtype };
+  } catch (error) {
+    console.error("Error al obtener obra:", error);
+    throw error;
+  }
+}*/

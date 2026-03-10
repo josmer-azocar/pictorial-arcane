@@ -74,17 +74,12 @@ return (
           <Route path="/login" element={<MainAuth />} />
           <Route path='/auth/*' element={<MainAuth/>} />
           <Route path='/artwork/*' element={<Artwork/>}/>
+          <Route path='/artwork/:id' element={<ArtworkDetail />} />
         
-          
-          <Route 
-            path="/artists/:id" 
-            element={
-              <ArtistProfile 
-                mockArtists={[testArtwork.artist]} 
-                mockArtworks={mockArtworksByArtist}
-              />
-            } 
-          />
+         <Route 
+  path="/artist/:id" 
+  element={<ArtistProfile />} 
+/>
           <Route element={<PrivateRoutes/>}>
             <Route path='/dashboard/*' element={<Dashboard/>}/>
           </Route>
