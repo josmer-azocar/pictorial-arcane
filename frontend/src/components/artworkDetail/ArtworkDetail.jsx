@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom';
 import { useAuth } from '../../services/AuthContext.jsx';
 import { getArtworkById, getArtistById } from '../../services/fetchArtwork.js';
 import { reserveArtwork } from '../../services/fetchSales.js';
-import { getAssignedSecurityQuestions, recoverSecurityCode } from '../../services/authUser.js';
+import { getAssignedSecurityQuestions, recoverSecurityCode,updateSecurityAnswer } from '../../services/authUser.js';
 
 // ── ÍCONOS SVG ──────────────────────────────────────────────
 const CertificateIcon = ({ size = 28 }) => (
@@ -57,6 +57,10 @@ const ArtworkDetail = ({ artwork: artworkProp }) => {
   const [assignedQuestions, setAssignedQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [artistName, setArtistName] = useState("");
+
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+const [newAnswers, setNewAnswers] = useState({});
+const [allQuestions, setAllQuestions] = useState([]);
 
   // GET /artwork/{id}
 
@@ -116,6 +120,7 @@ useEffect(() => {
 
   const { name, imageUrl, price, creation_date, status, genre } = artwork;
 
+  
   // POST /sale/reserve
   /*const handleReservar = async () => {
     try {
@@ -129,6 +134,11 @@ useEffect(() => {
     }
   };*/
 
+
+
+
+
+  
   // PUT /questions/RecoverClientCode
   const handleRecoverCode = async () => {
     try {
@@ -145,6 +155,20 @@ useEffect(() => {
     }
   };
 
+  const handleUpdateAnswers = async () => {
+    try {
+        for (const q of assignedQuestions) {  // ← usa assignedQuestions, no allQuestions
+            if (newAnswers[q.idQuestion]?.trim()) {
+                await updateSecurityAnswer(q.idQuestion, newAnswers[q.idQuestion], token);
+            }
+        }
+        toast.success("✓ Respuestas actualizadas correctamente.");
+        setShowUpdateModal(false);
+    } catch (err) {
+        console.error("Error actualizando:", err);
+        toast.error("Error al actualizar las respuestas.");
+    }
+};
   const renderSpecificDetails = () => {
     switch (genre) {
       case 'ESCULTURA':
@@ -343,6 +367,21 @@ useEffect(() => {
                   </div>
                 ))
               )}
+              <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+    <button className="forgot-link" onClick={async () => {
+        const { getAllQuestions } = await import('../../services/authUser.js');
+        // carga todas las preguntas para que el usuario elija nuevas
+        const questions = await getAssignedSecurityQuestions(token);
+        setAllQuestions(questions);
+        const init = {};
+        questions.forEach(q => init[q.idQuestion] = "");
+        setNewAnswers(init);
+        setShowUpdateModal(true);
+        setShowRecoveryModal(false);
+    }}>
+        ¿Olvidaste tus respuestas? Actualízalas aquí
+    </button>
+</div>
               <div className="modal-buttons">
                 <button className="modal-btn modal-btn-cancel" onClick={() => { setShowRecoveryModal(false); setAssignedQuestions([]); }}>
                   Cancelar
@@ -354,6 +393,37 @@ useEffect(() => {
             </div>
           </div>
         )}
+
+        {showUpdateModal && (
+    <div className="modal-overlay">
+        <div className="modal-content">
+            <h3 className="modal-title">Actualizar Respuestas de Seguridad</h3>
+            <p className="modal-subtitle">Escribe nuevas respuestas para tus preguntas</p>
+            {allQuestions.map((q) => (
+                <div key={q.idQuestion} style={{ marginBottom: '16px' }}>
+                    <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
+                        {q.wording}
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Nueva respuesta"
+                        value={newAnswers[q.idQuestion] || ""}
+                        onChange={(e) => setNewAnswers(prev => ({ ...prev, [q.idQuestion]: e.target.value }))}
+                        className="modal-input"
+                    />
+                </div>
+            ))}
+            <div className="modal-buttons">
+                <button className="modal-btn modal-btn-cancel" onClick={() => setShowUpdateModal(false)}>
+                    Cancelar
+                </button>
+                <button className="modal-btn modal-btn-confirm" onClick={handleUpdateAnswers}>
+                    Guardar Respuestas
+                </button>
+            </div>
+        </div>
+    </div>
+)}
 
         <ToastContainer />
       </main>
