@@ -16,8 +16,10 @@ export async function getUserData(token) {
     }
 }
 
-export async function updateUserData(token, updatedData) {
+export async function updateUserData(updatedData) {
     try {
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error('No hay token disponible');
         const response = await axios.put(`${url}/user/update`, updatedData, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -27,6 +29,23 @@ export async function updateUserData(token, updatedData) {
         return response.data;
     } catch (error) {
         console.error("Error actualizando el data:", error);
+        throw error;
+    }
+}
+
+export async function updateClientData(updatedData) {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error('No hay token disponible');
+        const response = await axios.put(`${url}/client/update`, updatedData, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        console.log("La data del cliente actualizada es:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Error actualizando el data:", error.response?.data || error);
         throw error;
     }
 }
