@@ -1,7 +1,9 @@
 import './Reports.css'
 import { useState } from 'react';
 import { getSoldArtworks } from '../../services/salesServices';
+import { fetchSoldArtwork, fetchPaidArtwork } from '../../services/fetchSoldArtwork';
 import Loading from '../../components/Loading';
+import ReportsSearch from './ReportsSearch';
 
 /*
 - Consultas:
@@ -17,6 +19,7 @@ function Reports() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [data, setData] = useState([]);
+    const [ billingData, setBillingData] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const handleGenerate = async () => {
@@ -28,8 +31,13 @@ function Reports() {
         setLoading(true);
         try {
             // añadir switch
-            const result = await getSoldArtworks(startDate, endDate);
-            setData(result);
+            const paidArtList = await fetchPaidArtwork(startDate, endDate);
+            setData(paidArtList.content);
+            const billing = await fetchSoldArtwork(startDate, endDate);
+            console.log("Datos de ventas:", billing);
+            console.log("Datos de obras pagadas:", paidArtList);
+            setBillingData(billing);
+
         } catch (error) {
             console.error("Error al obtener el reporte:", error);
         } finally {
@@ -54,17 +62,15 @@ function Reports() {
                         <table className="report-table">
                             <thead>
                                 <tr>
-                                    <th>Fecha</th>
                                     <th>Obra</th>
                                     <th>Estado</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {data.map((sale) => (
-                                    <tr key={sale.idSale}>
-                                        <td>{sale.date}</td>
-                                        <td>{sale.artWork?.name}</td>
-                                        <td>{sale.saleStatus}</td>
+                                    <tr key={sale.idArtWork}>
+                                        <td>{sale?.name || "sin definir"}</td>
+                                        <td>{sale.status}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -72,9 +78,7 @@ function Reports() {
                     </div>
                 )};
             case 'billing':
-                //if (data.length === 0) return <p>No hay datos para el periodo seleccionado.</p>;
-                const totalRecaudado = data.reduce((sum, sale) => sum + (sale.totalPaid || 0), 0);
-                const totalGanancia = data.reduce((sum, sale) => sum + (sale.profitAmount || 0), 0);
+                if (!billingData) return <p>No hay datos de facturación.</p>;
 
                 return (
                     
@@ -88,21 +92,22 @@ function Reports() {
                                     <th>Fecha</th>
                                     <th>Obra</th>
                                     <th>Precio ($)</th>
-                                    <th>Estado</th>
                                     <th>Ganancia del Museo ($)</th>
                                     <th>Ganancia del Museo (%)</th>
+                                    <th>Pago total</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {data.map((sale) => (
-                                    <tr key={sale.idSale}>
-                                        <td>{sale.idSale}</td>
+                                {billingData.sales.map((sale) => (
+                                    <tr key={sale.invoiceCode}>
+                                        <td>{sale.invoiceCode}</td>
                                         <td>{sale.date}</td>
                                         <td>{sale.artWork?.name}</td>
-                                        <td>{sale.price}</td>
-                                        <td>{sale.saleStatus}</td>
-                                        <td>{sale.profitAmount}</td>
-                                        <td>{sale.profitPercentage}</td>
+                                        <td>{sale.artworkPrice}</td>
+                                        <td>{sale.museumProfitAmount}</td>
+                                        <td>{sale.museumProfitPercentage}</td>
+                                        <td>{sale.totalPaid}</td>
+
                                     </tr>
                                 ))}
                             </tbody>
@@ -110,21 +115,18 @@ function Reports() {
                         <div className="report-summary-footer">
                             <div className="summary-item">
                                 <span>Total Recaudado:</span>
-                                <strong>${totalRecaudado.toLocaleString()}</strong>
+                                <strong>${billingData.totalCollected.toLocaleString()}</strong>
                             </div>
                             <div className="summary-item">
                                 <span>Ganancia Neta Museo:</span>
-                                <strong>${totalGanancia.toLocaleString()}</strong>
+                                <strong>${billingData.totalMuseumProfit.toLocaleString()}</strong>
                             </div>
                         </div>
                     </div>
                 );
             case 'memberships':
                 return (
-                    <div className="report-view">
-                        <h3>Resumen de Membresías</h3>
-                        {/* Logic for memberships here */}
-                    </div>
+                    <ReportsSearch/>
                 );
             default:
                 return null;
