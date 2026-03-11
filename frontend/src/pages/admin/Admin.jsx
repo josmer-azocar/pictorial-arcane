@@ -6,96 +6,79 @@ import "./Admin.css";
 import CreateArtist from "./CreateArtist.jsx";
 import DeleteArtist from './DeleteArtist.jsx';
 import UpdateArtwork from './UpdateArtwork.jsx';
-import { getGenres } from '../../services/fetchArtwork.js';
+import { getArtworkById } from '../../services/fetchArtwork.js';
 import AddSculpture from './AddSculpture.jsx';
 import AddPainting from './AddPainting.jsx';
 import AddPhotography from './AddPhotography.jsx';
 import AddCeramic from './AddCeramic.jsx';
 import AddGoldsmith from './AddGoldsmith.jsx';
-import DeleteArtwork from './DeleteArtwork.jsx';
-import CreateGenre from './CreateGenre.jsx';
-import DeleteGenre from './DeleteGenre.jsx';
-import UpdateGenre from './UpdateGenre.jsx';
-
 import UpdateArtist from './UpdateArtist.jsx';
 import Reports from './Reports.jsx';
 
 
 function Admin() {
   const [activeSection, setActiveSection] = useState(null); // Vista actual
+  const [artworkToEditId, setArtworkToEditId] = useState(null); // ID de la obra a editar
   const [artworkToEdit, setArtworkToEdit] = useState(null); // Objeto de la obra a editar
+  const [loadingEdit, setLoadingEdit] = useState(false); // Cargando la obra a editar
   const [isArtworksMenuOpen, setArtworksMenuOpen] = useState(false);
   const [isArtistsMenuOpen, setArtistsMenuOpen] = useState(false);
-  const [isGenresMenuOpen, setGenresMenuOpen] = useState(false);
-  const [genres, setGenres] = useState([]); // Lista de todos los géneros
 
   // Función para cambiar de sección y limpiar estados secundarios
   const handleSectionChange = (section) => {
     setActiveSection(section);
+    setArtworkToEditId(null);
     setArtworkToEdit(null);
-  };
-
-  // Carga los géneros al montar el componente para poder mapear idGenre a tipo de obra
-  useEffect(() => {
-    const loadGenres = async () => {
-      try {
-        const genresData = await getGenres();
-        setGenres(genresData);
-      } catch (error) {
-        console.error("Error al cargar géneros en Admin:", error);
-      }
-    };
-    loadGenres();
-  }, []);
-
-  // Función para volver al dashboard principal después de una acción exitosa
-  const handleActionSuccess = () => {
-    handleSectionChange(null);
   };
 
   // Cargar los datos de la obra cuando se selecciona un ID para editar
   useEffect(() => {
-    // Este useEffect ya no es necesario porque los datos se pasan directamente.
-    // Se elimina la llamada a getSpecificArtworkById.
-  }, [artworkToEdit]);
+    if (!artworkToEditId) {
+      setArtworkToEdit(null);
+      return;
+    }
+
+    const fetchArtworkToEdit = async () => {
+      setLoadingEdit(true);
+      try {
+        const data = await getArtworkById(artworkToEditId);
+        setArtworkToEdit(data);
+      } catch (error) {
+        console.error("Error al cargar la obra para editar:", error);
+        setArtworkToEditId(null); // Reset en caso de error
+      } finally {
+        setLoadingEdit(false);
+      }
+    };
+
+    fetchArtworkToEdit();
+  }, [artworkToEditId]);
 
   // Renderiza el formulario de edición correcto basado en el tipo de obra
   const renderUpdateForm = () => {
-    if (!artworkToEdit || !genres.length) {
+    if (loadingEdit) {
       return <p className="empty-state">Cargando datos de la obra...</p>;
     }
 
-    const genre = genres.find(g => g.idGenre === artworkToEdit.idGenre);
-    if (!genre) {
-        return <p className="empty-state">Error: Género no encontrado para la obra seleccionada.</p>;
+    if (!artworkToEdit) {
+      return <p className="empty-state">No se pudo cargar la obra. Por favor, vuelve a intentarlo.</p>;
     }
 
-    // Mapeo de nombres de género a los tipos que esperan los componentes
-    const genreTypeMap = {
-        'Escultura': 'SCULPTURE',
-        'Pintura': 'PAINTING',
-        'Fotografía': 'PHOTOGRAPHY',
-        'Cerámica': 'CERAMIC',
-        'Orfebrería': 'GOLDSMITH'
-    };
-    const artworkType = genreTypeMap[genre.name];
-
-    // Los formularios esperan `id` para la actualización, pero getAllArtworks devuelve `idArtWork`.
-    const artworkDataForForm = { ...artworkToEdit, id: artworkToEdit.idArtWork };
-
-    switch (artworkType) {
+    // Pasamos los datos de la obra al formulario correspondiente.
+    // Estos formularios necesitarán ser adaptados para recibir `artworkData`.
+    switch (artworkToEdit.type) {
       case 'SCULPTURE':
-        return <AddSculpture artworkData={artworkDataForForm} onCreationSuccess={handleActionSuccess} />;
+        return <AddSculpture artworkData={artworkToEdit} />;
       case 'PAINTING':
-        return <AddPainting artworkData={artworkDataForForm} onCreationSuccess={handleActionSuccess} />;
+        return <AddPainting artworkData={artworkToEdit} />;
       case 'PHOTOGRAPHY':
-        return <AddPhotography artworkData={artworkDataForForm} onCreationSuccess={handleActionSuccess} />;
+        return <AddPhotography artworkData={artworkToEdit} />;
       case 'CERAMIC':
-        return <AddCeramic artworkData={artworkDataForForm} onCreationSuccess={handleActionSuccess} />;
+        return <AddCeramic artworkData={artworkToEdit} />;
       case 'GOLDSMITH':
-        return <AddGoldsmith artworkData={artworkDataForForm} onCreationSuccess={handleActionSuccess} />;
+        return <AddGoldsmith artworkData={artworkToEdit} />;
       default:
-        return <p>Tipo de obra "{genre.name}" no reconocido. No se puede editar.</p>;
+        return <p>Tipo de obra "{artworkToEdit.type}" no reconocido. No se puede editar.</p>;
     }
   };
 
@@ -106,7 +89,7 @@ function Admin() {
       case 'reservations':
         return <PendingReservations />;
       case 'createArtwork':
-        return <CreateArtwork onCreationSuccess={handleActionSuccess} />;
+        return <CreateArtwork />;
         case 'createArtist':
             return <CreateArtist />;
       case 'deleteArtist':
@@ -117,18 +100,12 @@ function Admin() {
         return <Reports/>;
       // case 'viewArtwork':
       //   return <p>Aquí irá la vista de todas las obras</p>;
-      case 'deleteArtwork':
-        return <DeleteArtwork />;
-      case 'createGenre':
-        return <CreateGenre />;
-      case 'deleteGenre':
-        return <DeleteGenre />;
-      case 'updateGenre':
-        return <UpdateGenre />;
+      // case 'deleteArtwork':
+      //   return <DeleteArtwork />;
       case 'updateArtwork':
-        return artworkToEdit ?
+        return artworkToEditId ?
           renderUpdateForm() :
-          <UpdateArtwork onEditSelect={setArtworkToEdit} />;
+          <UpdateArtwork onEditSelect={setArtworkToEditId} />;
       default:
         return (
           <>
@@ -160,6 +137,12 @@ function Admin() {
               onClick={() => handleSectionChange('createArtwork')}
             >
               Crear Obra
+            </button>
+            <button
+              className={`admin-nav-btn ${activeSection === 'viewArtwork' ? 'active' : ''}`}
+              onClick={() => handleSectionChange('viewArtwork')}
+            >
+              Ver Obra
             </button>
             <button
               className={`admin-nav-btn ${activeSection === 'updateArtwork' ? 'active' : ''}`}
@@ -209,34 +192,6 @@ function Admin() {
     </button>
   </div>
 )}
-        <button
-          className="admin-nav-btn"
-          onClick={() => setGenresMenuOpen(!isGenresMenuOpen)}
-        >
-          Gestión de Géneros
-        </button>
-        {isGenresMenuOpen && (
-          <div className="admin-submenu">
-            <button
-              className={`admin-nav-btn ${activeSection === 'createGenre' ? 'active' : ''}`}
-              onClick={() => handleSectionChange('createGenre')}
-            >
-              Crear Género
-            </button>
-            <button
-              className={`admin-nav-btn ${activeSection === 'deleteGenre' ? 'active' : ''}`}
-              onClick={() => handleSectionChange('deleteGenre')}
-            >
-              Borrar Género
-            </button>
-            <button
-              className={`admin-nav-btn ${activeSection === 'updateGenre' ? 'active' : ''}`}
-              onClick={() => handleSectionChange('updateGenre')}
-            >
-              Actualizar Género
-            </button>
-          </div>
-        )}
         <hr className="admin-sidebar-divider" />
         <p className="admin-sidebar-label">Operaciones</p>
         <button
