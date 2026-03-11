@@ -160,7 +160,7 @@
     border-radius: 5px;
 }
 
-.info-display button:hover {
+.info-display button:hover, .pagination-controls button:hover, .membership-actions button:hover {
     background-color: rgba(137, 43, 226, 0.377);
     color: white;
     cursor: pointer;
