@@ -49,6 +49,16 @@ export async function showArtist() {
     
 }
 
+export async function getGenres() {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/genre/all`);
+        return response.data;
+    } catch (error) {
+        console.error("Error al obtener los géneros:", error);
+        throw error;
+    }
+}
+
 
 /*export async function showArtwork(page = 0, sortBy = '', direction = 'asc', genre = '') {
   return new Promise((resolve) => {
@@ -283,6 +293,20 @@ export const createGoldsmith = async (goldsmithData, token) => {
     return response.data;
 };
 
+/**
+ * Crea un nuevo género en el backend.
+ * @param {object} genreData - Los datos del género (name, description).
+ * @param {string} token - El token de autenticación del administrador.
+ */
+export const createGenre = async (genreData, token) => {
+    const response = await axios.post(`${API_BASE_URL}/genre/add`, genreData, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+    return response.data;
+};
 /**
  * Sube una imagen para una obra de arte.
  * @param {number} artworkId - El ID de la obra para la que se sube la imagen.
