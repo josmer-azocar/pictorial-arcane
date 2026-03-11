@@ -5,8 +5,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import './Admin.css';
 import './Form.css';
 import { uploadArtistImage } from '../../services/fetchArtwork.js';
+import { getAllGenres, assignGenre } from '../../services/genreServices.js';
+import { useEffect } from 'react';
 
-const BASE_URL = import.meta.env.VITE_API_URL;
+const BASE_URL =  import.meta.env.VITE_API_URL;
 
 function CreateArtist() {
   const token = localStorage.getItem('token');
@@ -21,6 +23,8 @@ function CreateArtist() {
   });
   const [imageFile, setImageFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [genres, setGenres] = useState([]);
+  const [selectedGenres, setSelectedGenres] = useState([]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,6 +35,18 @@ function CreateArtist() {
       setImageFile(e.target.files[0]);
     }
   };
+
+  useEffect(() => {
+    const fetchGenres = async () => {
+        try {
+            const data = await getAllGenres();
+            setGenres(data);
+        } catch (error) {
+            toast.error('Error al cargar géneros');
+        }
+    };
+    fetchGenres();
+  }, []);
 
   // POST /artist/add  — Requiere rol ADMIN
   const handleSubmit = async () => {
@@ -48,6 +64,19 @@ function CreateArtist() {
 
       // PASO B: Subir la imagen
       await uploadArtistImage(newArtistId, imageFile, token);
+
+      if (selectedGenres.length > 0) {
+        try {
+            // Use Promise.all to assign all genres concurrently
+            await Promise.all(selectedGenres.map(genreId =>
+                assignGenre(newArtistId, genreId)
+            ));
+            toast.success('Géneros asignados correctamente');
+        } catch (err) {
+            toast.error('Error al asignar algunos géneros, pero el artista fue creado.');
+            console.error(err);
+        }
+    }
 
       toast.success('¡Artista e imagen registrados con éxito!');
       setFormData({
@@ -102,6 +131,29 @@ function CreateArtist() {
           value={(formData.commissionRate * 100).toFixed(2)}
           onChange={(e) => setFormData({ ...formData, commissionRate: parseFloat(e.target.value) / 100 })}
           step="0.01" min="5" max="10" />
+        <div className="form-group">
+          <label>Géneros del artista:</label>
+          <div className="genre-checkboxes">
+              {genres.map(genre => (
+                  <label key={genre.idGenre} className="genre-checkbox-label">
+                      <input
+                          type="checkbox"
+                          value={genre.idGenre}
+                          checked={selectedGenres.includes(genre.idGenre)}
+                          onChange={(e) => {
+                              const id = Number(e.target.value);
+                              setSelectedGenres(prev =>
+                                  prev.includes(id)
+                                      ? prev.filter(g => g !== id)
+                                      : [...prev, id]
+                              );
+                          }}
+                      />
+                      {genre.name}
+                  </label>
+              ))}
+          </div>
+      </div>
         <div className="form-group">
           <label
             htmlFor="artist-image-upload"

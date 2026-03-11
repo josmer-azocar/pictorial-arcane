@@ -5,37 +5,25 @@ import { fetchSoldArtwork, fetchPaidArtwork } from '../../services/fetchSoldArtw
 import Loading from '../../components/Loading';
 import ReportsSearch from './ReportsSearch';
 
-/*
-- Consultas:
-    - Listado de obras vendidas en un periodo dado por el usuario
-    - Resumen de facturación dado un periodo (código de factura, fecha, precio de la
-obra, ganancia del museo (en porcentaje y en dólares) , total recaudado)
-    - Resumen de membresías dado un período
-*/
-
 function Reports() {
-
-    const [activeReport, setActiveReport] = useState(null); //obras vendidas - facturación - membresías
+    const [activeReport, setActiveReport] = useState(null);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
-    const [data, setData] = useState([]);
-    const [ billingData, setBillingData] = useState(null);
+    const [data, setData] = useState([]);          // podrías eliminar esto si no lo usas
+    const [billingData, setBillingData] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [soldResponse, setSoldResponse] = useState(null);
+    const [soldPage, setSoldPage] = useState(0);
 
-    const handleGenerate = async () => {
+    const fetchSoldPage = async (page = 0) => {
         const effectiveStart = startDate || '1900-01-01';
         const effectiveEnd = endDate || new Date().toISOString().split('T')[0];
-
         setLoading(true);
         try {
-            // añadir switch
-            const paidArtList = await fetchPaidArtwork(effectiveStart, effectiveEnd);
-            setData(paidArtList.content);
-            const billing = await fetchSoldArtwork(effectiveStart, effectiveEnd);
-            console.log("Datos de ventas:", billing);
+            const paidArtList = await fetchPaidArtwork(effectiveStart, effectiveEnd, page, 10);
+            setSoldResponse(paidArtList);
+            setSoldPage(paidArtList.number);
             console.log("Datos de obras pagadas:", paidArtList);
-            setBillingData(billing);
-
         } catch (error) {
             console.error("Error al obtener el reporte:", error);
         } finally {
@@ -43,20 +31,36 @@ function Reports() {
         }
     };
 
+    const handleGenerate = async () => {
+        // Solo cargamos la primera página de obras vendidas y la facturación
+        await fetchSoldPage(0);
+
+        const effectiveStart = startDate || '1900-01-01';
+        const effectiveEnd = endDate || new Date().toISOString().split('T')[0];
+
+        try {
+            const billing = await fetchSoldArtwork(effectiveStart, effectiveEnd);
+            console.log("Datos de ventas:", billing);
+            setBillingData(billing);
+        } catch (error) {
+            console.error("Error al obtener el reporte:", error);
+        }
+    };
+
     const renderReportContent = () => {
-        if (loading) return <Loading />
-        //if (data.length === 0) return <p>No hay datos para el periodo seleccionado.</p>;
+        if (loading) return <Loading />;
         if (!activeReport) return <p className="select-prompt">Selecciona un tipo de reporte para comenzar.</p>;
 
         switch (activeReport) {
             case 'sold':
-                if (data.length === 0) {
+                // Usamos soldResponse en lugar de data
+                if (!soldResponse || soldResponse.content.length === 0) {
                     return <p>No hay datos para el periodo seleccionado.</p>;
-                } else {
+                }
+                const { content, totalPages, number } = soldResponse;
                 return (
                     <div className="report-view">
                         <h3>Listado de Obras Vendidas</h3>
-                        {/* Table logic for Sold Artworks */}
                         <table className="report-table">
                             <thead>
                                 <tr>
@@ -65,7 +69,7 @@ function Reports() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {data.map((sale) => (
+                                {content.map((sale) => (
                                     <tr key={sale.idArtWork}>
                                         <td>{sale?.name || "sin definir"}</td>
                                         <td>{sale.status}</td>
@@ -73,13 +77,31 @@ function Reports() {
                                 ))}
                             </tbody>
                         </table>
+                        {totalPages > 1 && (
+                            <div className="pagination-controls">
+                                <button
+                                    onClick={() => fetchSoldPage(number - 1)}
+                                    disabled={number === 0}
+                                    className="pagination-btn"
+                                >
+                                    Anterior
+                                </button>
+                                <span>Página {number + 1} de {totalPages}</span>
+                                <button
+                                    onClick={() => fetchSoldPage(number + 1)}
+                                    disabled={number === totalPages - 1}
+                                    className="pagination-btn"
+                                >
+                                    Siguiente
+                                </button>
+                            </div>
+                        )}
                     </div>
-                )};
+                );
+
             case 'billing':
                 if (!billingData) return <p>No hay datos de facturación.</p>;
-
                 return (
-                    
                     <div className="report-view">
                         <h3>Resumen de Facturación</h3>
                         <p>Total Recaudado | Ganancia Museo | Impuestos</p>
@@ -105,7 +127,6 @@ function Reports() {
                                         <td>{sale.museumProfitAmount}</td>
                                         <td>{sale.museumProfitPercentage}</td>
                                         <td>{sale.totalPaid}</td>
-
                                     </tr>
                                 ))}
                             </tbody>
@@ -122,16 +143,16 @@ function Reports() {
                         </div>
                     </div>
                 );
+
             case 'memberships':
-                return (
-                    <ReportsSearch/>
-                );
+                return <ReportsSearch />;
+
             default:
                 return null;
         }
     };
 
-    return(
+    return (
         <section id='reports-container'>
             <p className="admin-eyebrow">Panel de Control</p>
             <h2 className="admin-title">Reportes Administrativos</h2>
@@ -149,7 +170,7 @@ function Reports() {
                         <button
                             className={activeReport === 'billing' ? 'active' : ' '}
                             onClick={() => setActiveReport('billing')}>
-                            Resumen de facturazión
+                            Resumen de facturación
                         </button>
                     </li>
                     <li>
@@ -159,13 +180,13 @@ function Reports() {
                             Resumen de Membresías
                         </button>
                     </li>
-                    
                 </ul>
             </div>
+
             {activeReport && (activeReport === 'sold' || activeReport === 'billing') && (
                 <div className="date-picker-container">
-                    <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}/>
-                    <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}/>
+                    <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                    <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
                     <button className="generate-btn" onClick={handleGenerate} disabled={loading}>
                         Generar
                     </button>
@@ -179,4 +200,4 @@ function Reports() {
     );
 }
 
-export default Reports
+export default Reports;
