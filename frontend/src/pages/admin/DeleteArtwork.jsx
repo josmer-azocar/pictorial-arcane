@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { showArtwork, searchArtworks, showArtist, deleteArtwork, getAllArtworks, getGenres } from '../../services/fetchArtwork';
+import { showArtwork, searchArtworks, showArtist, deleteArtwork, getAllArtworks, getGenres, getArtworkById, updateGenericArtwork } from '../../services/fetchArtwork';
 import { useAuth } from '../../services/AuthContext';
 import './Admin.css';
 
@@ -72,36 +72,63 @@ const DeleteArtwork = () => {
     loadData();
   };
 
+  const reloadArtworks = async () => {
+    if (filters.id) {
+        const response = await getAllArtworks();
+        setArtworks(response.filter(art => art.idArtWork.toString() === filters.id && art.status === 'AVAILABLE'));
+    } else if (filters.artistId || filters.genre) {
+        const response = await searchArtworks({ artistId: filters.artistId, genre: filters.genre, size: 1000 });
+        setArtworks(response.content.filter(art => art.status === 'AVAILABLE') || []);
+    } else {
+        const response = await getAllArtworks();
+        setArtworks(response.filter(art => art.status === 'AVAILABLE'));
+    }
+  };
+
   const handleDelete = async (id, name) => {
-    // Confirmación simple del navegador
     if (window.confirm(`¿Estás seguro de que deseas eliminar la obra "${name}"? Esta acción no se puede deshacer.`)) {
         try {
             await deleteArtwork(id, token);
-            toast.success(`La obra "${name}" ha sido eliminada.`);
-            
-            // Recargamos la lista para ver los cambios
-            if (filters.id) {
-                // Para búsqueda por ID, recargar y filtrar localmente
-                const response = await getAllArtworks();
-                setArtworks(response.filter(art => art.idArtWork.toString() === filters.id && art.status === 'AVAILABLE'));
-            } else if (filters.artistId || filters.genre) {
-                // Si había filtros de artista o género, repetimos la búsqueda
-                const response = await searchArtworks({ artistId: filters.artistId, genre: filters.genre, size: 1000 });
-                setArtworks(response.content.filter(art => art.status === 'AVAILABLE') || []);
-            } else {
-                // Si no, recargamos todo
-                const response = await getAllArtworks();
-                setArtworks(response.filter(art => art.status === 'AVAILABLE'));
-            }
+            toast.success(`La obra "${name}" ha sido eliminada exitosamente.`);
+            await reloadArtworks();
+
         } catch (error) {
             console.error('Error deleting artwork:', error);
-            console.error('Error response:', error.response?.data);
-            if (error.response?.status === 404) {
-                toast.error("Obra de arte no encontrada.");
-            } else if (error.response?.data?.message?.includes('violates foreign key constraint')) {
-                toast.error("No se puede eliminar la obra porque tiene dependencias (reservas, ventas, etc.).");
+            const message = error.response?.data?.message || 
+                           error.response?.data?.error || 
+                           JSON.stringify(error.response?.data) || '';
+
+            const isForeignKeyError = 
+                error.response?.status === 500 && (
+                    message.toLowerCase().includes('constraint') ||
+                    message.toLowerCase().includes('foreign key') ||
+                    message.toLowerCase().includes('referenced')
+                );
+
+            if (isForeignKeyError) {
+                try {
+                    const artworkData = await getArtworkById(id);
+                    await updateGenericArtwork(id, {
+                        name: artworkData.name,
+                        price: artworkData.price,
+                        status: 'saled',
+                        idArtist: artworkData.idArtist,
+                        idGenre: artworkData.idGenre,
+                        imageUrl: artworkData.imageUrl
+                    }, token);
+
+                    toast.warning(`"${name}" no se puede eliminar porque tiene ventas asociadas. Se marcó como vendida automáticamente.`);
+                    await reloadArtworks();
+
+                } catch (updateError) {
+                    console.error('Error updating artwork status:', updateError);
+                    toast.error(`No se pudo eliminar ni actualizar "${name}". Contacta al equipo backend.`);
+                }
+
+            } else if (error.response?.status === 404) {
+                toast.error("Obra no encontrada.");
             } else {
-                toast.error("Error al eliminar la obra.");
+                toast.error(`Error al eliminar la obra: ${message || 'Error desconocido'}`);
             }
         }
     }

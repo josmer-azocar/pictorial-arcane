@@ -75,6 +75,7 @@ useEffect(() => {
   if (id) {
     getSpecificArtworkById(id)
       .then(data => {
+        console.log('ESTRUCTURA RECIBIDA:', JSON.stringify(data));
         setArtwork(data);
       })
       .catch((err) => {
@@ -91,8 +92,9 @@ useEffect(() => {
   // ── EFECTO: GET artista por idArtist ────────────────────
   // Se ejecuta cuando ya tenemos la obra y necesitamos el nombre del artista
   useEffect(() => {
-    if (artwork?.artWorkResponse?.idArtist) {
-      getArtistById(artwork.artWorkResponse.idArtist).then(data => {
+    if (artwork?.artWorkResponse?.idArtist || artwork?.artworkResponse?.idArtist) {
+      const artistId = artwork?.artWorkResponse?.idArtist || artwork?.artworkResponse?.idArtist;
+      getArtistById(artistId).then(data => {
         setArtistName(`${data.name} ${data.lastName}`);
       });
     }
@@ -127,8 +129,8 @@ useEffect(() => {
     </div>
   );
 
-if (!artwork || !artwork.artWorkResponse) return <div>Loading artwork details...</div>;
-const generalInfo = artwork.artWorkResponse;
+if (!artwork || (!artwork.artWorkResponse && !artwork.artworkResponse)) return <div>Loading artwork details...</div>;
+const generalInfo = artwork.artWorkResponse || artwork.artworkResponse;
 const { idArtWork, name, imageUrl, price, creation_date, status } = generalInfo;
 
   // ── HANDLER: POST /sale/reserve ──────────────────────────
