@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: row;
     margin: 70px;
-    align-items: center;
+    align-items: stretch;
     gap: 40px;
     background-color: rgb(43, 43, 43);
     color: antiquewhite;
@@ -20,6 +20,8 @@
     display: flex;
     flex-direction: column;
     min-height: 100%;
+    align-items: center;
+    justify-content: center;
 }
 
 #pfp-moment a {
@@ -122,7 +124,9 @@
     flex: 1;                
     min-width: 0;           
     overflow: auto;         
-    max-width: 100%;        
+    max-width: 100%; 
+    align-content: center;
+    justify-content: center;       
 }
 
 
@@ -145,7 +149,7 @@
     max-width: 100%;
 }
 
-.info-display button {
+.info-display button, .pagination-controls button {
     grid-column: span 2; 
     justify-self: center; 
     margin-top: 1rem;
@@ -156,7 +160,7 @@
     border-radius: 5px;
 }
 
-.info-display button:hover {
+.info-display button:hover, .pagination-controls button:hover {
     background-color: rgba(137, 43, 226, 0.377);
     color: white;
     cursor: pointer;
@@ -176,11 +180,12 @@
 
 .purchases-section {
     margin: 20px;
-    padding: 20px;
+    padding: 20px 40px;
     background-color: rgb(43, 43, 43);
     color: antiquewhite;
     border-radius: 8px;
     max-width: 100%;
+    margin-right: 40px;
 }
 
 .purchases-table {
@@ -234,6 +239,13 @@
 .purchases-table td:last-child {
     font-weight: 600;
     color: #ffd966; 
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 @media (max-width: 600px) {
