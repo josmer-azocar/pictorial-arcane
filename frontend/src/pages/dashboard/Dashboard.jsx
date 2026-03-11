@@ -54,7 +54,7 @@ function Dashboard() {
     const renderContent = () => {
         switch (activeSection) {
             case 'history':
-                return <div><h3>Tu Historial de Compras</h3><HistorialCompras/></div>;
+                return <div className='historic-sales'><HistorialCompras/></div>;
             case 'info':
                 return (
                     <div>
