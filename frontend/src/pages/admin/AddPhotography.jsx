@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { createPhotography, uploadArtworkImage } from '../../services/fetchArtwork.js';
+import { createPhotography, updateGenericArtwork, uploadArtworkImage, getArtists, getGenres } from '../../services/fetchArtwork.js';
 import { useAuth } from '../../services/AuthContext';
 import './AddArtwork.css';
 
@@ -9,6 +9,8 @@ const initialState = {
     name: '',
     status: 'AVAILABLE',
     price: '',
+    idArtist: '',
+    idGenre: '',
     printType: '',
     resolution: '',
     color: '',
@@ -16,12 +18,53 @@ const initialState = {
     camera: ''
 };
 
-const AddPhotography = () => {
+const AddPhotography = ({ artworkData, onCreationSuccess }) => {
     const { token } = useAuth();
     const [formData, setFormData] = useState(initialState);
     const [isLoading, setIsLoading] = useState(false);
     const [imageFile, setImageFile] = useState(null);
     const [error, setError] = useState('');
+    const [artists, setArtists] = useState([]);
+
+    useEffect(() => {
+        if (artworkData) {
+            setFormData({
+                name: artworkData.name || '',
+                status: artworkData.status || 'AVAILABLE',
+                price: artworkData.price || artworkData.precio || '',
+                idArtist: artworkData.idArtist || '',
+                idGenre: artworkData.idGenre || '',
+                printType: artworkData.printType || '',
+                resolution: artworkData.resolution || '',
+                color: artworkData.color || '',
+                serialNumber: artworkData.serialNumber || '',
+                camera: artworkData.camera || ''
+            });
+        }
+    }, [artworkData]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const artistsData = await getArtists();
+                const genresData = await getGenres();
+                setArtists(artistsData);
+
+                // Automatically set the photography genre for new artworks
+                if (!artworkData) {
+                    const photographyGenre = genresData.find(g => g.name === 'Fotografía');
+                    if (photographyGenre) {
+                        setFormData(prev => ({ ...prev, idGenre: photographyGenre.idGenre }));
+                    }
+                }
+            } catch (error) {
+                console.error("Error al cargar artistas o géneros:", error);
+                setError("No se pudieron cargar los artistas o géneros");
+            }
+        };
+        loadData();
+    }, []);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -43,8 +86,15 @@ const AddPhotography = () => {
         e.preventDefault();
         setError('');
 
-        if (!imageFile) {
+        if (!artworkData && !imageFile) {
             const msg = "Por favor, selecciona un archivo de imagen.";
+            setError(msg);
+            toast.error(msg);
+            return;
+        }
+
+        if(!formData.idArtist) {
+            const msg = "Por favor, selecciona un artista.";
             setError(msg);
             toast.error(msg);
             return;
@@ -54,27 +104,62 @@ const AddPhotography = () => {
         let newArtworkId = null;
 
         try {
-            // Crear la fotografía
             const photographyData = {
-                ...formData,
-                price: parseFloat(formData.price)
+                artWorkRequest: {
+                    name: formData.name,
+                    status: formData.status,
+                    price: parseFloat(formData.price),
+                    idArtist: parseInt(formData.idArtist),
+                    idGenre: parseInt(formData.idGenre)
+                },
+                photographyRequest: {
+                    printType: formData.printType,
+                    resolution: formData.resolution,
+                    color: formData.color,
+                    serialNumber: formData.serialNumber,
+                    camera: formData.camera
+                }
             };
 
-            const createdResponse = await createPhotography(photographyData, token);
-            newArtworkId = createdResponse?.artWork?.id;
+            if (artworkData) {
+                // --- MODO ACTUALIZACIÓN ---
+                // Usamos el endpoint genérico con solo los campos permitidos: name, status, price
+                const genericUpdateData = {
+                    name: formData.name,
+                    status: formData.status,
+                    price: parseFloat(formData.price)
+                };
+                await updateGenericArtwork(artworkData.id, genericUpdateData, token);
+                newArtworkId = artworkData.id;
+            } else {
+                const createdResponse = await createPhotography(photographyData, token);
+                newArtworkId = createdResponse?.artworkResponse?.idArtWork;
 
-            if (!newArtworkId) {
-                throw new Error("La respuesta del servidor no contenía el ID de la obra tras su creación.");
+                if (newArtworkId === null || newArtworkId === undefined) {
+                    throw new Error("La respuesta del servidor no contenía el ID de la obra tras su creación.");
+                }
             }
 
-            // Subir la imagen
-            await uploadArtworkImage(newArtworkId, imageFile, token);
+            if (imageFile) {
+                await uploadArtworkImage(newArtworkId, imageFile, token);
+            }
 
-            toast.success('¡Fotografía y su imagen han sido registradas con éxito!');
-            setFormData(initialState);
-            setImageFile(null);
-            if (document.getElementById('image-upload')) {
-                document.getElementById('image-upload').value = '';
+            const successMessage = artworkData ? '¡Fotografía actualizada con éxito!' : '¡Fotografía registrada con éxito!';
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll arriba para mostrar el mensaje
+            toast.success(successMessage, {
+                onClose: () => {
+                    if (onCreationSuccess) {
+                        onCreationSuccess();
+                    }
+                }
+            });
+
+            if (!onCreationSuccess) {
+                setFormData(initialState);
+                setImageFile(null);
+                if (document.getElementById('image-upload')) {
+                    document.getElementById('image-upload').value = '';
+                }
             }
 
         } catch (err) {
@@ -82,10 +167,15 @@ const AddPhotography = () => {
             const serverMessage = err.response?.data?.message || err.message;
 
             if (newArtworkId) {
-                finalErrorMessage = `La fotografía se creó (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
-                toast.warning('La fotografía se creó pero la imagen no se pudo subir. Por favor, intente subir la imagen desde el panel de edición.');
+                finalErrorMessage = `La operación se realizó (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
+                toast.warning('Datos guardados, pero hubo un error con la imagen.');
             } else {
-                finalErrorMessage = `Error al crear la fotografía: ${serverMessage}`;
+                // Check for duplicate key error
+                if (serverMessage.includes('duplicate key value') || serverMessage.includes('already exists')) {
+                    finalErrorMessage = 'Ya existe una obra con ese nombre. Por favor, elige un nombre diferente.';
+                } else {
+                    finalErrorMessage = `Error al procesar la fotografía: ${serverMessage}`;
+                }
                 toast.error(finalErrorMessage);
             }
             setError(finalErrorMessage);
@@ -107,8 +197,8 @@ const AddPhotography = () => {
                 pauseOnHover
                 theme="dark"
             />
-            <h2 className="section-title">Nueva Fotografía</h2>
-            <p className="admin-subtitle">Detalles específicos para fotografía (resolución, tipo de impresión, edición).</p>
+            <h2 className="section-title">{artworkData ? 'Editar Fotografía' : 'Nueva Fotografía'}</h2>
+            <p className="admin-subtitle">{artworkData ? 'Modifica los detalles de la fotografía.' : 'Detalles específicos para fotografía (resolución, tipo de impresión, edición).'}</p>
             
             <form className="admin-form" onSubmit={handleSubmit}>
                 {error && <p className="error-message">{error}</p>}
@@ -119,8 +209,8 @@ const AddPhotography = () => {
                 </div>
 
                 <div className="form-group">
-                    <label className="form-label">Archivo de la Imagen</label>
-                    <input id="image-upload" type="file" name="artworkImage" accept="image/*" onChange={handleImageChange} required />
+                    <label className="form-label">Archivo de la Imagen {artworkData && '(Opcional)'}</label>
+                    <input id="image-upload" type="file" name="artworkImage" accept="image/*" onChange={handleImageChange} required={!artworkData} />
                 </div>
 
                 <div className="form-row">
@@ -133,8 +223,19 @@ const AddPhotography = () => {
                         <select name="status" value={formData.status} onChange={handleChange}>
                             <option value="AVAILABLE">Disponible</option>
                             <option value="RESERVED">Reservado</option>
+                            <option value="SOLD">Vendido</option>
                         </select>
                     </div>
+                </div>
+
+                <div className="form-group">
+                    <label className="form-label">Artista</label>
+                    <select name="idArtist" value={formData.idArtist} onChange={handleChange} required>
+                        <option value="">Selecciona un artista</option>
+                        {artists.map(artist => (
+                            <option key={artist.idArtist} value={artist.idArtist}>{artist.name} {artist.lastName}</option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="form-row">
@@ -149,7 +250,7 @@ const AddPhotography = () => {
 
                 <div className="form-group"><label className="form-label">Número de Serie</label><input type="text" name="serialNumber" value={formData.serialNumber} onChange={handleChange} placeholder="Ej: 1/50" required /></div>
 
-                <button type="submit" className="admin-create-btn" disabled={isLoading}>{isLoading ? 'Registrando...' : 'Registrar Fotografía'}</button>
+                <button type="submit" className="admin-create-btn" disabled={isLoading}>{isLoading ? 'Procesando...' : (artworkData ? 'Actualizar Fotografía' : 'Registrar Fotografía')}</button>
             </form>
         </div>
     );
