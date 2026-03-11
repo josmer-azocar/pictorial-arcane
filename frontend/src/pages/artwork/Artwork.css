@@ -110,3 +110,12 @@
 .pagination button.active-page {
     background-color: rgb(176, 91, 255);
 }
+
+.price-input {
+  width: 100px;
+  padding: 5px;
+  margin: 0 5px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  font-family: 'Roboto Flex', Arial, Helvetica, sans-serif;
+}

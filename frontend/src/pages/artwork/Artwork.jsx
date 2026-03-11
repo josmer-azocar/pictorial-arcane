@@ -12,6 +12,8 @@ function Artwork() {
     const [sortConfig, setSortConfig] = useState({ idGenre: '', idArtist: '', title: '', sortBy: 'price', direction: 'ASC' });
     const [availableArtists, setAvailableArtists] = useState([]);
     const [availableGenres, setAvailableGenres] = useState([]);
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
 
     const getArt = async (
         page = 0,
@@ -22,7 +24,15 @@ function Artwork() {
         isLoad(true);
         try {
             setError("");
-            const response = await showArtwork(idGenre, idArtist, '', 0, 99999, page, 10, sortBy, direction);
+            const response = await showArtwork(idGenre, 
+                                                idArtist, 
+                                                '', 
+                                                minPrice === '' ? null : Number(minPrice),
+                                                maxPrice === '' ? null : Number(maxPrice), 
+                                                page, 
+                                                10, 
+                                                sortBy, 
+                                                direction);
             const artistData = await showArtist();
 
             console.log("primer objeto artwork", response.content);
@@ -83,6 +93,22 @@ function Artwork() {
             <div id="sort-galery">
                 <p>Filtrar por: </p>
                 <div id="botton-filtrado">
+                    <input
+                        type="number"
+                        placeholder="Precio mínimo"
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(e.target.value)}
+                        className="price-input"
+                        min="0"
+                    />
+                        <input
+                        type="number"
+                        placeholder="Precio máximo"
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(e.target.value)}
+                        className="price-input"
+                        min="0" 
+                    />
                     <button onClick={() => getArt(0, sortConfig.idGenre, sortConfig.idArtist, 'price', sortConfig.direction === 'ASC' ? 'DESC' : 'ASC')}>
                         Precio {sortConfig.direction === 'ASC' ? '↑' : '↓'}
                     </button>{/*menor a mayor*/}
@@ -108,7 +134,11 @@ function Artwork() {
                         ))}
                     </select>
 
-                    <button onClick={() => getArt(0, null, null, 'price', 'ASC')}>Limpiar</button>
+                    <button onClick={() => {
+                        setMinPrice('');
+                        setMaxPrice('');
+                        getArt(0, null, null, 'price', 'ASC');
+                        }}>Limpiar</button>
                 </div>
             </div>
             <section id="art-grid">
