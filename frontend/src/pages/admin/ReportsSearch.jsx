@@ -1,5 +1,5 @@
 import './Reports.css'
-import { searchMemberships, cancelMembership } from '../../services/membershipServices'
+import { searchMemberships, cancelMembership } from '../../services/membershipServices.js'
 import { useState } from 'react';
 import Loading from '../../components/Loading';
 
@@ -118,7 +118,7 @@ function ReportsSearch() {
                             <button 
                                 onClick={() => goToPage(page - 1)} 
                                 disabled={page === 0}
-                                className="pagination-btn"
+                                className="generate-btn"
                             >
                                 Anterior
                             </button>
@@ -126,7 +126,7 @@ function ReportsSearch() {
                             <button 
                                 onClick={() => goToPage(page + 1)} 
                                 disabled={page === results.totalPages - 1}
-                                className="pagination-btn"
+                                className="generate-btn"
                             >
                                 Siguiente
                             </button>

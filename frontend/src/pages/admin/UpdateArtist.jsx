@@ -3,6 +3,8 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Admin.css';
+import { getAllGenres, assignGenre, unassignGenre } from '../../services/genreServices.js';
+
 
 //const BASE_URL = 'http://localhost:8080';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
