@@ -189,12 +189,12 @@ function Admin() {
     >
       Crear Artista
     </button>
-    <button
-      className={`admin-nav-btn ${activeSection === 'viewArtist' ? 'active' : ''}`}
-      onClick={() => handleSectionChange('viewArtist')}
-    >
-      Actualizar Artista
-    </button>
+   <button
+  className={`admin-nav-btn ${activeSection === 'updateArtist' ? 'active' : ''}`}
+  onClick={() => handleSectionChange('updateArtist')}  // ✅
+>
+  Actualizar Artista
+</button>
     <button
       className={`admin-nav-btn ${activeSection === 'deleteArtist' ? 'active' : ''}`}
       onClick={() => handleSectionChange('deleteArtist')}
