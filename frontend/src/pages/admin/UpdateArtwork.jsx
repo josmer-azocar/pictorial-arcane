@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { showArtwork, searchArtworks, showArtist, getAllArtworks, getGenres } from '../../services/fetchArtwork';
+import { showArtwork, searchArtworks, showArtist, getAllArtworks, getGenres, getArtworkById } from '../../services/fetchArtwork';
 import './Admin.css';
 
 const UpdateArtwork = ({ onEditSelect }) => {
@@ -10,6 +10,7 @@ const UpdateArtwork = ({ onEditSelect }) => {
   const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ id: '', artistId: '', genre: '' });
+  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
 
 
   useEffect(() => {
@@ -80,10 +81,19 @@ const UpdateArtwork = ({ onEditSelect }) => {
     loadData();
   };
 
-  const handleEdit = (artworkObject) => {
-    // Llama a la función pasada por props para notificar al componente padre (Admin.jsx)
-    // que se ha seleccionado una obra para editar.
-    onEditSelect(artworkObject);
+  const handleEdit = async (artworkObject) => {
+    setIsLoadingDetail(true);
+    try {
+        // Llama al endpoint /artwork/{id} para obtener TODOS los campos
+        // específicos del tipo de obra (material, técnica, dimensiones, etc.)
+        const fullArtworkData = await getArtworkById(artworkObject.idArtWork);
+
+        onEditSelect(fullArtworkData);
+    } catch (err) {
+        toast.error('Error al cargar los detalles de la obra. Intenta de nuevo.');
+    } finally {
+        setIsLoadingDetail(false);
+    }
   };
 
   return (
@@ -145,7 +155,13 @@ const UpdateArtwork = ({ onEditSelect }) => {
                     <td className="td-price">${art.price?.toLocaleString()}</td>
                     <td>
                       <div className="action-buttons">
-                        <button className="btn-invoice" onClick={() => handleEdit(art)}>Seleccionar para Editar</button>
+                        <button 
+                            className="btn-invoice" 
+                            onClick={() => handleEdit(art)}
+                            disabled={isLoadingDetail}
+                        >
+                            {isLoadingDetail ? 'Cargando...' : 'Seleccionar para Editar'}
+                        </button>
                       </div>
                     </td>
                   </tr>

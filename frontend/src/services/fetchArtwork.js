@@ -177,6 +177,8 @@ export async function getArtworkById(id) {
     const response = await axios.get(`${API_BASE_URL}/artwork/${id}`);
     const data = response.data;
 
+    console.log('RESPUESTA CRUDA DEL BACKEND:', JSON.stringify(data));
+
     // Aplanamos el objeto para que sea más fácil de usar en los formularios.
     // Combina el objeto principal 'artWorkResponse' con el objeto específico del tipo de obra.
     const flattenedData = {
