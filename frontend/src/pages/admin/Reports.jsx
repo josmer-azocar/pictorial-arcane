@@ -96,8 +96,12 @@ function Reports() {
 
         switch (activeReport) {
             case 'sold':
-                // Usamos soldResponse en lugar de data
-                if (!soldResponse || soldResponse.content.length === 0) {
+                
+
+                if(!soldResponse){
+                    return <p>Seleccione un periodo</p>;           
+                }
+                if (soldResponse.content.length === 0) {
                     return <p>No hay datos para el periodo seleccionado.</p>;
                 }
                 const { content, totalPages, number } = soldResponse;
@@ -146,7 +150,12 @@ function Reports() {
                 );
 
             case 'billing':
-                if (!billingData) return <p>No hay datos de facturación.</p>;
+                if(!billingData){
+                    return <p>Seleccione un periodo</p>;           
+                }
+                if (billingData.sales.length === 0) {
+                    return <p>No hay datos para el periodo seleccionado.</p>;
+                }
                 const chartData = {
                     labels: ['Total Recaudado', 'Ganancia Neta Museo'],
                     datasets: [

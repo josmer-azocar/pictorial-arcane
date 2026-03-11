@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams ,useNavigate} from 'react-router-dom';
 import './ArtistProfile.css';
 import { getArtistById, getArtworksByArtist } from '../../services/fetchArtwork';
 
-/*const ArtistProfile = ({ mockArtists, mockArtworks }) */
+
+import Loading from '../../components/Loading.jsx';
 
 const ArtistProfile = () => {
   const { id } = useParams();
   const artistId = parseInt(id);
+  const navigate = useNavigate();
 
   const [artist, setArtist] = useState(null);
   const [artworksByGenre, setArtworksByGenre] = useState({});
@@ -40,12 +42,6 @@ useEffect(() => {
       ]);
       setArtist(artistData);
 
-      const grouped = artworksData.reduce((acc, obra) => {
-        const genre = obra.gender || 'Sin género';
-        if (!acc[genre]) acc[genre] = [];
-        acc[genre].push(obra);
-        return acc;
-      }, {});
       setArtworksByGenre(artworksData);
 
     } catch (err) {
@@ -59,7 +55,7 @@ useEffect(() => {
 
 
   if (error) return <div className="artp-page"><p>Error: {error}</p></div>;
-  if (loading) return <div className="artp-page"><p>Cargando...</p></div>;
+  if (loading) return <Loading />;
   if (!artist) return <div className="artp-page"><h2>Artista no encontrado</h2></div>;
 
   return (
@@ -110,7 +106,7 @@ useEffect(() => {
     <h2 className="artp-section-title">Obras del Artista</h2>
     <div className="artp-genres-row">
       {artworksByGenre.map((work) => (
-        <div key={work.idArtWork} className="artp-work-mini-card">
+        <div key={work.idArtWork} className="artp-work-mini-card" onClick={() => navigate(`/artwork/${work.idArtWork}`)} style={{ cursor: 'pointer' }}>
           <img src={work.imageUrl} alt={work.name} className="artp-genre-cover" />
           <p className="artp-work-name">{work.name}</p>
           <span className="artp-work-price">${work.price}</span>

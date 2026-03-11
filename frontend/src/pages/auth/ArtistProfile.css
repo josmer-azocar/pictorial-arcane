@@ -18,7 +18,7 @@
   gap: 30px;
 }
 
-/* --- SECCIÓN SUPERIOR (Avatar y Nombre) --- */
+/*  SECCIÓN SUPERIOR (Avatar y Nombre) */
 .artp-top-layout {
   display: flex;
   align-items: center;
@@ -47,7 +47,6 @@
   color: white;
   font-size: 3.5rem;
   font-weight: 800;
-  
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
 }
 .artp-layout-split {
@@ -115,37 +114,124 @@
 }
 
 /* TARJETAS DE ESCULTURA */
+/* SECCIÓN DE GALERÍA (DERECHA) */
+.artp-gallery-right {
+  flex: 1;
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+/* GRID igual que la galería principal */
+.artp-genres-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  padding: 20px 0;
+}
+
+/* TARJETA igual que .art-piece */
 .artp-work-mini-card {
-  width: 200px;         /* Ancho fijo para cada tarjeta */
+  width: 100%;
+  height: 480px;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
   display: flex;
   flex-direction: column;
-  text-align: left;     /* Alineación a la izquierda */
+}
+
+.artp-work-mini-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.14);
+}
+
+/* IMAGEN igual que .art-piece img */
+/* SECCIÓN DE GALERÍA (DERECHA) */
+.artp-gallery-right {
+  flex: 1;
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+/* GRID igual que la galería principal */
+.artp-genres-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  padding: 20px 0;
+}
+
+/* TARJETA igual que .art-piece */
+.artp-work-mini-card {
+  width: 100%;
+  height: 480px;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.artp-work-mini-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.14);
+}
+
+/* IMAGEN igual que .art-piece img */
+.artp-genres-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  padding: 20px 0;
+}
+
+.artp-work-mini-card {
+  width: 100%;
+  height: 480px;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.artp-work-mini-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.14);
 }
 
 .artp-genre-cover {
   width: 100%;
-  aspect-ratio: 1 / 1;  /* Crea un cuadrado perfecto */
-  object-fit: cover;    /* Evita que la foto de la escultura se estire */
-  border-radius: 18px;  /* Esquinas redondeadas suaves */
-  margin-bottom: 10px;
-  transition: transform 0.3s ease; /* Para efecto visual opcional */
-}
-
-.artp-genre-cover:hover {
-  transform: scale(1.02); /* Pequeño efecto de zoom al pasar el mouse */
+  height: 340px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
 .artp-work-name {
-  font-weight: 600;
-  font-size: 1.05rem;
-  margin: 0;
-  color: var(--text-dark);
+  font-weight: 400;
+  font-size: 1.15rem;
+  margin: 14px 16px 6px;
+  color: #111;
+  line-height: 1.3;
 }
 
 .artp-work-price {
-  color: #777;          /* Color gris para el precio */
-  font-size: 0.9rem;
-  margin-top: 4px;
-}.artp-page {
-  padding-top: 100px; 
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: rgb(176, 91, 255);
+  text-align: right;
+  padding: 0 16px 14px;
+  margin-top: auto;
+  display: block;
 }
