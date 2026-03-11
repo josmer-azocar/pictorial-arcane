@@ -3,6 +3,7 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Admin.css';
+import { getGenresByArtist } from '../../services/genreServices';
 
 //const BASE_URL = 'http://localhost:8080';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
@@ -12,6 +13,7 @@ function DeleteArtist() {
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedArtist, setSelectedArtist] = useState(null);
+  const [artistGenres, setArtistGenres] = useState([]);
 
   // GET /artists — trae todos los artistas
  useEffect(() => {
@@ -28,6 +30,22 @@ function DeleteArtist() {
     };
     fetchArtists();
   }, []);
+
+  useEffect(() => {
+  if (selectedArtist) {
+    const fetchGenres = async () => {
+      try {
+        const genres = await getGenresByArtist(selectedArtist.idArtist);
+        setArtistGenres(genres); 
+      } catch (error) {
+        toast.error('Error al cargar los géneros del artista.');
+      }
+    };
+    fetchGenres();
+  } else {
+    setArtistGenres([]);
+  }
+}, [selectedArtist]);
 
 /* useEffect(() => {
     const fetchArtists = async () => {
@@ -97,7 +115,7 @@ function DeleteArtist() {
     }).catch(() => {}); // si no tiene imagen no importa
 
     // PASO 2: borrar el artista
-    await axios.delete(`${API_BASE_URL}/artist/${id}`, {
+    await axios.delete(`${API_BASE_URL}/artist/delete/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
@@ -254,6 +272,26 @@ function DeleteArtist() {
                 <span className="form-label">Biografía: </span>
                 {selectedArtist.biography || 'No disponible'}
               </p>
+              <p>
+                  <span className="form-label">Géneros: </span>
+                  <span style={{ display: 'flex', flexWrap: 'wrap', gap: '0.3rem', marginTop: '0.2rem' }}>
+                    {artistGenres.length > 0 ? (
+                      artistGenres.map(g => (
+                        <span key={g.idGenre} style={{
+                          background: '#2a2a2a',
+                          padding: '0.2rem 0.6rem',
+                          borderRadius: '12px',
+                          fontSize: '0.9rem',
+                          color: '#e0e0e0'
+                        }}>
+                          {g.name}
+                        </span>
+                      ))
+                    ) : (
+                      'No tiene géneros asignados'
+                    )}
+                  </span>
+                </p>
             </div>
           </div>
           <div className="modal-actions">
