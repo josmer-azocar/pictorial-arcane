@@ -8,6 +8,7 @@ import { useAuth } from '../../services/AuthContext.jsx';
 import { getSpecificArtworkById, getArtistById } from '../../services/fetchArtwork.js';
 import { reserveArtwork } from '../../services/fetchSales.js';
 import { getAssignedSecurityQuestions, recoverSecurityCode, updateSecurityAnswer } from '../../services/authUser.js';
+import Loading from '../Loading.jsx';
 
 // ── ÍCONOS SVG ──────────────────────────────────────────────
 
@@ -127,8 +128,8 @@ useEffect(() => {
     </div>
   );
 
-if (!artwork || !artwork.artWorkResponse) return <div>Loading artwork details...</div>;
-const generalInfo = artwork.artWorkResponse;
+if (!artwork || (!artwork.artWorkResponse && !artwork.artworkResponse)) return <Loading />;
+const generalInfo = artwork.artWorkResponse || artwork.artworkResponse;
 const { idArtWork, name, imageUrl, price, creation_date, status } = generalInfo;
 
   // ── HANDLER: POST /sale/reserve ──────────────────────────
