@@ -149,7 +149,7 @@
     max-width: 100%;
 }
 
-.info-display button, .pagination-controls button {
+.info-display button, .pagination-controls button, .membership-actions button {
     grid-column: span 2; 
     justify-self: center; 
     margin-top: 1rem;
@@ -160,7 +160,7 @@
     border-radius: 5px;
 }
 
-.info-display button:hover, .pagination-controls button:hover {
+.info-display button:hover, .pagination-controls button:hover, .membership-actions button:hover {
     background-color: rgba(137, 43, 226, 0.377);
     color: white;
     cursor: pointer;
@@ -246,6 +246,62 @@
     justify-content: center;
     gap: 10px;
     margin-top: 20px;
+}
+
+.print-btn {
+  background-color: #4a4a4a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  margin: 10px 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.print-btn:hover {
+  background-color: #5a5a5a;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .report-view.printable,
+  .report-view.printable * {
+    visibility: visible;
+  }
+  .report-view.printable {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 20px;
+    background: white;
+    color: black;
+  }
+  .report-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  .report-table th,
+  .report-table td {
+    border: 1px solid #000;
+    padding: 8px;
+    text-align: left;
+  }
+  .report-table th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+  }
+  .print-btn,
+  .pagination-controls,
+  .date-picker-container,
+  .report-tabs,
+  .admin-eyebrow,
+  .admin-title {
+    display: none;
+  }
 }
 
 @media (max-width: 600px) {

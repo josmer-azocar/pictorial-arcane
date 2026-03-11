@@ -96,3 +96,20 @@ export async function fetchMembershipStatus() {
         throw error;
     }
 }
+
+export async function createSecurityCode (){
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error('No hay token de autenticación disponible');
+        const response = await axios.post(`${url}/client/createSecurityCode`, {}, {
+            headers: {
+                Authorization: `Bearer ${token}`, }
+            });
+        console.log('Security code created:', response.data);
+        return response.data;
+        
+    } catch (error) {
+        console.error('Error creating security code:', error.response?.data || error.message);
+        throw error;
+    }
+}

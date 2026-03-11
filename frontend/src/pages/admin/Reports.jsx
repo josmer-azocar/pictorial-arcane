@@ -4,6 +4,25 @@ import { getSoldArtworks } from '../../services/salesServices';
 import { fetchSoldArtwork, fetchPaidArtwork } from '../../services/fetchSoldArtwork';
 import Loading from '../../components/Loading';
 import ReportsSearch from './ReportsSearch';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 function Reports() {
     const [activeReport, setActiveReport] = useState(null);
@@ -14,6 +33,22 @@ function Reports() {
     const [loading, setLoading] = useState(false);
     const [soldResponse, setSoldResponse] = useState(null);
     const [soldPage, setSoldPage] = useState(0);
+    const [isPrinting, setIsPrinting] = useState(false);
+
+    const handlePrint = () => {
+    setIsPrinting(true);
+    // Pequeño retraso para que React aplique la clase antes del diálogo de impresión
+    setTimeout(() => {
+        window.print();
+        // Restablecer después de imprimir (evento afterprint)
+        window.onafterprint = () => {
+        setIsPrinting(false);
+        window.onafterprint = null;
+        };
+        // por si afterprint no es compatible
+        setTimeout(() => setIsPrinting(false), 1000);
+    }, 100);
+    };
 
     const fetchSoldPage = async (page = 0) => {
         const effectiveStart = startDate || '1900-01-01';
@@ -59,6 +94,7 @@ function Reports() {
                 }
                 const { content, totalPages, number } = soldResponse;
                 return (
+                    <div className={`report-view ${isPrinting ? 'printable' : ''}`}>
                     <div className="report-view">
                         <h3>Listado de Obras Vendidas</h3>
                         <table className="report-table">
@@ -96,15 +132,39 @@ function Reports() {
                                 </button>
                             </div>
                         )}
+                        <button onClick={handlePrint} className="print-btn">🖨️ Imprimir</button>
+                    </div>
                     </div>
                 );
 
             case 'billing':
                 if (!billingData) return <p>No hay datos de facturación.</p>;
+                const chartData = {
+                    labels: ['Total Recaudado', 'Ganancia Neta Museo'],
+                    datasets: [
+                        {
+                            label: 'Monto ($)',
+                            data: [billingData.totalCollected, billingData.totalMuseumProfit],
+                            backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(153, 102, 255, 0.6)'],
+                            borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)'],
+                            borderWidth: 1,
+                        },
+                    ],
+                };
+
+                const options = {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: { display: true, text: 'Resumen de Facturación' },
+                    },
+                };
+
                 return (
+                    <div className={`report-view ${isPrinting ? 'printable' : ''}`}>
                     <div className="report-view">
                         <h3>Resumen de Facturación</h3>
-                        <p>Total Recaudado | Ganancia Museo | Impuestos</p>
+                        <p>Total Recaudado | Ganancia Museo </p>
                         <table className="report-table">
                             <thead>
                                 <tr>
@@ -140,7 +200,12 @@ function Reports() {
                                 <span>Ganancia Neta Museo:</span>
                                 <strong>${billingData.totalMuseumProfit.toLocaleString()}</strong>
                             </div>
+                            <div style={{ marginTop: '2rem', width: '100%', maxWidth: '600px' }}>
+                                <Bar data={chartData} options={options} />
+                            </div>
                         </div>
+                    </div>
+                        <button onClick={handlePrint} className="print-btn">🖨️ Imprimir</button>
                     </div>
                 );
 
