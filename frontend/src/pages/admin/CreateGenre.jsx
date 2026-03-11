@@ -1,60 +1,93 @@
 import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { createGenre } from '../../services/fetchArtwork.js';
+import { createGenre } from '../../services/fetchArtwork';
 import { useAuth } from '../../services/AuthContext';
 import './Admin.css';
 
 const CreateGenre = () => {
     const { token } = useAuth();
-    const [description, setDescription] = useState('');
+    const [formData, setFormData] = useState({
+        name: '',
+        description: ''
+    });
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
-
-        if (!description.trim()) {
-            const msg = "La descripción del género no puede estar vacía.";
-            setError(msg);
-            toast.error(msg);
+        
+        if (!formData.name.trim() || !formData.description.trim()) {
+            toast.warning('Por favor completa todos los campos.');
             return;
         }
 
         setIsLoading(true);
         try {
-            // TODO: Pasar el token real
-            await createGenre({ description }, token);
-            toast.success(`¡Género "${description}" creado con éxito!`);
-            setDescription(''); // Limpiar el campo
-        } catch (err) {
-            const serverMessage = err.response?.data?.message || err.message;
-            const finalErrorMessage = `Error al crear el género: ${serverMessage}`;
-            setError(finalErrorMessage);
-            toast.error(finalErrorMessage);
+            // El endpoint espera { name: "string", description: "string" }
+            await createGenre({
+                name: formData.name,
+                description: formData.description
+            }, token);
+
+            toast.success(`Género "${formData.name}" creado exitosamente.`);
+            
+            // Limpiar formulario
+            setFormData({ name: '', description: '' });
+            
+        } catch (error) {
+            console.error("Error creating genre:", error);
+            console.log('STATUS:', error.response?.status);
+    console.log('DATA COMPLETA:', JSON.stringify(error.response?.data));
+            const msg = error.response?.data?.message || 'Error al crear el género.';
+            toast.error(msg);
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="admin-form-container">
-            <ToastContainer position="top-center" autoClose={5000} theme="dark" />
-            <h1 className="admin-title">Crear Nuevo Género</h1>
+        <div className="admin-section">
+            <ToastContainer position="top-center" theme="dark" />
+            <h1 className="section-title">Crear Nuevo Género</h1>
             <div className="admin-line"></div>
-            <p className="admin-subtitle">
-                Añade una nueva categoría o estilo para clasificar las obras de arte.
-            </p>
-            <form onSubmit={handleSubmit} className="admin-form">
-                {error && <p className="error-message">{error}</p>}
-                
-                <div className="form-group" style={{ marginBottom: '20px' }}>
-                    <label className="form-label">Descripción del Género</label>
-                    <input type="text" name="description" placeholder="Ej: Cubismo, Arte Abstracto..." value={description} onChange={(e) => setDescription(e.target.value)} required />
+            <p className="admin-subtitle">Agrega nuevas categorías para clasificar las obras de arte.</p>
+
+            <form className="admin-form" onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <label className="form-label">Nombre del Género</label>
+                    <input 
+                        type="text" 
+                        name="name" 
+                        value={formData.name} 
+                        onChange={handleChange} 
+                        placeholder="Ej: Renacimiento, Cubismo..." 
+                        required 
+                    />
                 </div>
 
-                <button type="submit" className="admin-create-btn" disabled={isLoading}>{isLoading ? 'Creando...' : 'Crear Género'}</button>
+                <div className="form-group">
+                    <label className="form-label">Descripción</label>
+                    <textarea 
+                        name="description" 
+                        value={formData.description} 
+                        onChange={handleChange} 
+                        placeholder="Breve descripción del género..." 
+                        rows="4"
+                        required 
+                    />
+                </div>
+
+                <button type="submit" className="btn-primary" disabled={isLoading}>
+                    {isLoading ? 'Creando...' : 'Crear Género'}
+                </button>
             </form>
         </div>
     );
