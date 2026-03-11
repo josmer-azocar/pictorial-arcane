@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { showArtwork, searchArtworks, showArtist, deleteArtwork } from '../../services/fetchArtwork';
+import { showArtwork, searchArtworks, showArtist, deleteArtwork, getAllArtworks, getGenres } from '../../services/fetchArtwork';
+import { useAuth } from '../../services/AuthContext';
 import './Admin.css';
 
 const DeleteArtwork = () => {
+  const { token } = useAuth();
   const [artworks, setArtworks] = useState([]);
   const [artists, setArtists] = useState([]);
+  const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ id: '', artistId: '', genre: '' });
 
@@ -14,11 +17,15 @@ const DeleteArtwork = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const response = await showArtwork(0);
-      setArtworks(response.content);
+      const response = await getAllArtworks();
+      // Filtrar solo obras con estatus AVAILABLE
+      setArtworks(response.filter(art => art.status === 'AVAILABLE'));
       
       const artistsData = await showArtist();
       setArtists(artistsData);
+
+      const genresData = await getGenres();
+      setGenres(genresData);
     } catch (err) {
       toast.error('Error al cargar las obras.');
     } finally {
@@ -38,10 +45,20 @@ const DeleteArtwork = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await searchArtworks(filters);
-      setArtworks(response.content || []);
-      if (response.content.length === 0) {
-        toast.info("No se encontraron obras con esos filtros.");
+      if (filters.id) {
+        // Búsqueda por ID local (en las obras ya cargadas)
+        const filtered = artworks.filter(art => art.idArtWork.toString() === filters.id);
+        setArtworks(filtered);
+        if (filtered.length === 0) {
+          toast.info("No se encontraron obras disponibles con ese ID.");
+        }
+      } else {
+        // Búsqueda por artista o género usando la API
+        const response = await searchArtworks({ artistId: filters.artistId, genre: filters.genre, size: 1000 });
+        setArtworks(response.content.filter(art => art.status === 'AVAILABLE') || []);
+        if (response.content.filter(art => art.status === 'AVAILABLE').length === 0) {
+          toast.info("No se encontraron obras disponibles con esos filtros.");
+        }
       }
     } catch (err) {
       toast.error('Error al buscar obras.');
@@ -59,23 +76,33 @@ const DeleteArtwork = () => {
     // Confirmación simple del navegador
     if (window.confirm(`¿Estás seguro de que deseas eliminar la obra "${name}"? Esta acción no se puede deshacer.`)) {
         try {
-            // TODO: Pasar el token de autenticación cuando se implemente
-            await deleteArtwork(id, null);
+            await deleteArtwork(id, token);
             toast.success(`La obra "${name}" ha sido eliminada.`);
             
             // Recargamos la lista para ver los cambios
-            if (filters.id || filters.artistId || filters.genre) {
-                // Si había filtros activos, repetimos la búsqueda
-                const response = await searchArtworks(filters);
-                setArtworks(response.content || []);
+            if (filters.id) {
+                // Para búsqueda por ID, recargar y filtrar localmente
+                const response = await getAllArtworks();
+                setArtworks(response.filter(art => art.idArtWork.toString() === filters.id && art.status === 'AVAILABLE'));
+            } else if (filters.artistId || filters.genre) {
+                // Si había filtros de artista o género, repetimos la búsqueda
+                const response = await searchArtworks({ artistId: filters.artistId, genre: filters.genre, size: 1000 });
+                setArtworks(response.content.filter(art => art.status === 'AVAILABLE') || []);
             } else {
                 // Si no, recargamos todo
-                const response = await showArtwork(0);
-                setArtworks(response.content);
+                const response = await getAllArtworks();
+                setArtworks(response.filter(art => art.status === 'AVAILABLE'));
             }
         } catch (error) {
-            console.error(error);
-            toast.error("Error al eliminar la obra.");
+            console.error('Error deleting artwork:', error);
+            console.error('Error response:', error.response?.data);
+            if (error.response?.status === 404) {
+                toast.error("Obra de arte no encontrada.");
+            } else if (error.response?.data?.message?.includes('violates foreign key constraint')) {
+                toast.error("No se puede eliminar la obra porque tiene dependencias (reservas, ventas, etc.).");
+            } else {
+                toast.error("Error al eliminar la obra.");
+            }
         }
     }
   };
@@ -98,12 +125,17 @@ const DeleteArtwork = () => {
           <select name="artistId" value={filters.artistId} onChange={handleFilterChange} style={{ margin: 0 }}>
             <option value="">Filtrar por Artista</option>
             {artists.map(artist => (
-              <option key={artist.id} value={artist.id}>{artist.name}</option>
+              <option key={artist.idArtist} value={artist.idArtist}>{artist.name} {artist.lastName}</option>
             ))}
           </select>
         </div>
         <div style={{ flex: 1, minWidth: '200px' }}>
-          <input type="text" name="genre" placeholder="Filtrar por Género" value={filters.genre} onChange={handleFilterChange} style={{ margin: 0 }} />
+          <select name="genre" value={filters.genre} onChange={handleFilterChange} style={{ margin: 0 }}>
+            <option value="">Filtrar por Género</option>
+            {genres.map(genre => (
+              <option key={genre.idGenre} value={genre.idGenre}>{genre.name}</option>
+            ))}
+          </select>
         </div>
         <button type="submit" className="btn-primary" style={{ height: '50px', marginTop: '0' }} disabled={loading}>Buscar</button>
         <button type="button" className="btn-secondary" onClick={handleClear} style={{ height: '50px', marginTop: '0' }} disabled={loading}>Limpiar</button>
@@ -115,23 +147,28 @@ const DeleteArtwork = () => {
         <div className="table-wrapper" style={{ marginTop: '40px' }}>
           <table className="admin-table">
             <thead>
-              <tr><th>ID</th><th>Obra</th><th>Género</th><th>Precio</th><th>Acciones</th></tr>
+              <tr><th>ID</th><th>Obra</th><th>Artista</th><th>Género</th><th>Precio</th><th>Acciones</th></tr>
             </thead>
             <tbody>
-              {artworks.map(art => (
-                <tr key={art.id}>
-                  <td className="td-id">#{art.id}</td>
-                  <td className="td-artwork">{art.name}</td>
-                  <td>{art.genre}</td>
-                  <td className="td-price">${art.precio?.toLocaleString()}</td>
-                  <td>
-                    <div className="action-buttons">
-                      <button className="btn-cancel" onClick={() => handleDelete(art.id, art.name)}>Eliminar</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {artworks.length === 0 && <tr><td colSpan="5" className="empty-state">No hay obras registradas.</td></tr>}
+              {artworks.map(art => {
+                const genre = genres.find(g => g.idGenre === art.idGenre);
+                const artist = artists.find(a => a.idArtist === art.idArtist);
+                return (
+                  <tr key={art.idArtWork}>
+                    <td className="td-id">#{art.idArtWork}</td>
+                    <td className="td-artwork">{art.name}</td>
+                    <td>{artist ? artist.name : art.idArtist}</td>
+                    <td>{genre ? genre.name : art.idGenre}</td>
+                    <td className="td-price">${art.price?.toLocaleString()}</td>
+                    <td>
+                      <div className="action-buttons">
+                        <button className="btn-cancel" onClick={() => handleDelete(art.idArtWork, art.name)}>Eliminar</button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+              {artworks.length === 0 && <tr><td colSpan="6" className="empty-state">No hay obras registradas.</td></tr>}
             </tbody>
           </table>
         </div>

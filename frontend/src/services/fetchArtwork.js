@@ -53,6 +53,16 @@ export async function showArtist() {
     
 }
 
+export async function getAllArtworks() {
+    try {
+        const response = await axios.get(`${url}/artwork/all`);
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
 
 /*export async function showArtwork(page = 0, sortBy = '', direction = 'asc', genre = '') {
   return new Promise((resolve) => {
@@ -163,16 +173,34 @@ export async function getArtworksByArtist(artistId) {
 
 // Trae una obra por su id - GET /artworks/{id}
 export async function getArtworkById(id) {
-  //const url = `http://localhost:8080/artworks/${id}`;
   try {
-    const response = await axios.get(`${API_BASE_URL}/artwork/${id}`); 
-    return response.data;
+    const response = await axios.get(`${API_BASE_URL}/artwork/${id}`);
+    const data = response.data;
+
+    // Aplanamos el objeto para que sea más fácil de usar en los formularios.
+    // Combina el objeto principal 'artWorkResponse' con el objeto específico del tipo de obra.
+    const flattenedData = {
+      ...data.artWorkResponse,
+      ...(data.sculptureResponse || {}),
+      ...(data.paintingResponse || {}),
+      ...(data.photographyResponse || {}),
+      ...(data.ceramicResponse || {}),
+      ...(data.goldsmithResponse || {})
+    };
+
+    // El backend en la respuesta anidada de artwork/{id} devuelve el id como 'idArtWork'
+    // pero los formularios de edición esperan 'id' para la actualización.
+    // Hacemos un mapeo para asegurar la compatibilidad.
+    if (flattenedData.idArtWork && !flattenedData.id) {
+      flattenedData.id = flattenedData.idArtWork;
+    }
+
+    return flattenedData;
   } catch (error) {
     console.error("Error al obtener obra:", error);
     throw error;
   }
 }
-
 
 
 
@@ -456,6 +484,16 @@ export const updatePhotography = async (id, data, token) => {
     });
 };
 
+/**
+ * Actualiza los datos genéricos de una obra (Nombre, Precio, Estado).
+ * Endpoint: PUT /artwork/update/{id}
+ */
+export const updateGenericArtwork = async (id, data, token) => {
+    return await axios.put(`${API_BASE_URL}/artwork/update/${id}`, data, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+    });
+};
+
 export const updateCeramic = async (id, data, token) => {
     return await axios.put(`${API_BASE_URL}/artwork/ceramic/update/${id}`, data, {
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
@@ -476,7 +514,8 @@ export async function searchArtworks(filters) {
     const params = new URLSearchParams();
     if (filters.id) params.append('id', filters.id);
     if (filters.artistId) params.append('idArtist', filters.artistId);
-    if (filters.genre) params.append('genre', filters.genre);
+    if (filters.genre) params.append('idGenre', filters.genre);
+    if (filters.size) params.append('size', filters.size); //tamano del resultado del filtrado 
     
     const response = await axios.get(`${API_BASE_URL}/artwork/search?${params.toString()}`);
     return response.data;
@@ -563,4 +602,3 @@ const allGenresMock = [
     throw error;
   }
 }*/
-

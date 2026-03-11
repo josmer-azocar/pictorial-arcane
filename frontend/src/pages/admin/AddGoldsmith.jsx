@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { createGoldsmith, updateGoldsmith, uploadArtworkImage, getArtists, getGenres } from '../../services/fetchArtwork.js';
+import { createGoldsmith, updateGenericArtwork, uploadArtworkImage, getArtists, getGenres } from '../../services/fetchArtwork.js';
 import { useAuth } from '../../services/AuthContext';
 import './AddArtwork.css';
 
@@ -17,11 +17,11 @@ const initialState = {
 };
 
 const AddGoldsmith = ({ artworkData, onCreationSuccess }) => {
-    //const { token } = useAuth();
-    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRyb3NlcnJhODNAZ21haWwuY29tIiwiaWF0IjoxNzczMDI4ODA3LCJleHAiOjE3NzMwMzAyNDd9.ctMz9Sl2_wd8YE_PqfPn5TwowhHv059jOjBypyZHGNU";
+    const { token } = useAuth();
     const [formData, setFormData] = useState(initialState);
     const [isLoading, setIsLoading] = useState(false);
     const [imageFile, setImageFile] = useState(null);
+    const [artists, setArtists] = useState([]);
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -45,7 +45,14 @@ const AddGoldsmith = ({ artworkData, onCreationSuccess }) => {
                 const artistsData = await getArtists();
                 const genresData = await getGenres();
                 setArtists(artistsData || []);
-                setGenres(genresData || []);
+
+                // Automatically set the goldsmith genre for new artworks
+                if (!artworkData) {
+                    const goldsmithGenre = genresData.find(g => g.name === 'Orfebrería');
+                    if (goldsmithGenre) {
+                        setFormData(prev => ({ ...prev, idGenre: goldsmithGenre.idGenre }));
+                    }
+                }
             } catch (error) {
                 console.error("Error al cargar artistas o géneros:", error);
                 setError("No se pudieron cargar los artistas o géneros");
@@ -81,8 +88,8 @@ const AddGoldsmith = ({ artworkData, onCreationSuccess }) => {
             return;
         }
 
-        if(!formData.idArtist || !formData.idGenre) {
-            const msg = "Por favor, selecciona un artista y un género.";
+        if(!formData.idArtist) {
+            const msg = "Por favor, selecciona un artista.";
             setError(msg);
             toast.error(msg);
             return;
@@ -108,7 +115,14 @@ const AddGoldsmith = ({ artworkData, onCreationSuccess }) => {
             };
 
             if (artworkData) {
-                await updateGoldsmith(artworkData.id, goldsmithData, token);
+                // --- MODO ACTUALIZACIÓN ---
+                // Usamos el endpoint genérico con solo los campos permitidos: name, status, price
+                const genericUpdateData = {
+                    name: formData.name,
+                    status: formData.status,
+                    price: parseFloat(formData.price)
+                };
+                await updateGenericArtwork(artworkData.id, genericUpdateData, token);
                 newArtworkId = artworkData.id;
             } else {
                 const createdResponse = await createGoldsmith(goldsmithData, token);
@@ -122,8 +136,8 @@ const AddGoldsmith = ({ artworkData, onCreationSuccess }) => {
             if (imageFile) {
                 await uploadArtworkImage(newArtworkId, imageFile, token);
             }
-
             const successMessage = artworkData ? '¡Orfebrería actualizada con éxito!' : '¡Orfebrería registrada con éxito!';
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll arriba para mostrar el mensaje
             toast.success(successMessage, {
                 onClose: () => {
                     if (onCreationSuccess) {
@@ -148,7 +162,12 @@ const AddGoldsmith = ({ artworkData, onCreationSuccess }) => {
                 finalErrorMessage = `La operación se realizó (ID: ${newArtworkId}), pero falló la subida de la imagen. Error: ${serverMessage}`;
                 toast.warning('Datos guardados, pero hubo un error con la imagen.');
             } else {
-                finalErrorMessage = `Error al procesar la orfebrería: ${serverMessage}`;
+                // Check for duplicate key error
+                if (serverMessage.includes('duplicate key value') || serverMessage.includes('already exists')) {
+                    finalErrorMessage = 'Ya existe una obra con ese nombre. Por favor, elige un nombre diferente.';
+                } else {
+                    finalErrorMessage = `Error al procesar la orfebrería: ${serverMessage}`;
+                }
                 toast.error(finalErrorMessage);
             }
             setError(finalErrorMessage);
@@ -169,7 +188,19 @@ const AddGoldsmith = ({ artworkData, onCreationSuccess }) => {
                 <div className="form-group"><label className="form-label">Título de la Obra</label><input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Ej: Collar de Zafiros" required /></div>
                 <div className="form-group"><label className="form-label">Archivo de la Imagen {artworkData && '(Opcional)'}</label><input id="image-upload" type="file" name="artworkImage" accept="image/*" onChange={handleImageChange} required={!artworkData} /></div>
 
-                <div className="form-row"><div className="form-group"><label className="form-label">Precio ($)</label><input type="number" name="price" value={formData.price} onChange={handleChange} placeholder="0.00" min="0" required /></div><div className="form-group"><label className="form-label">Estado</label><select name="status" value={formData.status} onChange={handleChange}><option value="AVAILABLE">Disponible</option><option value="RESERVED">Reservado</option></select></div></div>
+                <div className="form-row">
+                    <div className="form-group">
+                        <label className="form-label">Precio ($)</label>
+                        <input type="number" name="price" value={formData.price} onChange={handleChange} placeholder="0.00" min="0" required /></div>
+                        <div className="form-group">
+                            <label className="form-label">Estado</label>
+                            <select name="status" value={formData.status} onChange={handleChange}>
+                                <option value="AVAILABLE">Disponible</option>
+                                <option value="RESERVED">Reservado</option>
+                                <option value="SOLD">Vendido</option>
+                            </select>
+                        </div>
+                    </div>
 
                 <div className="form-group">
                     <label className="form-label">Artista</label>
@@ -177,16 +208,6 @@ const AddGoldsmith = ({ artworkData, onCreationSuccess }) => {
                         <option value="">Selecciona un artista</option>
                         {artists.map(artist => (
                             <option key={artist.idArtist} value={artist.idArtist}>{artist.name} {artist.lastName}</option>
-                        ))}
-                    </select>
-                </div>
-
-                <div className="form-group">
-                    <label className="form-label">Género</label>
-                    <select name="idGenre" value={formData.idGenre} onChange={handleChange} required>
-                        <option value="">Selecciona un género</option>
-                        {genres.map(genre => (
-                            <option key={genre.idGenre} value={genre.idGenre}>{genre.description}</option>
                         ))}
                     </select>
                 </div>

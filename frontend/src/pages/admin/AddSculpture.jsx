@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { createSculpture, updateSculpture, uploadArtworkImage, getArtists, getGenres} from '../../services/fetchArtwork.js';
+import { createSculpture, updateGenericArtwork, uploadArtworkImage, getArtists, getGenres} from '../../services/fetchArtwork.js';
 import { useAuth } from '../../services/AuthContext';
 import './AddArtwork.css';
 
@@ -21,14 +21,12 @@ const initialState = {
 };
 
 const AddSculpture = ({ artworkData, onCreationSuccess }) => {
-    //const { token } = useAuth();
-    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRyb3NlcnJhODNAZ21haWwuY29tIiwiaWF0IjoxNzczMDI4ODA3LCJleHAiOjE3NzMwMzAyNDd9.ctMz9Sl2_wd8YE_PqfPn5TwowhHv059jOjBypyZHGNU";
+    const { token } = useAuth();
     const [formData, setFormData] = useState(initialState);
     const [isLoading, setIsLoading] = useState(false);
     const [imageFile, setImageFile] = useState(null);
     const [error, setError] = useState('');
     const [artists, setArtists] = useState([]);
-    const [genres, setGenres] = useState([]);
 
     // Efecto para cargar datos si estamos en modo edición
     useEffect(() => {
@@ -54,9 +52,13 @@ const AddSculpture = ({ artworkData, onCreationSuccess }) => {
                 const artistsData = await getArtists();
                 const genresData = await getGenres();
                 setArtists(artistsData);
-                setGenres(genresData);
-                console.log('Artistas cargados:', artistsData);
-                console.log('Géneros cargados:', genresData);
+                // automaticamente asigna el género "Escultura" si estamos creando una nueva escultura y no se ha asignado un género
+                if (!artworkData) {
+                    const sculptureGenre = genresData.find(g => g.name === 'Escultura');
+                    if (sculptureGenre) {
+                        setFormData(prev => ({ ...prev, idGenre: sculptureGenre.idGenre }));
+                    }
+                }
             } catch (error) {
                 console.error("Error al cargar artistas o géneros:", error);
                 setError("No se pudieron cargar los artistas o géneros");
@@ -94,8 +96,8 @@ const AddSculpture = ({ artworkData, onCreationSuccess }) => {
         }
 
         //validacion de id
-        if(!formData.idArtist || !formData.idGenre) {
-            const msg = "Por favor, selecciona un artista y un género.";
+        if(!formData.idArtist) {
+            const msg = "Por favor, selecciona un artista.";
             setError(msg);
             toast.error(msg);
             return;
@@ -107,14 +109,6 @@ const AddSculpture = ({ artworkData, onCreationSuccess }) => {
         try {
             // Prepara y crea la escultura
             const sculptureData = {
-                /*...formData,
-                price: parseFloat(formData.price),
-                weight: parseFloat(formData.weight),
-                length: parseFloat(formData.length),
-                width: parseFloat(formData.width),
-                depth: parseFloat(formData.depth),*/
-                
-                //creo un obajeto aninado en vez de uno plano
                 artWorkRequest: {
                     name: formData.name,
                     status: formData.status,
@@ -133,7 +127,13 @@ const AddSculpture = ({ artworkData, onCreationSuccess }) => {
 
             if (artworkData) {
                 // --- MODO ACTUALIZACIÓN ---
-                await updateSculpture(artworkData.id, sculptureData, token);
+                // Usamos el endpoint genérico con solo los campos permitidos: name, status, price
+                const genericUpdateData = {
+                    name: formData.name,
+                    status: formData.status,
+                    price: parseFloat(formData.price)
+                };
+                await updateGenericArtwork(artworkData.id, genericUpdateData, token);
                 newArtworkId = artworkData.id; // Mantenemos el ID existente
                 toast.success('¡Escultura actualizada con éxito!');
             } else {
@@ -141,7 +141,6 @@ const AddSculpture = ({ artworkData, onCreationSuccess }) => {
                 console.log('Datos enviados a createSculpture:', sculptureData);
                 console.log('Token:', token);
                 const createdSculptureResponse = await createSculpture(sculptureData, token);
-                //newArtworkId = createdSculptureResponse?.artWork?.id;
                 newArtworkId = createdSculptureResponse?.artworkResponse?.idArtWork;
 
                 if (!newArtworkId) {
@@ -156,6 +155,7 @@ const AddSculpture = ({ artworkData, onCreationSuccess }) => {
 
             // Mensaje de éxito y navegación
             const successMessage = artworkData ? '¡Escultura actualizada con éxito!' : '¡Escultura registrada con éxito!';
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll arriba para mostrar el mensaje
             toast.success(successMessage, {
                 onClose: () => {
                     if (onCreationSuccess) {
@@ -180,7 +180,12 @@ const AddSculpture = ({ artworkData, onCreationSuccess }) => {
                 toast.warning('Datos guardados, pero hubo un error con la imagen.');
             } else {
                 // si el error ocurre antes de intentar crear la escultura
-                finalErrorMessage = `Error al procesar la escultura: ${serverMessage}`;
+                // Check for duplicate key error
+                if (serverMessage.includes('duplicate key value') || serverMessage.includes('already exists')) {
+                    finalErrorMessage = 'Ya existe una obra con ese nombre. Por favor, elige un nombre diferente.';
+                } else {
+                    finalErrorMessage = `Error al procesar la escultura: ${serverMessage}`;
+                }
                 toast.error(finalErrorMessage);
             }
             setError(finalErrorMessage);
@@ -267,17 +272,6 @@ const AddSculpture = ({ artworkData, onCreationSuccess }) => {
                         <option value="">Selecciona un artista</option>
                         {artists.map(artist => (
                             <option key={artist.idArtist} value={artist.idArtist}>{artist.name} {artist.lastName}</option>
-                        ))}
-                    </select>
-                </div>
-
-                {/* Género */}
-                <div className="form-group">
-                    <label className="form-label">Género</label>
-                    <select name="idGenre" value={formData.idGenre} onChange={handleChange} required>
-                        <option value="">Selecciona un género</option>
-                        {genres.map(genre => (
-                            <option key={genre.idGenre} value={genre.idGenre}>{genre.description}</option>
                         ))}
                     </select>
                 </div>
