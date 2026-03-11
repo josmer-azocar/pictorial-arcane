@@ -29,28 +29,33 @@ function InvoiceModal({ reservation, onClose, onSuccess }) {
     setError('');
   };
 
-  const handleConfirm = async () => {
-    if (!formData.bankName || !formData.reference || !formData.amount || !formData.paymentDate || !formData.description || !formData.direction) {
-      setError('Todos los campos son obligatorios.');
-      return;
-    }
-    setLoading(true);
-    setError('');
-    try {
-      await axios.post(`${API_BASE_URL}/admin/confirmSale/${reservation.idSale}`, {
-        ...formData,
-        amount: parseFloat(formData.amount)
-      }, { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } });
-
-      onSuccess(reservation.idSale);
-    } catch (err) {
-      const msg = err.response?.data?.message || 'Error al procesar la factura. Intenta de nuevo.';
-      toast.error(msg);
-      setError(msg);
-    } finally {
-      setLoading(false);
-    }
-  };
+ const handleConfirm = async () => {
+  if (!formData.bankName || !formData.reference || !formData.amount || !formData.paymentDate || !formData.description || !formData.direction) {
+    setError('Todos los campos son obligatorios.');
+    return;
+  }
+  setLoading(true);
+  setError('');
+  try {
+    await axios.put(
+      `${API_BASE_URL}/admin/confirmSale/${reservation.idSale}?description=${encodeURIComponent(formData.description)}&direction=${encodeURIComponent(formData.direction)}`,
+      {
+        amount: parseFloat(formData.amount),
+        paymentDate: formData.paymentDate,
+        bankName: formData.bankName,
+        reference: formData.reference
+      },
+      { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
+    );
+    onSuccess(reservation.idSale);
+  } catch (err) {
+    const msg = err.response?.data?.message || 'Error al procesar la factura. Intenta de nuevo.';
+    toast.error(msg);
+    setError(msg);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="modal-overlay" onClick={onClose}>
