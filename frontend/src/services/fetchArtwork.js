@@ -10,8 +10,8 @@ const url = API_BASE_URL;
 export async function showArtwork(idGenre = null, 
     idArtist = null, 
     title= '',
-    minPrice=0,
-    maxPrice=999999, 
+    minPrice=null,
+    maxPrice=null, 
     page = 0,
     size = 10, 
     sortBy = 'price', 
@@ -21,13 +21,13 @@ export async function showArtwork(idGenre = null,
             idGenre: idGenre, 
             idArtist: idArtist,
             title: title || '',
-            min: minPrice,
-            max: maxPrice,
             page: page,
             size: size,
             sortBy: sortBy,
             direction: direction,
         };
+        if (minPrice != null) searchParams.min = minPrice;
+        if (maxPrice != null) searchParams.max = maxPrice;
         const response = await axios.get(`${url}/artwork/search`, {
             params: searchParams
         });

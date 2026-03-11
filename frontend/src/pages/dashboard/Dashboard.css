@@ -8,11 +8,18 @@
     color: antiquewhite;
 
 }
+
+.user-welcome div{
+    flex-shrink: 2;
+}
+
 #pfp-moment{
     background-color: rgb(54, 26, 80);
     color: antiquewhite;
     padding: 40px;
-    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
 }
 
 #pfp-moment a {
@@ -81,12 +88,21 @@
     cursor: pointer;
 }
 
+.form-cont {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
 .form-cont select {
     background-color: transparent;
     color: antiquewhite;
     border-radius: 5px;
     padding: 5px;
     border-width: 1px;
+    border-color: rgba(255, 228, 196, 0.247);
+    max-width: 50%;
 }
 
 .form-cont select:hover {
@@ -98,19 +114,35 @@
     background-color: transparent;
     color: antiquewhite;
     padding: 5px;
+    max-width: 50%;
+    border-color: rgba(255, 228, 196, 0.247);
 }
+
+#message-user {
+    flex: 1;                
+    min-width: 0;           
+    overflow: auto;         
+    max-width: 100%;        
+}
+
 
 .info-display {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem 2rem; 
     align-items: center;
+    max-width: 90%;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .info-display p {
     margin: 0; 
     padding: 0.5rem 0;
     border-bottom: 1px solid #eee;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
 }
 
 .info-display button {
@@ -118,4 +150,96 @@
     justify-self: center; 
     margin-top: 1rem;
     padding: 0.5rem 2rem;
+    background-color: rgba(112, 29, 112, 0.473);
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.info-display button:hover {
+    background-color: rgba(137, 43, 226, 0.377);
+    color: white;
+    cursor: pointer;
+
+}
+
+.edit-form .form-cont {
+    flex-wrap: wrap;       
+}
+
+.edit-form input,
+.edit-form select {
+    width: 100%;             
+    box-sizing: border-box;  
+    min-width: 0;
+}
+
+.purchases-section {
+    margin: 20px;
+    padding: 20px;
+    background-color: rgb(43, 43, 43);
+    color: antiquewhite;
+    border-radius: 8px;
+    max-width: 100%;
+}
+
+.purchases-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: scroll;
+}
+
+.purchases-table thead tr {
+    background-color: #4a2c6d;
+    color: #fff;
+    text-align: left;
+    font-weight: 600;
+}
+
+.purchases-table th,
+.purchases-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.purchases-table tbody tr {
+    background-color: #2d2d2d; 
+    color: #f0f0f0;
+    transition: background-color 0.2s ease;
+}
+
+.purchases-table tbody tr:nth-child(even) {
+    background-color: #3a3a3a; 
+}
+
+.purchases-table tbody tr:hover {
+    background-color: #5a3a7a; 
+    cursor: default;
+}
+
+.purchases-table td {
+    color: #e0e0e0;
+}
+
+.purchases-table th {
+    background-color: #3a2560;
+    color: white;
+    letter-spacing: 0.5px;
+}
+
+.purchases-table td:last-child {
+    font-weight: 600;
+    color: #ffd966; 
+}
+
+@media (max-width: 600px) {
+    .purchases-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
 }

@@ -22,10 +22,12 @@ export const AuthProvider = ({children}) => {
                 role: profile.user.role,
                 email: profile.user.email,
                 gender: profile.user.gender,
-                pfp: "https://picsum.photos/200"
+                pfp: "https://picsum.photos/200",
+                dateOfBirth: profile.user.dateOfBirth || null,
             });
             setClient({
                 postalCode: profile.client?.postalCode,
+                creditCardNumber: profile.client?.creditCardNumber || null,
             });
             console.log("Profile from API:", profile);
             return profile;
