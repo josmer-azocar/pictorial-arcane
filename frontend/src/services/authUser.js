@@ -30,15 +30,18 @@ export async function updateSecurityAnswer(questionId, answer, token) {
     }
 
     const response = await axios.put(
-        `${API_BASE_URL}/questions/updateQuestion?questionId=${parseInt(questionId)}`,
-        JSON.stringify(answer), // ✅ String directo serializado correctamente
-        {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            }
+    `${API_BASE_URL}/questions/updateQuestion?questionId=${parseInt(questionId)}`,
+    {
+        idQuestion: parseInt(questionId),
+        Answer: answer  // ← objeto completo
+    },
+    {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
         }
-    );
+    }
+);
     return response.data;
 }
 // update client payment/membership information
@@ -145,6 +148,7 @@ export const recoverSecurityCode = async (answersArray, token) => {
     throw error.response?.data?.message || "Las respuestas no son correctas";
   }
 };
+
 
 // Crear/renovar membresía del cliente
 export async function createMembership(token) {

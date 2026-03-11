@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: row;
     margin: 70px;
-    align-items: stretch;
+    align-items: center;
     gap: 40px;
     background-color: rgb(43, 43, 43);
     color: antiquewhite;
@@ -20,8 +20,6 @@
     display: flex;
     flex-direction: column;
     min-height: 100%;
-    align-items: center;
-    justify-content: center;
 }
 
 #pfp-moment a {
@@ -124,9 +122,7 @@
     flex: 1;                
     min-width: 0;           
     overflow: auto;         
-    max-width: 100%; 
-    align-content: center;
-    justify-content: center;       
+    max-width: 100%;        
 }
 
 
@@ -180,12 +176,11 @@
 
 .purchases-section {
     margin: 20px;
-    padding: 20px 40px;
+    padding: 20px;
     background-color: rgb(43, 43, 43);
     color: antiquewhite;
     border-radius: 8px;
     max-width: 100%;
-    margin-right: 40px;
 }
 
 .purchases-table {

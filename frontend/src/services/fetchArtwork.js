@@ -602,3 +602,13 @@ const allGenresMock = [
     throw error;
   }
 }*/
+
+export async function getSpecificArtworkById(id) {
+  try {
+   const response = await axios.get(`${API_BASE_URL}/artwork/search/specificArtWork/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener obra específica:", error);
+    throw error;
+  }
+}
