@@ -23,7 +23,6 @@ function Header(){
             <li className="list-item"><Link to="/">Home</Link></li>
             <li className="list-item"><Link to="/about">Acerca de</Link></li>
             <li className="list-item"><Link to="/artwork">Galería</Link></li>
-            <li className="list-item"><Link to="#">Artistas</Link></li>
             <li className="list-item"><Link to="/shipment">Envíos</Link></li>
             {/* botón de Login */}
             {!isLoggedIn ? (

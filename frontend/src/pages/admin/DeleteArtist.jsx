@@ -97,10 +97,9 @@ function DeleteArtist() {
     }).catch(() => {}); // si no tiene imagen no importa
 
     // PASO 2: borrar el artista
-    await axios.delete(`${API_BASE_URL}/artist/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
+    await axios.delete(`${API_BASE_URL}/artist/delete/${id}`, {
+  headers: { Authorization: `Bearer ${token}` }
+});
     toast.success(`Artista "${name}" eliminado correctamente.`);
     setArtists(prev => prev.filter(a => a.idArtist !== id));
   } catch (err) {
