@@ -37,7 +37,6 @@
     letter-spacing: -1px;
     text-shadow: 0 4px 20px rgba(0,0,0,0.5);
     background: linear-gradient(90deg, #e0c3fc, #f8e1ff, #d4a5ff);
-    -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -88,8 +87,7 @@
     cursor: pointer;
     transition: all 0.25s ease;
     outline: none;
-    appearance: none;
-    -webkit-appearance: none;
+    
 }
 
 #botton-filtrado button:hover,
@@ -236,7 +234,6 @@
     font-size: 1.25rem;
     font-weight: 500;
     box-shadow: 0 4px 15px rgba(0,0,0,0.18);
-    backdrop-filter: blur(6px);
     transition: all 0.35s ease;
     cursor: pointer;
 }
