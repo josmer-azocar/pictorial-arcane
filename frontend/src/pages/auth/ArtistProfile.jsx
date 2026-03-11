@@ -4,6 +4,7 @@ import './ArtistProfile.css';
 import { getArtistById, getArtworksByArtist } from '../../services/fetchArtwork';
 
 /*const ArtistProfile = ({ mockArtists, mockArtworks }) */
+import Loading from '../../components/Loading.jsx';
 
 const ArtistProfile = () => {
   const { id } = useParams();
@@ -40,12 +41,6 @@ useEffect(() => {
       ]);
       setArtist(artistData);
 
-      const grouped = artworksData.reduce((acc, obra) => {
-        const genre = obra.gender || 'Sin género';
-        if (!acc[genre]) acc[genre] = [];
-        acc[genre].push(obra);
-        return acc;
-      }, {});
       setArtworksByGenre(artworksData);
 
     } catch (err) {
@@ -59,7 +54,7 @@ useEffect(() => {
 
 
   if (error) return <div className="artp-page"><p>Error: {error}</p></div>;
-  if (loading) return <div className="artp-page"><p>Cargando...</p></div>;
+  if (loading) return <Loading />;
   if (!artist) return <div className="artp-page"><h2>Artista no encontrado</h2></div>;
 
   return (
