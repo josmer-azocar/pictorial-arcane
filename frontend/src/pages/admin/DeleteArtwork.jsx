@@ -1,36 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { showArtwork, searchArtworks, showArtist, getAllArtworks, getGenres } from '../../services/fetchArtwork';
+import { showArtwork, searchArtworks, showArtist, deleteArtwork, getAllArtworks, getGenres } from '../../services/fetchArtwork';
+import { useAuth } from '../../services/AuthContext';
 import './Admin.css';
 
-const UpdateArtwork = ({ onEditSelect }) => {
+const DeleteArtwork = () => {
+  const { token } = useAuth();
   const [artworks, setArtworks] = useState([]);
   const [artists, setArtists] = useState([]);
   const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ id: '', artistId: '', genre: '' });
 
+  // Carga inicial de datos
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const response = await getAllArtworks();
+      // Filtrar solo obras con estatus AVAILABLE
+      setArtworks(response.filter(art => art.status === 'AVAILABLE'));
+      
+      const artistsData = await showArtist();
+      setArtists(artistsData);
+
+      const genresData = await getGenres();
+      setGenres(genresData);
+    } catch (err) {
+      toast.error('Error al cargar las obras.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const response = await getAllArtworks();
-        // Filtrar solo obras con estatus AVAILABLE
-        setArtworks(response.filter(art => art.status === 'AVAILABLE'));
-        
-        const artistsData = await showArtist();
-        setArtists(artistsData);
-
-        const genresData = await getGenres();
-        setGenres(genresData);
-      } catch (err) {
-        toast.error('Error al cargar las obras.');
-      } finally {
-        setLoading(false);
-      }
-    };
     loadData();
   }, []);
 
@@ -66,39 +69,57 @@ const UpdateArtwork = ({ onEditSelect }) => {
 
   const handleClear = async () => {
     setFilters({ id: '', artistId: '', genre: '' });
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const response = await getAllArtworks();
-        setArtworks(response.filter(art => art.status === 'AVAILABLE'));
-      } catch (err) {
-        toast.error('Error al recargar las obras.');
-      } finally {
-        setLoading(false);
-      }
-    };
     loadData();
   };
 
-  const handleEdit = (artworkObject) => {
-    // Llama a la función pasada por props para notificar al componente padre (Admin.jsx)
-    // que se ha seleccionado una obra para editar.
-    onEditSelect(artworkObject);
+  const handleDelete = async (id, name) => {
+    // Confirmación simple del navegador
+    if (window.confirm(`¿Estás seguro de que deseas eliminar la obra "${name}"? Esta acción no se puede deshacer.`)) {
+        try {
+            await deleteArtwork(id, token);
+            toast.success(`La obra "${name}" ha sido eliminada.`);
+            
+            // Recargamos la lista para ver los cambios
+            if (filters.id) {
+                // Para búsqueda por ID, recargar y filtrar localmente
+                const response = await getAllArtworks();
+                setArtworks(response.filter(art => art.idArtWork.toString() === filters.id && art.status === 'AVAILABLE'));
+            } else if (filters.artistId || filters.genre) {
+                // Si había filtros de artista o género, repetimos la búsqueda
+                const response = await searchArtworks({ artistId: filters.artistId, genre: filters.genre, size: 1000 });
+                setArtworks(response.content.filter(art => art.status === 'AVAILABLE') || []);
+            } else {
+                // Si no, recargamos todo
+                const response = await getAllArtworks();
+                setArtworks(response.filter(art => art.status === 'AVAILABLE'));
+            }
+        } catch (error) {
+            console.error('Error deleting artwork:', error);
+            console.error('Error response:', error.response?.data);
+            if (error.response?.status === 404) {
+                toast.error("Obra de arte no encontrada.");
+            } else if (error.response?.data?.message?.includes('violates foreign key constraint')) {
+                toast.error("No se puede eliminar la obra porque tiene dependencias (reservas, ventas, etc.).");
+            } else {
+                toast.error("Error al eliminar la obra.");
+            }
+        }
+    }
   };
 
   return (
     <div className="admin-section">
       <ToastContainer position="top-center" theme="dark" />
-      <h1 className="section-title">Actualizar Obra</h1>
+      <h1 className="section-title">Borrar Obra</h1>
       <div className="admin-line"></div>
       <p className="admin-subtitle">
-        Selecciona la obra que deseas editar.
+        Busca y elimina obras del sistema permanentemente.
       </p>
 
-      {/* Barra de Filtros */}
+      {/* Barra de Filtros (Reutilizada de UpdateArtwork) */}
       <form className="admin-form" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: '15px', maxWidth: '100%', marginTop: '20px', marginBottom: '30px' }} onSubmit={handleSearch}>
         <div style={{ flex: 1, minWidth: '150px' }}>
-          <input type="number" name="id" placeholder="Buscar por ID de Obra" value={filters.id} onChange={handleFilterChange} style={{ margin: 0 }} />
+          <input type="number" name="id" placeholder="Buscar por ID" value={filters.id} onChange={handleFilterChange} style={{ margin: 0 }} />
         </div>
         <div style={{ flex: 1, minWidth: '200px' }}>
           <select name="artistId" value={filters.artistId} onChange={handleFilterChange} style={{ margin: 0 }}>
@@ -116,12 +137,8 @@ const UpdateArtwork = ({ onEditSelect }) => {
             ))}
           </select>
         </div>
-        <button type="submit" className="btn-primary" style={{ height: '50px', marginTop: '0' }} disabled={loading}>
-          {loading ? 'Buscando...' : 'Buscar'}
-        </button>
-        <button type="button" className="btn-secondary" onClick={handleClear} style={{ height: '50px', marginTop: '0' }} disabled={loading}>
-          Limpiar
-        </button>
+        <button type="submit" className="btn-primary" style={{ height: '50px', marginTop: '0' }} disabled={loading}>Buscar</button>
+        <button type="button" className="btn-secondary" onClick={handleClear} style={{ height: '50px', marginTop: '0' }} disabled={loading}>Limpiar</button>
       </form>
 
       {loading ? (
@@ -145,7 +162,7 @@ const UpdateArtwork = ({ onEditSelect }) => {
                     <td className="td-price">${art.price?.toLocaleString()}</td>
                     <td>
                       <div className="action-buttons">
-                        <button className="btn-invoice" onClick={() => handleEdit(art)}>Seleccionar para Editar</button>
+                        <button className="btn-cancel" onClick={() => handleDelete(art.idArtWork, art.name)}>Eliminar</button>
                       </div>
                     </td>
                   </tr>
@@ -160,4 +177,4 @@ const UpdateArtwork = ({ onEditSelect }) => {
   );
 };
 
-export default UpdateArtwork;
+export default DeleteArtwork;
