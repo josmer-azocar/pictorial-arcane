@@ -17,6 +17,7 @@ import Dashboard from './pages/dashboard/Dashboard.jsx';
 import PrivateRoutes from './services/PrivateRoutes.jsx';
 import PrivateRoutesAdmin from './services/PrivateRoutesAdmin.jsx';
 import Admin from './pages/admin/Admin.jsx';
+import { NotificationProvider } from './services/NotificationContext';
 
 
 function App() {
@@ -64,6 +65,7 @@ const mockArtworksByArtist = {
 
 return (
     <AuthProvider>
+      <NotificationProvider>
         <Header />
         <main className="main-content">
         <Routes>
@@ -91,6 +93,7 @@ return (
         </Routes>
         </main>
         <Footer />
+        </NotificationProvider>
       </AuthProvider>
   );
 }

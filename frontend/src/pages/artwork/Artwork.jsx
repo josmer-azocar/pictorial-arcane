@@ -14,19 +14,21 @@ function Artwork() {
     const [availableGenres, setAvailableGenres] = useState([]);
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
 
     const getArt = async (
         page = 0,
         idGenre= sortConfig.idGenre,
         idArtist = sortConfig.idArtist,
         sortBy = sortConfig.sortBy,
-        direction = sortConfig.direction) => {
+        direction = sortConfig.direction,
+        title = searchTerm) => {
         isLoad(true);
         try {
             setError("");
             const response = await showArtwork(idGenre, 
                                                 idArtist, 
-                                                '', 
+                                                title, 
                                                 minPrice === '' ? null : Number(minPrice),
                                                 maxPrice === '' ? null : Number(maxPrice), 
                                                 page, 
@@ -95,7 +97,7 @@ function Artwork() {
                 <div id="botton-filtrado">
                     <input
                         type="number"
-                        placeholder="Precio mínimo"
+                        placeholder="Precio mín"
                         value={minPrice}
                         onChange={(e) => setMinPrice(e.target.value)}
                         className="price-input"
@@ -103,7 +105,7 @@ function Artwork() {
                     />
                         <input
                         type="number"
-                        placeholder="Precio máximo"
+                        placeholder="Precio máx"
                         value={maxPrice}
                         onChange={(e) => setMaxPrice(e.target.value)}
                         className="price-input"
@@ -134,10 +136,24 @@ function Artwork() {
                         ))}
                     </select>
 
+                    <div id="search-bar">
+                    <input
+                        type="text"
+                        placeholder="Buscar por título..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && getArt(0)} // Search on Enter key
+                        className="search-input"
+                    />
+                    <button onClick={() => getArt(0)} className="search-button">
+                        🔍
+                    </button>
+                </div>
+
                     <button onClick={() => {
                         setMinPrice('');
                         setMaxPrice('');
-                        getArt(0, null, null, 'price', 'ASC');
+                        getArt(0, null, null, 'price', 'ASC', '');
                         }}>Limpiar</button>
                 </div>
             </div>

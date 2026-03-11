@@ -5,7 +5,7 @@ import { useState } from 'react';
 import HistorialCompras from './HistorialCompras';
 import InfoUsuario from './InfoUsuario';
 import Loading from '../../components/Loading.jsx';
-import { obtainOrRenewMembership, fetchMembershipStatus } from '../../services/membershipServices.js';
+import { obtainOrRenewMembership, fetchMembershipStatus, createSecurityCode } from '../../services/membershipServices.js';
 import { useEffect } from 'react';
 
 function Dashboard() {
@@ -40,6 +40,8 @@ function Dashboard() {
         try {
             const newMembership = await obtainOrRenewMembership();
             setMember(newMembership); // directly set the result
+            createSecurityCode(); 
+            alert('Membresía obtenida/renovada exitosamente. Se ha generado un código de seguridad para tu cuenta. Revise su correo');
         } catch (error) {
             console.error("Error obteniendo o renovando membresía:", error);
             alert("Error obteniendo o renovando membresía");
@@ -52,7 +54,7 @@ function Dashboard() {
     const renderContent = () => {
         switch (activeSection) {
             case 'history':
-                return <div><h3>Tu Historial de Compras</h3><HistorialCompras/></div>;
+                return <div className='historic-sales'><HistorialCompras/></div>;
             case 'info':
                 return (
                     <div>

@@ -33,7 +33,7 @@ export async function unassignGenre(idArtist, idGenre){
     try {
         const token = localStorage.getItem('token');
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        const unassignation = await axios.post(`${url}/genre/unassign`,  null, {
+        const unassignation = await axios.delete(`${url}/genre/unassign`, {
             params: { idArtist, idGenre },
             headers
         });
@@ -46,3 +46,16 @@ export async function unassignGenre(idArtist, idGenre){
 
 }
 
+export async function getGenresByArtist(idArtist){
+    try {
+        const genres = await axios.get(`${url}/genre/getAllByArtist`, {
+            params: { idArtist }
+        });
+        console.log("Géneros del artista obtenidos:", genres.data);
+        return genres.data;
+        
+    } catch (error) {
+        console.error("Error al obtener los géneros del artista:", error);
+        throw error;
+    }
+}

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Admin.css';
-import { getAllGenres, assignGenre, unassignGenre } from '../../services/genreServices.js';
+import { getAllGenres, assignGenre, unassignGenre, getGenresByArtist } from '../../services/genreServices.js';
 
 
 //const BASE_URL = 'http://localhost:8080';
@@ -30,6 +30,9 @@ function UpdateArtist() {
   const [imageHovered, setImageHovered] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef(null);
+  const [allGenres, setAllGenres] = useState([]);
+  const [artistGenres, setArtistGenres] = useState([]);
+  const [updatingGenre, setUpdatingGenre] = useState(false);
 
   const handleChangeImage = async (artistId, file) => {
     if (!file) return;
@@ -71,6 +74,60 @@ function UpdateArtist() {
     }
   };
 
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const data = await getAllGenres();
+        setAllGenres(data);
+      } catch (err) {
+        toast.error('Error al cargar géneros disponibles.');
+      }
+    };
+    fetchGenres();
+  }, []);
+
+  useEffect(() => {
+    if (selectedArtist) {
+      const fetchArtistGenres = async () => {
+        try {
+          const genres = await getGenresByArtist(selectedArtist.idArtist);
+          setArtistGenres(Array.isArray(genres) ? genres.map(g => g.idGenre) : []);
+          setArtistGenres(genres.map(g => g.idGenre));
+        } catch (err) {
+          console.error(err);
+          toast.error('No se pudieron cargar los géneros del artista.');
+        }
+      };
+      fetchArtistGenres();
+    } else {
+      setArtistGenres([]);
+    }
+  }, [selectedArtist]);
+
+
+  const handleGenreToggle = async (genreId, currentlyAssigned) => {
+    if (!selectedArtist) return;
+    setUpdatingGenre(true);
+    try {
+      if (currentlyAssigned) {
+        // unassign
+        await unassignGenre(selectedArtist.idArtist, genreId);
+        setArtistGenres(prev => prev.filter(id => id !== genreId));
+        toast.info('Género removido.');
+      } else {
+        // assign
+        await assignGenre(selectedArtist.idArtist, genreId);
+        setArtistGenres(prev => [...prev, genreId]);
+        toast.success('Género asignado.');
+      }
+    } catch (err) {
+      const action = currentlyAssigned ? 'remover' : 'asignar';
+      toast.error(`Error al ${action} el género.`);
+      console.error(err);
+    } finally {
+      setUpdatingGenre(false);
+    }
+  };
   // PASO 1: Cargar todos los artistas al montar
 useEffect(() => {
     const fetchArtists = async () => {
@@ -380,6 +437,22 @@ useEffect(() => {
                 min="5"
                 max="10"
               />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Géneros del artista</label>
+              <div className="genre-checkboxes" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
+                {allGenres.map(genre => (
+                  <label key={genre.idGenre} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', background: '#2a2a2a', padding: '0.3rem 0.8rem', borderRadius: '20px', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={artistGenres.includes(genre.idGenre)}
+                      onChange={() => handleGenreToggle(genre.idGenre, artistGenres.includes(genre.idGenre))}
+                      disabled={updatingGenre}
+                    />
+                    {genre.name}
+                  </label>
+                ))}
+              </div>
             </div>
             <div className="modal-actions">
               <button type="button" className="btn-primary" onClick={handleSubmit}>Guardar Cambios</button>
