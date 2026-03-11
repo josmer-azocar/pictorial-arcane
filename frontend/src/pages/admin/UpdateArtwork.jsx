@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { showArtwork, searchArtworks, showArtist, getAllArtworks, getGenres, getArtworkById } from '../../services/fetchArtwork';
+import { showArtwork, searchArtworks, showArtist, getAllArtworks, getGenres } from '../../services/fetchArtwork';
 import './Admin.css';
 
 const UpdateArtwork = ({ onEditSelect }) => {
@@ -84,11 +84,9 @@ const UpdateArtwork = ({ onEditSelect }) => {
   const handleEdit = async (artworkObject) => {
     setIsLoadingDetail(true);
     try {
-        // Llama al endpoint /artwork/{id} para obtener TODOS los campos
-        // específicos del tipo de obra (material, técnica, dimensiones, etc.)
-        const fullArtworkData = await getArtworkById(artworkObject.idArtWork);
-
-        onEditSelect(fullArtworkData);
+        // Pasamos directamente el objeto de getAllArtworks que ya tiene idGenre
+        // No llamamos a getArtworkById porque devuelve objeto vacío {}
+        onEditSelect(artworkObject);
     } catch (err) {
         toast.error('Error al cargar los detalles de la obra. Intenta de nuevo.');
     } finally {

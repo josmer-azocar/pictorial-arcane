@@ -14,7 +14,6 @@ import AddCeramic from './AddCeramic.jsx';
 import AddGoldsmith from './AddGoldsmith.jsx';
 import DeleteArtwork from './DeleteArtwork.jsx';
 import CreateGenre from './CreateGenre.jsx';
-import DeleteGenre from './DeleteGenre.jsx';
 import UpdateGenre from './UpdateGenre.jsx';
 
 import UpdateArtist from './UpdateArtist.jsx';
@@ -65,8 +64,11 @@ function Admin() {
     if (!artworkToEdit || !genres.length) {
       return <p className="empty-state">Cargando datos de la obra...</p>;
     }
+    console.log('artworkToEdit:', JSON.stringify(artworkToEdit)); // Ver datos de la obra seleccionada
+    console.log('genres:', JSON.stringify(genres));// Ver lista de géneros para mapear idGenre a tipo
 
     const genre = genres.find(g => g.idGenre === artworkToEdit.idGenre);
+    console.log('genre encontrado:', genre);
     if (!genre) {
         return <p className="empty-state">Error: Género no encontrado para la obra seleccionada.</p>;
     }
@@ -124,8 +126,6 @@ function Admin() {
         return <DeleteArtwork />;
       case 'createGenre':
         return <CreateGenre />;
-      case 'deleteGenre':
-        return <DeleteGenre />;
       case 'updateGenre':
         return <UpdateGenre />;
       case 'updateArtwork':
@@ -196,6 +196,12 @@ function Admin() {
       className={`admin-nav-btn ${activeSection === 'viewArtist' ? 'active' : ''}`}
       onClick={() => handleSectionChange('viewArtist')}
     >
+      Ver Artista
+    </button>
+    <button
+      className={`admin-nav-btn ${activeSection === 'updateArtist' ? 'active' : ''}`}
+      onClick={() => handleSectionChange('updateArtist')}
+    >
       Actualizar Artista
     </button>
     <button
@@ -219,12 +225,6 @@ function Admin() {
               onClick={() => handleSectionChange('createGenre')}
             >
               Crear Género
-            </button>
-            <button
-              className={`admin-nav-btn ${activeSection === 'deleteGenre' ? 'active' : ''}`}
-              onClick={() => handleSectionChange('deleteGenre')}
-            >
-              Borrar Género
             </button>
             <button
               className={`admin-nav-btn ${activeSection === 'updateGenre' ? 'active' : ''}`}

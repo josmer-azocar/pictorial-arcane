@@ -133,6 +133,9 @@ const AddSculpture = ({ artworkData, onCreationSuccess }) => {
                     status: formData.status,
                     price: parseFloat(formData.price)
                 };
+                 console.log('artworkData completo:', JSON.stringify(artworkData)); 
+    console.log('ID usado:', artworkData.id); 
+    console.log('genericUpdateData:', JSON.stringify(genericUpdateData));
                 await updateGenericArtwork(artworkData.id, genericUpdateData, token);
                 newArtworkId = artworkData.id; // Mantenemos el ID existente
                 toast.success('¡Escultura actualizada con éxito!');
