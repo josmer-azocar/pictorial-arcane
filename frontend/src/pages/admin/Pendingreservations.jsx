@@ -70,14 +70,14 @@ function PendingReservations() {
   const token = localStorage.getItem('token');
 
   // ── GET /admin/getAllPendingSales ──────────────────────────
-  const fetchPendingSales = async () => {
+  /*const fetchPendingSales = async () => {
 
  /*  if (!token || token === 'test-token-fake') {
     setReservations(mockReservations);
     setLoading(false);
     return;
   }*/
-    setLoading(true);
+  /*  setLoading(true);
     try {
       const data = await getPendingSales(token);
       setReservations(Array.isArray(data) ? data : data?.content || []);
@@ -88,8 +88,20 @@ function PendingReservations() {
     } finally {
       setLoading(false);
     }
-  };
-
+  };*/
+  const fetchPendingSales = async () => {
+  const token = localStorage.getItem('token');
+  console.log("Token al hacer fetch:", token);
+  setLoading(true);
+  try {
+    const data = await getPendingSales(token);
+    setReservations(Array.isArray(data) ? data : data?.content || []);
+  } catch (err) {
+    toast.error('Error al cargar las reservas pendientes.');
+  } finally {
+    setLoading(false);
+  }
+};
   useEffect(() => {
     fetchPendingSales();
   }, []);
