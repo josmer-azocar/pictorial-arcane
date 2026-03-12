@@ -76,7 +76,7 @@ function ReportsSearch() {
                     <option value="">Todos los estados</option>
                     <option value="ACTIVE">Activa</option>
                     <option value="EXPIRED">Expirada</option>
-                    <option value="CANCELED">Cancelada</option>
+                    <option value="CANCELLED">Cancelada</option>
                 </select>
                 <button type="submit" disabled={loading} className='generate-btn'>Buscar</button>
             </form>
