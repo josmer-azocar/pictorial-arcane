@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { showArtwork, showArtist } from '../../services/fetchArtwork.js'
+import { showArtwork, showArtist, getGenres } from '../../services/fetchArtwork.js'
 import Loading from "../../components/Loading";
 import { Link } from "react-router-dom";
 import './Artwork.css'
@@ -15,6 +15,19 @@ function Artwork() {
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [genreList, setGenreList] = useState([]);
+
+    useEffect(() => {
+    const fetchGenres = async () => {
+        try {
+            const data = await getGenres();
+            setGenreList(data);
+        } catch (err) {
+            console.error("Error al cargar géneros", err);
+        }
+    };
+    fetchGenres();
+    }, []);
 
     const getArt = async (
         page = 0,
@@ -126,12 +139,15 @@ function Artwork() {
                     </select>
 
                     <select 
-                        value={sortConfig.idGenre} 
-                        onChange={(e) => getArt(0, e.target.value, sortConfig.idArtist)}>
+                        value={sortConfig.idGenre || ""} 
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            getArt(0, val === "" ? null : Number(val), sortConfig.idArtist);
+                        }}>
                         <option value="">Todos los Géneros</option>
-                        {availableGenres.map((genre, index) => (
-                            <option key={index} value={genre}>
-                                {genre}
+                        {genreList.map((genre) => (
+                            <option key={genre.idGenre} value={genre.idGenre}>
+                                {genre.name}
                             </option>
                         ))}
                     </select>
