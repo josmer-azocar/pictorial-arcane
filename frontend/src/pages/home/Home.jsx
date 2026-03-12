@@ -15,7 +15,7 @@ const FAQS = [
   },
   {
     question: '¿Cómo recupero mi código de seguridad?',
-    answer: 'Ve a tu perfil y selecciona "Recuperar código". Deberás responder tus 3 preguntas de seguridad correctamente y te enviaremos un nuevo código a tu correo registrado.'
+answer: 'Al intentar comprar una obra, aparecerá un modal solicitando tu código de seguridad. En ese modal encontrarás el enlace "¿Has olvidado tu código de seguridad?" — haz clic ahí, responde tus preguntas de seguridad y te enviaremos el código a tu correo registrado.'
   }
 ];
 
