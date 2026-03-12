@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import PendingReservations from "./PendingReservations.jsx";  
+import PendingReservations from "./Pendingreservations.jsx";  
 import CreateAdmin from "./CreateAdmin.jsx";
 import CreateArtwork from "./CreateArtwork.jsx";
 import "./Admin.css";
