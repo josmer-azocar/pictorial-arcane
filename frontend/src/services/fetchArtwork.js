@@ -396,6 +396,7 @@ export async function getGenres() {
                 'Content-Type': 'application/json'
             }
         } );
+        console.log("Géneros obtenidos:", response.data);
          return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
         console.error("Error al obtener géneros:", error);
