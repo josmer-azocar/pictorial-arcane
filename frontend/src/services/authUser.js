@@ -163,3 +163,12 @@ export async function createMembership(token) {
     );
     return response.data;
 }
+
+export async function getAllQuestions(token) {
+    const response = await axios.get(`${API_BASE_URL}/questions/getAllQuestions`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+    return response.data;
+}

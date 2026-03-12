@@ -4,13 +4,13 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 //import { useAuth } from '../../services/AuthContext.jsx';
-import axios from 'axios';
 import {
     registerUser,
     updateSecurityAnswer,
     updateClientInfo,
     createMembership ,
-    createSecurityCode
+    createSecurityCode,
+    getAllQuestions
 } from '../../services/authUser.js';
 
 import Loading from '../../components/Loading.jsx';
@@ -50,14 +50,10 @@ useEffect(() => {
         setIsLoadingPreguntas(true);
         setErrorPreguntas(null);
 
-        axios.get('/api/questions/getAllQuestions', {  //se consume un enpont y se pase un token 
-            headers: {
-                Authorization: `Bearer ${authToken}`
-            }
-        })
+        getAllQuestions(authToken)
         .then(res => {
-            console.log("Preguntas OK:", res.data);
-            setPreguntasBackend(res.data || []);  // fuerza array
+            console.log("Preguntas OK:", res);
+            setPreguntasBackend(res || []);  // fuerza array
         })
         .catch(err => {
             console.error("Error preguntas:", err);
