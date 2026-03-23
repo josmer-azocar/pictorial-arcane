@@ -9,7 +9,9 @@
 [![Azure](https://img.shields.io/badge/Azure-Deployment-0078D4?logo=microsoftazure&logoColor=white)](#)
 
 Pictorial Arcane is a professional-grade web platform for **exhibiting** and **managing** contemporary art collections.  
+
 The system targets the digital transformation needs of art galleries by providing a centralized, secure, and immersive experience for both administrators and collectors.
+
 ---
 
 ## 🖼️ Preview
