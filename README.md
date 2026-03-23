@@ -197,6 +197,3 @@ Developed by:
 - Inés Salazar (Frontend)
 - Lismarx Gamboa (Frontend)
 - Licett Avendaño (Frontend)
----
-
-## 📄 License
