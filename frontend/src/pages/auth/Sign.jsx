@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-//import { useAuth } from '../../services/AuthContext.jsx';
+import { useAuth } from '../../services/AuthContext.jsx';
 import {
     registerUser,
     updateSecurityAnswer,
@@ -40,7 +40,7 @@ function Sign() {
     const [authToken, setAuthToken] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [preguntasBackend, setPreguntasBackend] = useState([]);
-  
+  const { login } = useAuth();
 const [isLoadingPreguntas, setIsLoadingPreguntas] = useState(false);
 const [errorPreguntas, setErrorPreguntas] = useState(null);
 
@@ -221,14 +221,24 @@ const handleNext3 = async () => {
         // Genera el código de seguridad
         await createSecurityCode(authToken);
 
-        toast.success(`¡Registro exitoso! Revisa tu correo: ${registerData.email}`, {
+        /*toast.success(`¡Registro exitoso! Revisa tu correo: ${registerData.email}`, {
             position: "top-center",
             autoClose: 6000,
         });
         sessionStorage.removeItem('reg_token');   
         sessionStorage.removeItem('reg_step'); 
         sessionStorage.removeItem('reg_data');    
-        setTimeout(() => navigate('/login'), 3000);
+        setTimeout(() => navigate('/login'), 3000);*/
+        toast.success(`¡Registro exitoso! Revisa tu correo: ${registerData.email}`, {
+    position: "top-center",
+    autoClose: 3000,
+});
+sessionStorage.removeItem('reg_token');   
+sessionStorage.removeItem('reg_step'); 
+sessionStorage.removeItem('reg_data');    
+
+await login(authToken); 
+navigate('/dashboard');   
          
     } catch (err) {
         console.error("Error en registro", err);

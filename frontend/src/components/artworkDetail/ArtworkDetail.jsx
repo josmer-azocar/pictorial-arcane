@@ -122,14 +122,17 @@ useEffect(() => {
   }, [showRecoveryModal, token]);
 
   // ── GUARD: espera a que la obra esté cargada ─────────────
-  if (artworkError) return (
-    <div style={{ padding: '2rem', textAlign: 'center' }}>
-      <h2>Obra no encontrada</h2>
-      <p>{artworkError}</p>
-      <Link to="/galeria">← Volver a la galería</Link>
-    </div>
-  );
-
+ if (artworkError) return (
+  <div className="not-found-container">
+    <img 
+      src="/not-found.png"  
+      className="not-found-icon" 
+    />
+    <h2 className="not-found-title">Obra no encontrada</h2>
+    <p className="not-found-text">Esta obra no existe o fue eliminada de la galería.</p>
+    <Link to="/artwork" className="not-found-btn">← Volver a la galería</Link>
+  </div>
+);
 if (!artwork || (!artwork.artWorkResponse && !artwork.artworkResponse)) return <Loading />;
 const generalInfo = artwork.artWorkResponse || artwork.artworkResponse;
 const { idArtWork, name, imageUrl, price, creation_date, status } = generalInfo;
